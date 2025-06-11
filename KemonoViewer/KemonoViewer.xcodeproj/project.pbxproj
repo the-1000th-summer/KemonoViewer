@@ -1,0 +1,576 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7939C8982DF93DBB003170C2 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 7939C8972DF93DBB003170C2 /* SQLite */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		791DEF502DF93CE900261376 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 791DEF362DF93CE800261376 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 791DEF3D2DF93CE800261376;
+			remoteInfo = KemonoViewer;
+		};
+		791DEF5A2DF93CE900261376 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 791DEF362DF93CE800261376 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 791DEF3D2DF93CE800261376;
+			remoteInfo = KemonoViewer;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		791DEF3E2DF93CE800261376 /* KemonoViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KemonoViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		791DEF4F2DF93CE900261376 /* KemonoViewerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KemonoViewerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		791DEF592DF93CE900261376 /* KemonoViewerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KemonoViewerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		791DEF402DF93CE800261376 /* KemonoViewer */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = KemonoViewer;
+			sourceTree = "<group>";
+		};
+		791DEF522DF93CE900261376 /* KemonoViewerTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = KemonoViewerTests;
+			sourceTree = "<group>";
+		};
+		791DEF5C2DF93CE900261376 /* KemonoViewerUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = KemonoViewerUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		791DEF3B2DF93CE800261376 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7939C8982DF93DBB003170C2 /* SQLite in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		791DEF4C2DF93CE900261376 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		791DEF562DF93CE900261376 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		791DEF352DF93CE800261376 = {
+			isa = PBXGroup;
+			children = (
+				791DEF402DF93CE800261376 /* KemonoViewer */,
+				791DEF522DF93CE900261376 /* KemonoViewerTests */,
+				791DEF5C2DF93CE900261376 /* KemonoViewerUITests */,
+				791DEF3F2DF93CE800261376 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		791DEF3F2DF93CE800261376 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				791DEF3E2DF93CE800261376 /* KemonoViewer.app */,
+				791DEF4F2DF93CE900261376 /* KemonoViewerTests.xctest */,
+				791DEF592DF93CE900261376 /* KemonoViewerUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		791DEF3D2DF93CE800261376 /* KemonoViewer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 791DEF632DF93CE900261376 /* Build configuration list for PBXNativeTarget "KemonoViewer" */;
+			buildPhases = (
+				791DEF3A2DF93CE800261376 /* Sources */,
+				791DEF3B2DF93CE800261376 /* Frameworks */,
+				791DEF3C2DF93CE800261376 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				791DEF402DF93CE800261376 /* KemonoViewer */,
+			);
+			name = KemonoViewer;
+			packageProductDependencies = (
+				7939C8972DF93DBB003170C2 /* SQLite */,
+			);
+			productName = KemonoViewer;
+			productReference = 791DEF3E2DF93CE800261376 /* KemonoViewer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		791DEF4E2DF93CE900261376 /* KemonoViewerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 791DEF662DF93CE900261376 /* Build configuration list for PBXNativeTarget "KemonoViewerTests" */;
+			buildPhases = (
+				791DEF4B2DF93CE900261376 /* Sources */,
+				791DEF4C2DF93CE900261376 /* Frameworks */,
+				791DEF4D2DF93CE900261376 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				791DEF512DF93CE900261376 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				791DEF522DF93CE900261376 /* KemonoViewerTests */,
+			);
+			name = KemonoViewerTests;
+			packageProductDependencies = (
+			);
+			productName = KemonoViewerTests;
+			productReference = 791DEF4F2DF93CE900261376 /* KemonoViewerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		791DEF582DF93CE900261376 /* KemonoViewerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 791DEF692DF93CE900261376 /* Build configuration list for PBXNativeTarget "KemonoViewerUITests" */;
+			buildPhases = (
+				791DEF552DF93CE900261376 /* Sources */,
+				791DEF562DF93CE900261376 /* Frameworks */,
+				791DEF572DF93CE900261376 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				791DEF5B2DF93CE900261376 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				791DEF5C2DF93CE900261376 /* KemonoViewerUITests */,
+			);
+			name = KemonoViewerUITests;
+			packageProductDependencies = (
+			);
+			productName = KemonoViewerUITests;
+			productReference = 791DEF592DF93CE900261376 /* KemonoViewerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		791DEF362DF93CE800261376 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					791DEF3D2DF93CE800261376 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					791DEF4E2DF93CE900261376 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 791DEF3D2DF93CE800261376;
+					};
+					791DEF582DF93CE900261376 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 791DEF3D2DF93CE800261376;
+					};
+				};
+			};
+			buildConfigurationList = 791DEF392DF93CE800261376 /* Build configuration list for PBXProject "KemonoViewer" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 791DEF352DF93CE800261376;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7939C8962DF93DBB003170C2 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 791DEF3F2DF93CE800261376 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				791DEF3D2DF93CE800261376 /* KemonoViewer */,
+				791DEF4E2DF93CE900261376 /* KemonoViewerTests */,
+				791DEF582DF93CE900261376 /* KemonoViewerUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		791DEF3C2DF93CE800261376 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		791DEF4D2DF93CE900261376 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		791DEF572DF93CE900261376 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		791DEF3A2DF93CE800261376 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		791DEF4B2DF93CE900261376 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		791DEF552DF93CE900261376 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		791DEF512DF93CE900261376 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 791DEF3D2DF93CE800261376 /* KemonoViewer */;
+			targetProxy = 791DEF502DF93CE900261376 /* PBXContainerItemProxy */;
+		};
+		791DEF5B2DF93CE900261376 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 791DEF3D2DF93CE800261376 /* KemonoViewer */;
+			targetProxy = 791DEF5A2DF93CE900261376 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		791DEF612DF93CE900261376 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		791DEF622DF93CE900261376 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		791DEF642DF93CE900261376 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = KemonoViewer/KemonoViewer.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.the1000thsummer.KemonoViewer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		791DEF652DF93CE900261376 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = KemonoViewer/KemonoViewer.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.the1000thsummer.KemonoViewer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		791DEF672DF93CE900261376 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.the1000thsummer.KemonoViewerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KemonoViewer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/KemonoViewer";
+			};
+			name = Debug;
+		};
+		791DEF682DF93CE900261376 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.the1000thsummer.KemonoViewerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KemonoViewer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/KemonoViewer";
+			};
+			name = Release;
+		};
+		791DEF6A2DF93CE900261376 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.the1000thsummer.KemonoViewerUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = KemonoViewer;
+			};
+			name = Debug;
+		};
+		791DEF6B2DF93CE900261376 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.the1000thsummer.KemonoViewerUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = KemonoViewer;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		791DEF392DF93CE800261376 /* Build configuration list for PBXProject "KemonoViewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				791DEF612DF93CE900261376 /* Debug */,
+				791DEF622DF93CE900261376 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		791DEF632DF93CE900261376 /* Build configuration list for PBXNativeTarget "KemonoViewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				791DEF642DF93CE900261376 /* Debug */,
+				791DEF652DF93CE900261376 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		791DEF662DF93CE900261376 /* Build configuration list for PBXNativeTarget "KemonoViewerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				791DEF672DF93CE900261376 /* Debug */,
+				791DEF682DF93CE900261376 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		791DEF692DF93CE900261376 /* Build configuration list for PBXNativeTarget "KemonoViewerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				791DEF6A2DF93CE900261376 /* Debug */,
+				791DEF6B2DF93CE900261376 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7939C8962DF93DBB003170C2 /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.15.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7939C8972DF93DBB003170C2 /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7939C8962DF93DBB003170C2 /* XCRemoteSwiftPackageReference "SQLite.swift" */;
+			productName = SQLite;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 791DEF362DF93CE800261376 /* Project object */;
+}

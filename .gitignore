@@ -1,0 +1,24 @@
+xcuserdata/
+**/*.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+**/*.xcworkspace/xcshareddata/*.xccheckout
+**/*.xcworkspace/xcshareddata/*.xcscmblueprint
+**/*.playground/**/timeline.xctimeline
+.idea/
+
+# Build
+**/.build/
+**/Build/
+DerivedData/
+*.ipa
+
+# CocoaPods
+Pods/
+
+# Other
+*~
+.DS_Store
+*.swp
+*.save
+._*
+*.bak
+
