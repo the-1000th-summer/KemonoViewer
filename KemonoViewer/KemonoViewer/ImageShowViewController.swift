@@ -7,28 +7,108 @@
 
 import Cocoa
 import SQLite
+import SwiftyJSON
 
 class ImageShowViewController: NSViewController {
-
+    
+    let dateFormatter = DateFormatter()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
+        
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        
+        
+        
+    }
+    @IBAction func loadData(_ sender: NSButton) {
         aa()
     }
     
     func aa() {
-        let fm = FileManager.default
         let inputFolderPath = "/Volumes/ACG/kemono"
-        do {
-            // 获取目录下所有内容的名字（包括文件和文件夹）
-            let contents = try fm.contentsOfDirectory(atPath: inputFolderPath, )
-            print("目录内容: \(contents)")
-        } catch {
-            print(error.localizedDescription)
-        }
-         
         
-            
+        guard let db = DatabaseManager.shared.getConnection() else {
+            print("数据库初始化失败")
+            return
+        }
+        
+        guard let artistsName = getSubdirectoryNames(atPath: inputFolderPath) else { return }
+        for artistName in artistsName {
+            let artistDirPath = URL(filePath: inputFolderPath).appendingPathComponent(artistName).path()
+            if let postsName = getSubdirectoryNames(atPath: artistDirPath) {
+                var a = 0
+                var artistId: Int64? = nil
+                
+                try! db.transaction {
+                    for postName in postsName {
+                        let currentPostDirPath = URL(filePath:artistDirPath).appendingPathComponent(postName).path(percentEncoded: false)
+                        
+                        artistId = handleOnePost(postDirPath: currentPostDirPath, artistId: artistId)
+                        
+                    }
+                }
+            }
+            return
+                    
+        }
+    }
+    
+    func handleOnePost(postDirPath: String, artistId: Int64?) -> Int64? {
+        let postJsonFileURL = URL(filePath: postDirPath).appendingPathComponent("post.json")
+        guard let jsonFileData = try? Data(contentsOf: postJsonFileURL) else {
+            print("打开Json文件失败")
+            return nil
+        }
+        guard let jsonObj = try? JSON(data: jsonFileData) else {
+            print("转换为Json对象失败")
+            return nil
+        }
+        guard let db = DatabaseManager.shared.getConnection() else {
+            print("数据库初始化失败")
+            return nil
+        }
+        
+        var artistId_upload: Int64? = nil
+        do {
+//            try db.transaction {
+                // artist data
+                let artistName = URL(filePath: postDirPath).deletingLastPathComponent().lastPathComponent
+                if let artistId {
+                    artistId_upload = artistId
+                } else {
+                    artistId_upload = try db.run(Artist.artistTable.insert(
+                        Artist.e_artistName <- artistName,
+                        Artist.e_service <- jsonObj["service"].stringValue
+                    ))
+                }
+                
+                // post data
+                let postDateStr = jsonObj["published"].stringValue + "Z"
+                let postDate = dateFormatter.date(from: postDateStr)!
+                let postId = try db.run(KemonoPost.postTable.insert(
+                    KemonoPost.e_artistIdRef <- artistId_upload!,
+                    KemonoPost.e_postName <- jsonObj["title"].stringValue,
+                    KemonoPost.e_postDate <- postDate,
+                    KemonoPost.e_coverImgFileName <- jsonObj["id"].stringValue + "_" + jsonObj["file"]["name"].stringValue
+                ))
+                
+                // attachment data
+                for (i, attachment) in jsonObj["attachments"].arrayValue.enumerated() {
+                    let fileExt = URL(fileURLWithPath: attachment["name"].stringValue).pathExtension
+                    try db.run(KemonoImage.imageTable.insert(
+                        KemonoImage.e_postIdRef <- postId,
+                        KemonoImage.e_imageName <- String(i+1) + "." + fileExt
+                    ))
+                }
+//            }
+        } catch {
+            print("save:", error.localizedDescription)
+        }
+        
+        return artistId_upload
+        
     }
     
     func addDataToDatabase(db: Connection) {
@@ -36,83 +116,8 @@ class ImageShowViewController: NSViewController {
 //        let fm = FileManager.default
     }
     
-    func initDatabase() {
-        let dbFilePath = "/Volumes/imagesShown/images.sqlite3"
-        let fm = FileManager.default
-        if fm.fileExists(atPath: dbFilePath) {
-            return
-        }
-        
-        do {
-            let db = try Connection(dbFilePath)
-            createTable(db: db)
-        } catch {
-            print(error.localizedDescription)
-            return
-        }
-    }
     
-    func createTable(db: Connection) {
-        // artist
-        let artistTable = Table("artist")
-        let e_artistId = Expression<Int64>("id")
-        let e_artistName = Expression<String>("name")
-        
-        do {
-            try db.run(artistTable.create { t in
-                t.column(e_artistId, primaryKey: .autoincrement)
-                t.column(e_artistName, unique: true)
-            })
-        } catch {
-            print(error.localizedDescription)
-            return
-        }
-        
-        // post
-        let postTable = Table("kemonoPost")
-        let e_postId = Expression<Int64>("id")
-        let e_artistIdRef = Expression<Int64>("artist_id")
-        let e_postName = Expression<String>("name")
-        let e_postDate = Expression<Date>("post_date")
-        
-        do {
-            try db.run(postTable.create { t in
-                t.column(e_postId, primaryKey: .autoincrement)
-                t.column(e_artistIdRef)
-                t.column(e_postName)
-                t.column(e_postDate)
-                
-                t.foreignKey(e_artistIdRef, references: artistTable, e_artistId, delete: .cascade)
-            })
-            
-        } catch {
-            print(error.localizedDescription)
-            return
-        }
-        
-        // image
-        let imageTable = Table("kemonoImage")
-        let e_imageId = Expression<Int64>("id")
-        let e_postIdRef = Expression<Int64>("post_id")
-        let e_imageName = Expression<String>("name")
-        let e_viewed = Expression<Bool>("viewed")
-        
-        do {
-            try db.run(imageTable.create { t in
-                t.column(e_imageId, primaryKey: .autoincrement)
-                t.column(e_postIdRef)
-                t.column(e_imageName)
-                t.column(e_viewed, defaultValue: false)
-                
-                t.foreignKey(e_postIdRef, references: postTable, e_postId, delete: .cascade)
-            })
-            
-            try db.execute("PRAGMA foreign_keys = ON")
-        } catch {
-            print(error.localizedDescription)
-            return
-        }
-        
-    }
+    
+    
     
 }

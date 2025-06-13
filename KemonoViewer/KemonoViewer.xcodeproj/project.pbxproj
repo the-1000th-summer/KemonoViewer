@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		7939C8982DF93DBB003170C2 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 7939C8972DF93DBB003170C2 /* SQLite */; };
+		79B9896C2DF9D16600EB5476 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 79B9896B2DF9D16600EB5476 /* SwiftyJSON */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79B9896C2DF9D16600EB5476 /* SwiftyJSON in Frameworks */,
 				7939C8982DF93DBB003170C2 /* SQLite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -118,6 +120,7 @@
 			name = KemonoViewer;
 			packageProductDependencies = (
 				7939C8972DF93DBB003170C2 /* SQLite */,
+				79B9896B2DF9D16600EB5476 /* SwiftyJSON */,
 			);
 			productName = KemonoViewer;
 			productReference = 791DEF3E2DF93CE800261376 /* KemonoViewer.app */;
@@ -203,6 +206,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				7939C8962DF93DBB003170C2 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
+				79B9896A2DF9D16600EB5476 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 791DEF3F2DF93CE800261376 /* Products */;
@@ -562,6 +566,14 @@
 				minimumVersion = 0.15.3;
 			};
 		};
+		79B9896A2DF9D16600EB5476 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 5.0.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -569,6 +581,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7939C8962DF93DBB003170C2 /* XCRemoteSwiftPackageReference "SQLite.swift" */;
 			productName = SQLite;
+		};
+		79B9896B2DF9D16600EB5476 /* SwiftyJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 79B9896A2DF9D16600EB5476 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
+			productName = SwiftyJSON;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
