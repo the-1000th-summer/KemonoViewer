@@ -22,6 +22,8 @@ struct KemonoPost {
     static let e_postName = Expression<String>("name")
     static let e_postDate = Expression<Date>("post_date")
     static let e_coverImgFileName = Expression<String>("cover_name")
+    static let e_postFolderName = Expression<String>("folder_name")
+    static let e_attachmentNumber = Expression<Int64>("att_number")
 }
 
 struct KemonoImage {
@@ -81,7 +83,6 @@ final class DatabaseManager {
         }
         
         // post
-        
         do {
             try db.run(KemonoPost.postTable.create { t in
                 t.column(KemonoPost.e_postId, primaryKey: .autoincrement)
@@ -89,6 +90,8 @@ final class DatabaseManager {
                 t.column(KemonoPost.e_postName)
                 t.column(KemonoPost.e_postDate)
                 t.column(KemonoPost.e_coverImgFileName)
+                t.column(KemonoPost.e_postFolderName)
+                t.column(KemonoPost.e_attachmentNumber)
                 
                 t.foreignKey(KemonoPost.e_artistIdRef, references: Artist.artistTable, Artist.e_artistId, delete: .cascade)
             })

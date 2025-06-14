@@ -21,6 +21,11 @@ class ViewController: NSViewController {
         }
     }
 
-
+    @IBAction func tryButtonAction(_ sender: NSButton) {
+        let storyboard = NSStoryboard(name: "Main", bundle: nil)
+        guard let windowController = storyboard.instantiateController(withIdentifier: "fsImageWindowController") as? FullScreenImageWindowController else { return }
+        windowController.showWindow(self)
+    }
+    
 }
 

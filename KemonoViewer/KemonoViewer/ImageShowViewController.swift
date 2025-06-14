@@ -19,9 +19,10 @@ class ImageShowViewController: NSViewController {
         
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
         
-        
-        
     }
+    
+
+    
     @IBAction func loadData(_ sender: NSButton) {
         aa()
     }
@@ -46,7 +47,8 @@ class ImageShowViewController: NSViewController {
                         let currentPostDirPath = URL(filePath:artistDirPath).appendingPathComponent(postName).path(percentEncoded: false)
                         
                         artistId = handleOnePost(postDirPath: currentPostDirPath, artistId: artistId)
-                        
+                        a += 1
+                        print(a)
                     }
                 }
             }
@@ -72,37 +74,37 @@ class ImageShowViewController: NSViewController {
         
         var artistId_upload: Int64? = nil
         do {
-//            try db.transaction {
-                // artist data
-                let artistName = URL(filePath: postDirPath).deletingLastPathComponent().lastPathComponent
-                if let artistId {
-                    artistId_upload = artistId
-                } else {
-                    artistId_upload = try db.run(Artist.artistTable.insert(
-                        Artist.e_artistName <- artistName,
-                        Artist.e_service <- jsonObj["service"].stringValue
-                    ))
-                }
-                
-                // post data
-                let postDateStr = jsonObj["published"].stringValue + "Z"
-                let postDate = dateFormatter.date(from: postDateStr)!
-                let postId = try db.run(KemonoPost.postTable.insert(
-                    KemonoPost.e_artistIdRef <- artistId_upload!,
-                    KemonoPost.e_postName <- jsonObj["title"].stringValue,
-                    KemonoPost.e_postDate <- postDate,
-                    KemonoPost.e_coverImgFileName <- jsonObj["id"].stringValue + "_" + jsonObj["file"]["name"].stringValue
+            // artist data
+            let artistName = URL(filePath: postDirPath).deletingLastPathComponent().lastPathComponent
+            if let artistId {
+                artistId_upload = artistId
+            } else {
+                artistId_upload = try db.run(Artist.artistTable.insert(
+                    Artist.e_artistName <- artistName,
+                    Artist.e_service <- jsonObj["service"].stringValue
                 ))
-                
-                // attachment data
-                for (i, attachment) in jsonObj["attachments"].arrayValue.enumerated() {
-                    let fileExt = URL(fileURLWithPath: attachment["name"].stringValue).pathExtension
-                    try db.run(KemonoImage.imageTable.insert(
-                        KemonoImage.e_postIdRef <- postId,
-                        KemonoImage.e_imageName <- String(i+1) + "." + fileExt
-                    ))
-                }
-//            }
+            }
+            let a = jsonObj["attachments"].arrayValue.count
+            // post data
+            let postDateStr = jsonObj["published"].stringValue + "Z"
+            let postDate = dateFormatter.date(from: postDateStr)!
+            let postId = try db.run(KemonoPost.postTable.insert(
+                KemonoPost.e_artistIdRef <- artistId_upload!,
+                KemonoPost.e_postName <- jsonObj["title"].stringValue,
+                KemonoPost.e_postDate <- postDate,
+                KemonoPost.e_coverImgFileName <- jsonObj["id"].stringValue + "_" + jsonObj["file"]["name"].stringValue,
+                KemonoPost.e_postFolderName <- URL(filePath: postDirPath).lastPathComponent,
+                KemonoPost.e_attachmentNumber <- Int64(jsonObj["attachments"].arrayValue.count)
+            ))
+            
+            // attachment data
+            for (i, attachment) in jsonObj["attachments"].arrayValue.enumerated() {
+                let fileExt = URL(fileURLWithPath: attachment["name"].stringValue).pathExtension
+                try db.run(KemonoImage.imageTable.insert(
+                    KemonoImage.e_postIdRef <- postId,
+                    KemonoImage.e_imageName <- String(i+1) + "." + fileExt
+                ))
+            }
         } catch {
             print("save:", error.localizedDescription)
         }
