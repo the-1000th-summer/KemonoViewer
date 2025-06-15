@@ -43,6 +43,7 @@ open class MyAspectFillImageNSImageView : NSImageView {
 class FullScreenImageViewController: NSViewController {
     
     var showImage: [NSImage] = []
+    var imagePointer: ImagePointer?
     
     @IBOutlet var imageView: NSImageView!
     
@@ -55,8 +56,37 @@ class FullScreenImageViewController: NSViewController {
 //        imageView.layer?.masksToBounds = true // 启用裁剪
     }
     
-    func updateImage(imageURL: URL) {
-        imageView.image = NSImage(contentsOf: imageURL)
+    @IBAction func previousBtnClicked(_ sender: NSButton) {
+        if let currentImageURL = imagePointer!.getPreviousImageURL() {
+            imageView.image = NSImage(contentsOf: currentImageURL)
+        } else {
+            imageView.image = nil
+        }
+        
+    }
+    
+    @IBAction func nextBtnClicked(_ sender: NSButton) {
+        if let currentImageURL = imagePointer!.getNextImageURL() {
+            imageView.image = NSImage(contentsOf: currentImageURL)
+        } else {
+            imageView.image = nil
+        }
+        
+    }
+    
+    func initData(artistName: String, postsFolderName: [String], postsId: [Int64], currentPostImagesName: [String], currentPostIndex: Int, currentImageIndex: Int) {
+        imagePointer = ImagePointer(
+            artistName: artistName,
+            postsFolderName: postsFolderName,
+            postsId: postsId,
+            currentPostImagesName: currentPostImagesName,
+            currentPostIndex: currentPostIndex,
+            currentImageIndex: currentImageIndex
+        )
+    }
+    
+    func updateImage() {
+        imageView.image = NSImage(contentsOf: imagePointer!.getCurrentImageURL())
     }
     
 }

@@ -22,13 +22,17 @@ class ArtistTableViewController: NSViewController, NSTableViewDataSource, NSTabl
     }
     
     func numberOfRows(in tableView: NSTableView) -> Int {
-        return artistsName.count
+        return artistsId.count
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         guard let vw = tableView.makeView(withIdentifier: tableColumn!.identifier, owner: self) as? NSTableCellView else { return nil }
         vw.textField?.stringValue = artistsName[row]
         return vw
+    }
+    
+    func getSelectedArtistName() -> String {
+        return artistsName[artistTableView.selectedRow]
     }
     
     private func loadData() {

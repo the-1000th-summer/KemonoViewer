@@ -21,8 +21,6 @@ class ImageShowViewController: NSViewController {
         
     }
     
-
-    
     @IBAction func loadData(_ sender: NSButton) {
         aa()
     }
@@ -99,7 +97,7 @@ class ImageShowViewController: NSViewController {
             
             // attachment data
             for (i, attachment) in jsonObj["attachments"].arrayValue.enumerated() {
-                let fileExt = URL(fileURLWithPath: attachment["name"].stringValue).pathExtension
+                let fileExt = URL(filePath: attachment["name"].stringValue).pathExtension
                 try db.run(KemonoImage.imageTable.insert(
                     KemonoImage.e_postIdRef <- postId,
                     KemonoImage.e_imageName <- String(i+1) + "." + fileExt

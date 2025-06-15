@@ -20,11 +20,25 @@ class FullScreenImageWindowController: NSWindowController {
 //        if let vc = contentViewController as? FullScreenImageViewController {
 //            vc.configure
 //        }
+        
     }
     
-    func updateImage(imageURL: URL) {
+    func initData(artistName: String, postsFolderName: [String], postsId: [Int64], currentPostImagesName: [String], currentPostIndex: Int, currentImageIndex: Int) {
         if let vc = contentViewController as? FullScreenImageViewController {
-            vc.updateImage(imageURL: imageURL)
+            vc.initData(
+                artistName: artistName,
+                postsFolderName: postsFolderName,
+                postsId: postsId,
+                currentPostImagesName: currentPostImagesName,
+                currentPostIndex: currentPostIndex,
+                currentImageIndex: currentImageIndex
+            )
+        }
+    }
+    
+    func updateImage() {
+        if let vc = contentViewController as? FullScreenImageViewController {
+            vc.updateImage()
         }
     }
 

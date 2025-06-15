@@ -33,6 +33,17 @@ class PostTableViewController: NSViewController, NSTableViewDataSource, NSTableV
         return vw
     }
     
+    func getPostsFolderName() -> [String] {
+        return postsFolderName
+    }
+    func getPostsId() -> [Int64] {
+        return postsId
+    }
+    
+    func getSelectedPostIndex() -> Int {
+        return postTableView.selectedRow
+    }
+    
     func artistSelected(artistName: String, artistId: Int64) {
         self.artistName = artistName
         guard let db = DatabaseManager.shared.getConnection() else {

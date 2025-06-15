@@ -13,7 +13,7 @@ class ImageViewController: NSViewController, NSCollectionViewDataSource, NSColle
     
     @IBOutlet var imageCollectionView: NSCollectionView!
     
-    private var imageNames = [String]()
+    private var imagesName = [String]()
     private var postDirPath = ""
     
     override func viewDidLoad() {
@@ -22,7 +22,7 @@ class ImageViewController: NSViewController, NSCollectionViewDataSource, NSColle
     }
     
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
-        return imageNames.count
+        return imagesName.count
     }
     
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
@@ -30,7 +30,7 @@ class ImageViewController: NSViewController, NSCollectionViewDataSource, NSColle
         guard let pictureItem = item as? KemonoImageViewItem else { return item }
         
         
-        let imageURL = URL(filePath: postDirPath).appendingPathComponent(imageNames[indexPath.item])
+        let imageURL = URL(filePath: postDirPath).appendingPathComponent(imagesName[indexPath.item])
 //        let imageFilePath = imageURL.path(percentEncoded: false)
         print("-", terminator: "")
         let image = NSImage(contentsOf: imageURL)
@@ -45,34 +45,43 @@ class ImageViewController: NSViewController, NSCollectionViewDataSource, NSColle
     }
     
     func postSelected(postId: Int64, postDirPath: String) {
-        imageNames.removeAll()
+        imagesName.removeAll()
         self.postDirPath = postDirPath
         
         guard let db = DatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return
         }
-        print("loading image...")
         do {
             let query = KemonoImage.imageTable.select(KemonoImage.e_imageName).filter(KemonoImage.e_postIdRef == postId)
             for row in try db.prepare(query) {
-                imageNames.append(row[KemonoImage.e_imageName])
+                imagesName.append(row[KemonoImage.e_imageName])
 //                postsId.append(row[KemonoPost.e_postId])
             }
         } catch {
             print(error.localizedDescription)
         }
-        print("loaded image")
         imageCollectionView.reloadData()
         
 //        kemonoImageView.image = NSImage(named: name)
     }
     
     func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
-        let imageURL = URL(filePath: postDirPath).appendingPathComponent(imageNames[indexPaths.first!.item])
+//        let imageURL = URL(filePath: postDirPath).appendingPathComponent(imagesName[indexPaths.first!.item])
+        
+        guard let splitVC = parent as? NSSplitViewController, let artistTVC = splitVC.children[0] as? ArtistTableViewController, let postTVC = splitVC.children[1] as? PostTableViewController else { return }
+        
         guard let windowController = storyboard?.instantiateController(withIdentifier: "fsImageWindowController") as? FullScreenImageWindowController else { return }
         windowController.showWindow(self)
-        windowController.updateImage(imageURL: imageURL)
+        windowController.initData(
+            artistName: artistTVC.getSelectedArtistName(),
+            postsFolderName: postTVC.getPostsFolderName(),
+            postsId: postTVC.getPostsId(),
+            currentPostImagesName: imagesName,
+            currentPostIndex: postTVC.getSelectedPostIndex(),
+            currentImageIndex: indexPaths.first!.item
+        )
+        windowController.updateImage()
     }
     
 }

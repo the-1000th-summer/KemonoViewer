@@ -775,12 +775,36 @@
                                 <rect key="frame" x="0.0" y="0.0" width="493" height="339"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" id="gs1-CW-ATN"/>
                             </imageView>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Fx0-29-6lX">
+                                <rect key="frame" x="431" y="153" width="63" height="32"/>
+                                <buttonCell key="cell" type="push" title="Next" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BDm-jD-JpO">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="nextBtnClicked:" target="2v9-z6-jPy" id="yN7-Yc-942"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="IFa-T9-dKQ">
+                                <rect key="frame" x="-1" y="153" width="87" height="32"/>
+                                <buttonCell key="cell" type="push" title="Previous" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ZnL-Ec-kv0">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="previousBtnClicked:" target="2v9-z6-jPy" id="JW1-vx-qoQ"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="lZO-T0-hih" firstAttribute="leading" secondItem="wOA-or-M6Q" secondAttribute="leading" id="Aee-CG-vPD"/>
+                            <constraint firstItem="Fx0-29-6lX" firstAttribute="centerY" secondItem="wOA-or-M6Q" secondAttribute="centerY" id="Og9-T0-Ybp"/>
                             <constraint firstAttribute="trailing" secondItem="lZO-T0-hih" secondAttribute="trailing" id="TUF-FZ-ndP"/>
                             <constraint firstItem="lZO-T0-hih" firstAttribute="top" secondItem="wOA-or-M6Q" secondAttribute="top" id="fsT-Fl-hob"/>
                             <constraint firstAttribute="bottom" secondItem="lZO-T0-hih" secondAttribute="bottom" id="mFO-uX-yP0"/>
+                            <constraint firstAttribute="trailing" secondItem="Fx0-29-6lX" secondAttribute="trailing" constant="6" id="nYT-h3-KWx"/>
+                            <constraint firstItem="IFa-T9-dKQ" firstAttribute="centerY" secondItem="wOA-or-M6Q" secondAttribute="centerY" id="sws-E2-bbb"/>
+                            <constraint firstItem="IFa-T9-dKQ" firstAttribute="leading" secondItem="wOA-or-M6Q" secondAttribute="leading" constant="6" id="tnB-tQ-db9"/>
                         </constraints>
                     </view>
                     <connections>
