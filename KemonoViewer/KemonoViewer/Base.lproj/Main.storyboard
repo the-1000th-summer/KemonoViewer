@@ -1026,8 +1026,16 @@
                                                             <rect key="frame" x="18" y="0.0" width="141" height="24"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
+                                                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sFJ-T4-CXC">
+                                                                    <rect key="frame" x="0.0" y="2" width="20" height="20"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="height" constant="20" id="79b-FJ-M8X"/>
+                                                                        <constraint firstAttribute="width" constant="20" id="qv5-9e-AtY"/>
+                                                                    </constraints>
+                                                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="Uw4-U5-oRb"/>
+                                                                </imageView>
                                                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="QCz-GI-L8U">
-                                                                    <rect key="frame" x="0.0" y="4" width="141" height="16"/>
+                                                                    <rect key="frame" x="15" y="4" width="111" height="16"/>
                                                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="Mqv-vg-cxr">
                                                                         <font key="font" usesAppearanceFont="YES"/>
                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1036,11 +1044,14 @@
                                                                 </textField>
                                                             </subviews>
                                                             <constraints>
+                                                                <constraint firstItem="sFJ-T4-CXC" firstAttribute="leading" secondItem="kfP-Bv-w7Q" secondAttribute="leading" id="5Yk-EK-tzV"/>
+                                                                <constraint firstItem="sFJ-T4-CXC" firstAttribute="centerY" secondItem="kfP-Bv-w7Q" secondAttribute="centerY" id="PXy-zB-L2q"/>
                                                                 <constraint firstItem="QCz-GI-L8U" firstAttribute="centerY" secondItem="kfP-Bv-w7Q" secondAttribute="centerY" id="d8s-T8-nZM"/>
                                                                 <constraint firstItem="QCz-GI-L8U" firstAttribute="centerX" secondItem="kfP-Bv-w7Q" secondAttribute="centerX" id="rQg-iX-aQS"/>
-                                                                <constraint firstItem="QCz-GI-L8U" firstAttribute="leading" secondItem="kfP-Bv-w7Q" secondAttribute="leading" constant="2" id="rbf-c7-DZg"/>
+                                                                <constraint firstItem="QCz-GI-L8U" firstAttribute="leading" secondItem="kfP-Bv-w7Q" secondAttribute="leading" constant="17" id="rbf-c7-DZg"/>
                                                             </constraints>
                                                             <connections>
+                                                                <outlet property="imageView" destination="sFJ-T4-CXC" id="ybG-Bw-ePV"/>
                                                                 <outlet property="textField" destination="QCz-GI-L8U" id="kBW-gF-OeZ"/>
                                                             </connections>
                                                         </tableCellView>

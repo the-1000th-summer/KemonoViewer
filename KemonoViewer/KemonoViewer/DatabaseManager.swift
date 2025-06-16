@@ -24,6 +24,7 @@ struct KemonoPost {
     static let e_coverImgFileName = Expression<String>("cover_name")
     static let e_postFolderName = Expression<String>("folder_name")
     static let e_attachmentNumber = Expression<Int64>("att_number")
+    static let e_viewed = Expression<Bool>("viewed")
 }
 
 struct KemonoImage {
@@ -31,7 +32,6 @@ struct KemonoImage {
     static let e_imageId = Expression<Int64>("id")
     static let e_postIdRef = Expression<Int64>("post_id")
     static let e_imageName = Expression<String>("name")
-    static let e_viewed = Expression<Bool>("viewed")
 }
 
 final class DatabaseManager {
@@ -92,6 +92,7 @@ final class DatabaseManager {
                 t.column(KemonoPost.e_coverImgFileName)
                 t.column(KemonoPost.e_postFolderName)
                 t.column(KemonoPost.e_attachmentNumber)
+                t.column(KemonoPost.e_viewed, defaultValue: false)
                 
                 t.foreignKey(KemonoPost.e_artistIdRef, references: Artist.artistTable, Artist.e_artistId, delete: .cascade)
             })
@@ -107,7 +108,6 @@ final class DatabaseManager {
                 t.column(KemonoImage.e_imageId, primaryKey: .autoincrement)
                 t.column(KemonoImage.e_postIdRef)
                 t.column(KemonoImage.e_imageName)
-                t.column(KemonoImage.e_viewed, defaultValue: false)
                 
                 t.foreignKey(KemonoImage.e_postIdRef, references: KemonoPost.postTable, KemonoPost.e_postId, delete: .cascade)
             })
@@ -163,17 +163,24 @@ final class ImagePointer {
                 return nil
             }
             currentImageIndex = 0
+            
+            NotificationCenter.default.post(
+                name: .updatePostTableViewData,
+                object: nil,
+                userInfo: ["viewedPostIndex": currentPostIndex]
+            )
+            
             return getCurrentImageURL()
         }
         return nil
     }
-    // first image in current post OR no attachment in current post
+    
     func getPreviousImageURL() -> URL? {
         if currentImageIndex > 0 && currentImageIndex < currentPostImagesName.count {
             currentImageIndex -= 1
             return getCurrentImageURL()
         }
-        
+        // first image in current post OR no attachment in current post
         if currentImageIndex == 0 || currentImageIndex == -2 {
             if currentPostIndex == 0 { return nil }
             currentPostIndex -= 1
@@ -182,7 +189,14 @@ final class ImagePointer {
                 currentImageIndex = -2
                 return nil
             }
-            currentImageIndex = 0
+            currentImageIndex = currentPostImagesName.count - 1
+            
+            NotificationCenter.default.post(
+                name: .updatePostTableViewData,
+                object: nil,
+                userInfo: ["viewedPostIndex": currentPostIndex]
+            )
+            
             return getCurrentImageURL()
         }
         return nil
@@ -207,3 +221,6 @@ final class ImagePointer {
     }
 }
 
+extension Notification.Name {
+    static let updatePostTableViewData = Notification.Name("UpdatePostTableViewDataNotification")
+}
