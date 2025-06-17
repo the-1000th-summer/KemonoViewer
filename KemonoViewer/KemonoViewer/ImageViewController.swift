@@ -66,6 +66,12 @@ class ImageViewController: NSViewController, NSCollectionViewDataSource, NSColle
 //        kemonoImageView.image = NSImage(named: name)
     }
     
+    func deselectPost() {
+        imagesName.removeAll()
+        postDirPath.removeAll()
+        imageCollectionView.reloadData()
+    }
+    
     func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
 //        let imageURL = URL(filePath: postDirPath).appendingPathComponent(imagesName[indexPaths.first!.item])
         

@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <capability name="System colors introduced in macOS 10.14" minToolsVersion="10.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -767,16 +768,16 @@
         <scene sceneID="arw-R0-nzi">
             <objects>
                 <viewController id="2v9-z6-jPy" customClass="FullScreenImageViewController" customModule="KemonoViewer" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="wOA-or-M6Q">
-                        <rect key="frame" x="0.0" y="0.0" width="493" height="339"/>
+                    <view key="view" id="wOA-or-M6Q" customClass="FullScreenView" customModule="KemonoViewer" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="860" height="581"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="249" verticalCompressionResistancePriority="249" translatesAutoresizingMaskIntoConstraints="NO" id="lZO-T0-hih">
-                                <rect key="frame" x="0.0" y="0.0" width="493" height="339"/>
+                                <rect key="frame" x="0.0" y="0.0" width="860" height="581"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" id="gs1-CW-ATN"/>
                             </imageView>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Fx0-29-6lX">
-                                <rect key="frame" x="431" y="153" width="63" height="32"/>
+                                <rect key="frame" x="798" y="274" width="63" height="32"/>
                                 <buttonCell key="cell" type="push" title="Next" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BDm-jD-JpO">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -786,7 +787,7 @@
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="IFa-T9-dKQ">
-                                <rect key="frame" x="-1" y="153" width="87" height="32"/>
+                                <rect key="frame" x="-1" y="274" width="87" height="32"/>
                                 <buttonCell key="cell" type="push" title="Previous" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ZnL-Ec-kv0">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -795,11 +796,35 @@
                                     <action selector="previousBtnClicked:" target="2v9-z6-jPy" id="JW1-vx-qoQ"/>
                                 </connections>
                             </button>
+                            <textField hidden="YES" wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8Ds-JY-Kv9">
+                                <rect key="frame" x="666" y="428" width="74" height="33"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="500" id="Duw-Af-QR4"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="XOZ-pf-pkq"/>
+                                </constraints>
+                                <textFieldCell key="cell" allowsUndo="NO" sendsActionOnEndEditing="YES" borderStyle="bezel" title="sdfsdf" drawsBackground="YES" id="MQ0-19-PAn">
+                                    <font key="font" metaFont="system" size="24"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" red="0.39215686274509803" green="0.39215686274509803" blue="0.39215686274509803" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Wue-Kg-rb1">
+                                <rect key="frame" x="384" y="272" width="93" height="37"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="无附件" id="UcU-VN-BKC">
+                                    <font key="font" size="31" name=".PingFangUITextSC-Regular"/>
+                                    <color key="textColor" name="unemphasizedSelectedTextBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                         <constraints>
+                            <constraint firstItem="Wue-Kg-rb1" firstAttribute="centerX" secondItem="lZO-T0-hih" secondAttribute="centerX" id="5tb-tp-dqn"/>
+                            <constraint firstAttribute="trailing" secondItem="8Ds-JY-Kv9" secondAttribute="trailing" constant="120" id="9Df-GE-ase"/>
                             <constraint firstItem="lZO-T0-hih" firstAttribute="leading" secondItem="wOA-or-M6Q" secondAttribute="leading" id="Aee-CG-vPD"/>
                             <constraint firstItem="Fx0-29-6lX" firstAttribute="centerY" secondItem="wOA-or-M6Q" secondAttribute="centerY" id="Og9-T0-Ybp"/>
+                            <constraint firstItem="8Ds-JY-Kv9" firstAttribute="top" secondItem="wOA-or-M6Q" secondAttribute="top" constant="120" id="OrP-Yb-zlD"/>
                             <constraint firstAttribute="trailing" secondItem="lZO-T0-hih" secondAttribute="trailing" id="TUF-FZ-ndP"/>
+                            <constraint firstItem="Wue-Kg-rb1" firstAttribute="centerY" secondItem="lZO-T0-hih" secondAttribute="centerY" id="Ug1-ab-ydw"/>
                             <constraint firstItem="lZO-T0-hih" firstAttribute="top" secondItem="wOA-or-M6Q" secondAttribute="top" id="fsT-Fl-hob"/>
                             <constraint firstAttribute="bottom" secondItem="lZO-T0-hih" secondAttribute="bottom" id="mFO-uX-yP0"/>
                             <constraint firstAttribute="trailing" secondItem="Fx0-29-6lX" secondAttribute="trailing" constant="6" id="nYT-h3-KWx"/>
@@ -808,12 +833,15 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="errorMsgLabel" destination="Wue-Kg-rb1" id="dkV-78-rrS"/>
+                        <outlet property="fullScreenView" destination="wOA-or-M6Q" id="XFZ-KF-mmn"/>
                         <outlet property="imageView" destination="lZO-T0-hih" id="gt6-fa-D6V"/>
+                        <outlet property="pathTextField" destination="8Ds-JY-Kv9" id="Kxh-c5-4fh"/>
                     </connections>
                 </viewController>
                 <customObject id="dhk-iP-qxX" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="761.5" y="1438.5"/>
+            <point key="canvasLocation" x="945" y="1559.5"/>
         </scene>
         <!--Image Show View Controller-->
         <scene sceneID="hSk-8y-itP">
@@ -994,7 +1022,7 @@
             <objects>
                 <viewController id="fgd-7a-ydK" customClass="PostTableViewController" customModule="KemonoViewer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="D2B-qZ-tEA">
-                        <rect key="frame" x="0.0" y="0.0" width="180" height="243"/>
+                        <rect key="frame" x="0.0" y="0.0" width="180" height="273"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <scrollView autohidesScrollers="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H5v-al-j5d">
@@ -1075,15 +1103,23 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
+                            <switch horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" baseWritingDirection="leftToRight" alignment="left" translatesAutoresizingMaskIntoConstraints="NO" id="Y17-xa-lxO">
+                                <rect key="frame" x="18" y="249" width="42" height="25"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <connections>
+                                    <action selector="switchClicked:" target="fgd-7a-ydK" id="c8M-h0-v6x"/>
+                                </connections>
+                            </switch>
                         </subviews>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="H5v-al-j5d" secondAttribute="bottom" id="Ezu-ed-nHn"/>
                             <constraint firstAttribute="trailing" secondItem="H5v-al-j5d" secondAttribute="trailing" id="Wgd-Ve-nbD"/>
-                            <constraint firstItem="H5v-al-j5d" firstAttribute="top" secondItem="D2B-qZ-tEA" secondAttribute="top" id="gub-Sg-YE3"/>
+                            <constraint firstItem="H5v-al-j5d" firstAttribute="top" secondItem="D2B-qZ-tEA" secondAttribute="top" constant="30" id="gub-Sg-YE3"/>
                             <constraint firstItem="H5v-al-j5d" firstAttribute="leading" secondItem="D2B-qZ-tEA" secondAttribute="leading" id="rCI-63-uUG"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="notViewedFilterSwitch" destination="Y17-xa-lxO" id="yGy-6I-p25"/>
                         <outlet property="postTableView" destination="UR8-Hw-TTv" id="r94-Mu-RlZ"/>
                     </connections>
                 </viewController>
@@ -1105,11 +1141,11 @@
                                     <rect key="frame" x="1" y="1" width="448" height="298"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <collectionView selectable="YES" id="L3j-sN-P8n">
+                                        <collectionView autoresizesSubviews="NO" selectable="YES" id="L3j-sN-P8n">
                                             <rect key="frame" x="0.0" y="0.0" width="448" height="158"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                             <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="10" minimumLineSpacing="10" id="mMe-vr-6Dr">
-                                                <size key="itemSize" width="50" height="50"/>
+                                                <size key="itemSize" width="200" height="200"/>
                                             </collectionViewFlowLayout>
                                             <color key="primaryBackgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <connections>

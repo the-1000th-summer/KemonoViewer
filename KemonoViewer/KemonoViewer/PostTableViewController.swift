@@ -11,12 +11,14 @@ import SQLite
 class PostTableViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
 
     @IBOutlet var postTableView: NSTableView!
+    @IBOutlet var notViewedFilterSwitch: NSSwitch!
     
     private var postsName = [String]()
     private var postsFolderName = [String]()
     private var postsId = [Int64]()
     private var postsViewed = [Bool]()
     private var artistName = ""
+    private var artistId: Int64 = -1
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +30,13 @@ class PostTableViewController: NSViewController, NSTableViewDataSource, NSTableV
             name: .updatePostTableViewData,
             object: nil
         )
+    }
+    
+    @IBAction func switchClicked(_ sender: NSSwitch) {
+        artistSelected(artistName: self.artistName, artistId: self.artistId)
+        if let splitVC = parent as? NSSplitViewController, let imageVC = splitVC.children[2] as? ImageViewController {
+            imageVC.deselectPost()
+        }
     }
     
     func numberOfRows(in tableView: NSTableView) -> Int {
@@ -71,24 +80,32 @@ class PostTableViewController: NSViewController, NSTableViewDataSource, NSTableV
     
     func artistSelected(artistName: String, artistId: Int64) {
         self.artistName = artistName
+        self.artistId = artistId
+        postsName.removeAll()
+        postsFolderName.removeAll()
+        postsId.removeAll()
+        postsViewed.removeAll()
+        
         guard let db = DatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return
         }
         do {
-            let query = KemonoPost.postTable.select(
+            var query = KemonoPost.postTable.select(
                 KemonoPost.e_postName,
                 KemonoPost.e_postFolderName,
                 KemonoPost.e_postId,
                 KemonoPost.e_viewed
             ).filter(KemonoPost.e_artistIdRef == artistId)
+            if notViewedFilterSwitch.state == .on {
+                query = query.filter(KemonoPost.e_viewed == false)
+            }
             for row in try db.prepare(query) {
                 postsName.append(row[KemonoPost.e_postName])
                 postsFolderName.append(row[KemonoPost.e_postFolderName])
                 postsId.append(row[KemonoPost.e_postId])
                 postsViewed.append(row[KemonoPost.e_viewed])
             }
-            
         } catch {
             print(error.localizedDescription)
         }
@@ -104,10 +121,7 @@ class PostTableViewController: NSViewController, NSTableViewDataSource, NSTableV
         postsViewed[selectedRow] = true
         postTableView.reloadData(forRowIndexes: IndexSet(integer: selectedRow), columnIndexes: IndexSet(integer: 0))
         
-        guard let splitVC = parent as? NSSplitViewController else {
-            return
-        }
-        if let imageVC = splitVC.children[2] as? ImageViewController {
+        if let splitVC = parent as? NSSplitViewController, let imageVC = splitVC.children[2] as? ImageViewController {
             imageVC.postSelected(postId: postsId[selectedRow], postDirPath: URL(filePath: "/Volumes/ACG/kemono").appendingPathComponent(artistName).appendingPathComponent(postsFolderName[selectedRow]).path(percentEncoded: false))
         }
     }

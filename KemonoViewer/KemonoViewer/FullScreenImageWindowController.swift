@@ -13,10 +13,9 @@ class FullScreenImageWindowController: NSWindowController {
         super.windowDidLoad()
     
         // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
-//        window?.setFrame(NSScreen.main?.frame ?? .zero, display: true)
-//        window?.collectionBehavior = [.fullScreenPrimary]
+
         window?.toggleFullScreen(nil)
-//        window?.makeKeyAndOrderFront(nil)
+
 //        if let vc = contentViewController as? FullScreenImageViewController {
 //            vc.configure
 //        }

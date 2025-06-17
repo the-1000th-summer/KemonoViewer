@@ -144,23 +144,33 @@ final class ImagePointer {
         self.currentImageIndex = currentImageIndex
     }
     
-    func getCurrentImageURL() -> URL {
-        return URL(filePath: inputFolderPath).appendingPathComponent(artistName).appendingPathComponent(postsFolderName[currentPostIndex]).appendingPathComponent(currentPostImagesName[currentImageIndex])
+    func getCurrentPostDirURL() -> URL {
+        return URL(filePath: inputFolderPath)
+            .appendingPathComponent(artistName)
+            .appendingPathComponent(postsFolderName[currentPostIndex])
     }
     
-    func getNextImageURL() -> URL? {
+    func getCurrentImageURL() -> URL {
+        return getCurrentPostDirURL().appendingPathComponent(
+            currentPostImagesName[currentImageIndex]
+        )
+    }
+    
+    
+    
+    func getNextImageURL() -> (URL?, URL?) {
         if currentImageIndex >= 0 && currentImageIndex < currentPostImagesName.count - 1 {
             currentImageIndex += 1
-            return getCurrentImageURL()
+            return (getCurrentImageURL(), nil)
         }
         // last image in current post OR no attachment in current post
         if currentImageIndex == currentPostImagesName.count - 1 || currentImageIndex == -2 {
-            if currentPostIndex == postsFolderName.count - 1 { return nil }
+            if currentPostIndex == postsFolderName.count - 1 { return (nil, nil) }
             currentPostIndex += 1
             currentPostImagesName = getImagesName(postId: postsId[currentPostIndex])
             if currentPostImagesName.isEmpty {
                 currentImageIndex = -2
-                return nil
+                return (nil, getCurrentPostDirURL())
             }
             currentImageIndex = 0
             
@@ -170,24 +180,24 @@ final class ImagePointer {
                 userInfo: ["viewedPostIndex": currentPostIndex]
             )
             
-            return getCurrentImageURL()
+            return (getCurrentImageURL(), getCurrentPostDirURL())
         }
-        return nil
+        return (nil, nil)
     }
     
-    func getPreviousImageURL() -> URL? {
+    func getPreviousImageURL() -> (URL?, URL?) {
         if currentImageIndex > 0 && currentImageIndex < currentPostImagesName.count {
             currentImageIndex -= 1
-            return getCurrentImageURL()
+            return (getCurrentImageURL(), nil)
         }
         // first image in current post OR no attachment in current post
         if currentImageIndex == 0 || currentImageIndex == -2 {
-            if currentPostIndex == 0 { return nil }
+            if currentPostIndex == 0 { return (nil, nil) }
             currentPostIndex -= 1
             currentPostImagesName = getImagesName(postId: postsId[currentPostIndex])
             if currentPostImagesName.isEmpty {
                 currentImageIndex = -2
-                return nil
+                return (nil, getCurrentPostDirURL())
             }
             currentImageIndex = currentPostImagesName.count - 1
             
@@ -196,10 +206,9 @@ final class ImagePointer {
                 object: nil,
                 userInfo: ["viewedPostIndex": currentPostIndex]
             )
-            
-            return getCurrentImageURL()
+            return (getCurrentImageURL(), getCurrentPostDirURL())
         }
-        return nil
+        return (nil, nil)
     }
     
 
