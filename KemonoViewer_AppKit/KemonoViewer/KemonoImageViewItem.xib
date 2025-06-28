@@ -19,6 +19,10 @@
             <subviews>
                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="szE-Hj-576" customClass="MyAspectFillImageNSImageView" customModule="KemonoViewer" customModuleProvider="target">
                     <rect key="frame" x="0.0" y="0.0" width="200" height="200"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="200" id="3zf-Xf-qp1"/>
+                        <constraint firstAttribute="width" constant="200" id="g4a-ev-fos"/>
+                    </constraints>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="bmF-2k-0qD"/>
                 </imageView>
             </subviews>
