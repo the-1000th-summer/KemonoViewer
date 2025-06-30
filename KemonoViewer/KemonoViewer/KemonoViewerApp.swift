@@ -16,8 +16,13 @@ struct KemonoViewerApp: App {
         Window("my kemono window", id: "viewer") {
             KContentSelectView()
         }
-        WindowGroup("my fullScreen window", id: "fsViewer") {
-            FullScreenImageView()
+        WindowGroup("my fullScreen window", id: "fsViewer", for: ImagePointerData.self) { $imagePointerData in
+            if let imagePointerData {
+                FullScreenImageView(imagePointerData: imagePointerData)
+            } else {
+                Text("lack of image pointer data")
+            }
+            
         }
     }
 }

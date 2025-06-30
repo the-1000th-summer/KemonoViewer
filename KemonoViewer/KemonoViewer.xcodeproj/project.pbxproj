@@ -19,6 +19,7 @@
 		7986A1362E105EE40008D9EE /* KContentSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7986A1352E105EE40008D9EE /* KContentSelectView.swift */; };
 		79B3E8A92E10EEE600567F1D /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79B3E8A82E10EEE600567F1D /* DatabaseManager.swift */; };
 		79B3E8B52E10F1F800567F1D /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 79B3E8B42E10F1F800567F1D /* SQLite */; };
+		79CB7BD72E124A9300FA7B77 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CB7BD62E124A9300FA7B77 /* Util.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		7986A10A2E105E1C0008D9EE /* KemonoViewerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KemonoViewerApp.swift; sourceTree = "<group>"; };
 		7986A1352E105EE40008D9EE /* KContentSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KContentSelectView.swift; sourceTree = "<group>"; };
 		79B3E8A82E10EEE600567F1D /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
+		79CB7BD62E124A9300FA7B77 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -137,6 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				79B3E8A82E10EEE600567F1D /* DatabaseManager.swift */,
+				79CB7BD62E124A9300FA7B77 /* Util.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -296,6 +299,7 @@
 				7986A10D2E105E1C0008D9EE /* KemonoViewerApp.swift in Sources */,
 				7986A1362E105EE40008D9EE /* KContentSelectView.swift in Sources */,
 				797E4A152E11649200C3A3A7 /* GridItemView.swift in Sources */,
+				79CB7BD72E124A9300FA7B77 /* Util.swift in Sources */,
 				797E49E22E1125D600C3A3A7 /* PostListView.swift in Sources */,
 				7959EE362E11104600ACF809 /* ArtistListView.swift in Sources */,
 			);

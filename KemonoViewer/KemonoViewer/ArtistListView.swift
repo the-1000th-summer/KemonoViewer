@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Artist_show {
+struct Artist_show: Hashable {
     let name: String
     let id: Int64
 }
@@ -15,10 +15,10 @@ struct Artist_show {
 struct ArtistListView: View {
     @State private var artistsData = [Artist_show]()
 //    @State private var artist
-    @Binding var artistSelectedId: Int64?
+    @Binding var artistSelectedData: Artist_show?
     
     var body: some View {
-        List(artistsData, id: \.id, selection: $artistSelectedId) { artistData in
+        List(artistsData, id: \.self, selection: $artistSelectedData) { artistData in
             Text(artistData.name)
         }
         .onAppear {
@@ -33,5 +33,5 @@ struct ArtistListView: View {
 }
 
 #Preview {
-    ArtistListView(artistSelectedId: .constant(0))
+    ArtistListView(artistSelectedData: .constant(Artist_show(name: "5924557", id: 1)))
 }

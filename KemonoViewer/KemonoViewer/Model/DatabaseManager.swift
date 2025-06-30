@@ -224,7 +224,17 @@ final class DataReader {
     }
 }
 
-final class ImagePointer {
+struct ImagePointerData: Hashable, Codable {
+    var id = UUID()
+    let artistName: String
+    let postsFolderName: [String]
+    let postsId: [Int64]
+    let currentPostImagesName: [String]
+    let currentPostIndex: Int
+    let currentImageIndex: Int
+}
+
+final class ImagePointer: ObservableObject {
 //    static let shared = ImagePointer()
     private var artistName = ""
     private var postsFolderName = [String]()
@@ -234,17 +244,31 @@ final class ImagePointer {
     private var currentArtistIndex = 0
     private var currentPostIndex = 0
     private var currentImageIndex = 0
+
+    @Published var currentImageURL: URL?
     
     private let inputFolderPath = "/Volumes/ACG/kemono"
     
-    init(artistName: String, postsFolderName: [String], postsId: [Int64], currentPostImagesName: [String], currentPostIndex: Int, currentImageIndex: Int) {
-        self.artistName = artistName
-        self.postsFolderName = postsFolderName
-        self.postsId = postsId
-        self.currentPostImagesName = currentPostImagesName
+//    init(artistName: String, postsFolderName: [String], postsId: [Int64], currentPostImagesName: [String], currentPostIndex: Int, currentImageIndex: Int) {
+//        self.artistName = artistName
+//        self.postsFolderName = postsFolderName
+//        self.postsId = postsId
+//        self.currentPostImagesName = currentPostImagesName
+//        
+//        self.currentPostIndex = currentPostIndex
+//        self.currentImageIndex = currentImageIndex
+//    }
+    
+    func loadData(imagePointerData: ImagePointerData) {
+        print("loadData")
+        self.artistName = imagePointerData.artistName
+        self.postsFolderName = imagePointerData.postsFolderName
+        self.postsId = imagePointerData.postsId
+        self.currentPostImagesName = imagePointerData.currentPostImagesName
+        self.currentPostIndex = imagePointerData.currentPostIndex
+        self.currentImageIndex = imagePointerData.currentImageIndex
         
-        self.currentPostIndex = currentPostIndex
-        self.currentImageIndex = currentImageIndex
+        currentImageURL = getCurrentImageURL()
     }
     
     func getCurrentPostDirURL() -> URL {
@@ -253,7 +277,7 @@ final class ImagePointer {
             .appendingPathComponent(postsFolderName[currentPostIndex])
     }
     
-    func getCurrentImageURL() -> URL {
+    private func getCurrentImageURL() -> URL {
         return getCurrentPostDirURL().appendingPathComponent(
             currentPostImagesName[currentImageIndex]
         )
@@ -261,19 +285,22 @@ final class ImagePointer {
     
     
     
-    func getNextImageURL() -> (URL?, URL?) {
+    func nextImage() {
         if currentImageIndex >= 0 && currentImageIndex < currentPostImagesName.count - 1 {
             currentImageIndex += 1
-            return (getCurrentImageURL(), nil)
+//            return (getCurrentImageURL(), nil)
+            currentImageURL = getCurrentImageURL()
         }
         // last image in current post OR no attachment in current post
         if currentImageIndex == currentPostImagesName.count - 1 || currentImageIndex == -2 {
-            if currentPostIndex == postsFolderName.count - 1 { return (nil, nil) }
+            if currentPostIndex == postsFolderName.count - 1 {
+//                return (nil, nil)
+            }
             currentPostIndex += 1
             currentPostImagesName = getImagesName(postId: postsId[currentPostIndex])
             if currentPostImagesName.isEmpty {
                 currentImageIndex = -2
-                return (nil, getCurrentPostDirURL())
+//                return (nil, getCurrentPostDirURL())
             }
             currentImageIndex = 0
             
@@ -283,9 +310,10 @@ final class ImagePointer {
                 userInfo: ["viewedPostIndex": currentPostIndex]
             )
             
-            return (getCurrentImageURL(), getCurrentPostDirURL())
+//            return (getCurrentImageURL(), getCurrentPostDirURL())
+            currentImageURL = getCurrentImageURL()
         }
-        return (nil, nil)
+//        return (nil, nil)
     }
     
     func getPreviousImageURL() -> (URL?, URL?) {

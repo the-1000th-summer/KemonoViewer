@@ -21,10 +21,7 @@ struct GridItemView: View {
             ProgressView()
         }
         .frame(width: size, height: size)
-        .onTapGesture {
-            let screenSize = NSScreen.main?.frame.size ?? CGSize(width: 800, height: 600)
-            openWindow(id: "fsViewer")
-        }
+        
     }
 }
 

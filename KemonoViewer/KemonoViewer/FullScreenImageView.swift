@@ -8,19 +8,34 @@
 import SwiftUI
 
 struct FullScreenImageView: View {
-//    @State private var width: CGFloat? = 800
-//    @State private var height: CGFloat? = 600
+    
+    let imagePointerData: ImagePointerData
+    @StateObject private var imagePointer = ImagePointer()
     
     var body: some View {
-        Text("Hello, World!")
-            .onAppear {
-                if let window = NSApplication.shared.keyWindow {
-                                window.toggleFullScreen(nil)
-                            }
+        VStack {
+            AsyncImage(url: imagePointer.currentImageURL) { image in
+                image
+                    .resizable()
+                    .scaledToFit()
+            } placeholder: {
+                ProgressView()
             }
+            Button("next") {
+                imagePointer.nextImage()
+            }
+        }
+        .onAppear {
+            imagePointer.loadData(imagePointerData: imagePointerData)
+            if let window = NSApplication.shared.keyWindow {
+                window.toggleFullScreen(nil)
+            }
+            
+        }
+    
     }
 }
 
-#Preview {
-    FullScreenImageView()
-}
+//#Preview {
+//    FullScreenImageView()
+//}

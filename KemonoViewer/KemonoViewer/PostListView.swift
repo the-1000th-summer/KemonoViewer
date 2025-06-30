@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct PostListView: View {
-    @State private var postsData = [Post_show]()
-    @Binding var postSelectedId: Int64?
+    @Binding var postsData: [Post_show]
+    
+    @Binding var postSelectedIndex: Int?
     var artistSelectedId: Int64?
     
     var body: some View {
-        List(postsData, id: \.id, selection: $postSelectedId) { postData in
-            Text(postData.name)
+        List(postsData.indices, id: \.self, selection: $postSelectedIndex) { postCurrentIndex in
+            Text(postsData[postCurrentIndex].name)
         }
         .onChange(of: artistSelectedId) {
             if let artistSelectedId {
@@ -26,6 +27,6 @@ struct PostListView: View {
     }
 }
 
-#Preview {
-    PostListView(postSelectedId: .constant(0), artistSelectedId: 0)
-}
+//#Preview {
+//    PostListView(postSelectedId: .constant(0), artistSelectedId: 0)
+//}

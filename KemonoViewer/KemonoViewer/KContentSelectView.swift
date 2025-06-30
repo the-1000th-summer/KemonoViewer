@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct KContentSelectView: View {
-    @State private var artistSelectedId: Int64?
-    @State private var postSelectedId: Int64?
+    @State private var artistSelectedData: Artist_show?
+    
+    @State private var postSelectedIndex: Int?
+    @State private var postsData = [Post_show]()
     
     var body: some View {
         VStack {
@@ -21,12 +23,20 @@ struct KContentSelectView: View {
                 Spacer()
             }
             HSplitView {
-                ArtistListView(artistSelectedId: $artistSelectedId)
+                ArtistListView(artistSelectedData: $artistSelectedData)
                 HSplitView {
-                    PostListView(postSelectedId: $postSelectedId, artistSelectedId: artistSelectedId)
-                        .layoutPriority(1)
-                    PostImageView(postSelectedId: postSelectedId)
-                        .layoutPriority(2)
+                    PostListView(
+                        postsData: $postsData,
+                        postSelectedIndex: $postSelectedIndex,
+                        artistSelectedId: artistSelectedData?.id
+                    )
+
+                    PostImageView(
+                        postsData: $postsData,
+                        artistSelectedData: $artistSelectedData,
+                        postSelectedIndex: postSelectedIndex
+                    )
+
                         .frame(maxWidth: .infinity)
                 }
                 
