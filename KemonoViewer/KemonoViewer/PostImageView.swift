@@ -57,11 +57,12 @@ struct PostImageView: View {
         .onChange(of: postSelectedIndex) {
             if let postSelectedIndex {
                 let imageData = DataReader.readImageData(postId: postsData[postSelectedIndex].id)
+                imagesName = []
                 imagesName = imageData.0 ?? []
                 postDirPath = imageData.1
-                
             }
         }
+        
     }
 }
 

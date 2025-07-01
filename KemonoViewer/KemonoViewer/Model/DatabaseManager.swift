@@ -117,7 +117,15 @@ final class DatabaseManager {
             print(error.localizedDescription)
             return
         }
-        
+    }
+    
+    func tagViewedPost(viewedPostId: Int64) {
+        do {
+            try db?.run(KemonoPost.postTable.filter(KemonoPost.e_postId == viewedPostId).update(KemonoPost.e_viewed <- true))
+        } catch {
+            print(error.localizedDescription)
+            return
+        }
     }
 }
 
@@ -308,11 +316,11 @@ final class ImagePointer: ObservableObject {
             }
             currentImageIndex = 0
             
-//            NotificationCenter.default.post(
-//                name: .updatePostTableViewData,
-//                object: nil,
-//                userInfo: ["viewedPostIndex": currentPostIndex]
-//            )
+            NotificationCenter.default.post(
+                name: .updatePostTableViewData,
+                object: nil,
+                userInfo: ["viewedPostIndex": currentPostIndex]
+            )
             
             currentImageURL = getCurrentImageURL()
             return getCurrentPostDirURL()

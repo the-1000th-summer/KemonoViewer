@@ -21,6 +21,7 @@ struct GridItemView: View {
             ProgressView()
         }
         .frame(width: size, height: size)
+        .id(imageURL)
         
     }
 }
