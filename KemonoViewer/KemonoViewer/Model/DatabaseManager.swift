@@ -246,6 +246,7 @@ final class ImagePointer: ObservableObject {
     private var currentImageIndex = 0
 
     @Published var currentImageURL: URL?
+//    @Published var currentPostDirURL: URL?
     
     private let inputFolderPath = "/Volumes/ACG/kemono"
     
@@ -269,6 +270,7 @@ final class ImagePointer: ObservableObject {
         self.currentImageIndex = imagePointerData.currentImageIndex
         
         currentImageURL = getCurrentImageURL()
+//        return nil
     }
     
     func getCurrentPostDirURL() -> URL {
@@ -283,52 +285,60 @@ final class ImagePointer: ObservableObject {
         )
     }
     
-    
-    
-    func nextImage() {
+    func nextImage() -> URL? {
         if currentImageIndex >= 0 && currentImageIndex < currentPostImagesName.count - 1 {
             currentImageIndex += 1
-//            return (getCurrentImageURL(), nil)
+            
             currentImageURL = getCurrentImageURL()
+            return nil
         }
         // last image in current post OR no attachment in current post
         if currentImageIndex == currentPostImagesName.count - 1 || currentImageIndex == -2 {
             if currentPostIndex == postsFolderName.count - 1 {
-//                return (nil, nil)
+                return nil
             }
             currentPostIndex += 1
             currentPostImagesName = getImagesName(postId: postsId[currentPostIndex])
+            
             if currentPostImagesName.isEmpty {
                 currentImageIndex = -2
 //                return (nil, getCurrentPostDirURL())
+                currentImageURL = nil
+                return getCurrentPostDirURL()
             }
             currentImageIndex = 0
             
-            NotificationCenter.default.post(
-                name: .updatePostTableViewData,
-                object: nil,
-                userInfo: ["viewedPostIndex": currentPostIndex]
-            )
+//            NotificationCenter.default.post(
+//                name: .updatePostTableViewData,
+//                object: nil,
+//                userInfo: ["viewedPostIndex": currentPostIndex]
+//            )
             
-//            return (getCurrentImageURL(), getCurrentPostDirURL())
             currentImageURL = getCurrentImageURL()
+            return getCurrentPostDirURL()
         }
-//        return (nil, nil)
+        currentImageURL = nil
+        return nil
     }
     
-    func getPreviousImageURL() -> (URL?, URL?) {
+    func previousImage() -> URL? {
         if currentImageIndex > 0 && currentImageIndex < currentPostImagesName.count {
             currentImageIndex -= 1
-            return (getCurrentImageURL(), nil)
+            
+            currentImageURL = getCurrentImageURL()
+            return nil
         }
         // first image in current post OR no attachment in current post
         if currentImageIndex == 0 || currentImageIndex == -2 {
-            if currentPostIndex == 0 { return (nil, nil) }
+            if currentPostIndex == 0 {
+                return nil
+            }
             currentPostIndex -= 1
             currentPostImagesName = getImagesName(postId: postsId[currentPostIndex])
             if currentPostImagesName.isEmpty {
                 currentImageIndex = -2
-                return (nil, getCurrentPostDirURL())
+                currentImageURL = nil
+                return getCurrentPostDirURL()
             }
             currentImageIndex = currentPostImagesName.count - 1
             
@@ -337,9 +347,11 @@ final class ImagePointer: ObservableObject {
                 object: nil,
                 userInfo: ["viewedPostIndex": currentPostIndex]
             )
-            return (getCurrentImageURL(), getCurrentPostDirURL())
+            currentImageURL = getCurrentImageURL()
+            return getCurrentPostDirURL()
         }
-        return (nil, nil)
+        currentImageURL = nil
+        return nil
     }
     
 
