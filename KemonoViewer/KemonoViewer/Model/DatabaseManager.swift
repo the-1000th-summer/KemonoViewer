@@ -132,6 +132,7 @@ final class DatabaseManager {
 struct Post_show {
     let name: String
     let folderName: String
+    let coverName: String
     let id: Int64
     let viewed: Bool
 }
@@ -173,6 +174,7 @@ final class DataReader {
             var query = KemonoPost.postTable.select(
                 KemonoPost.e_postName,
                 KemonoPost.e_postFolderName,
+                KemonoPost.e_coverImgFileName,
                 KemonoPost.e_postId,
                 KemonoPost.e_viewed
             ).filter(KemonoPost.e_artistIdRef == artistId)
@@ -183,6 +185,7 @@ final class DataReader {
                 let currentPost = Post_show(
                     name: row[KemonoPost.e_postName],
                     folderName: row[KemonoPost.e_postFolderName],
+                    coverName: row[KemonoPost.e_coverImgFileName],
                     id: row[KemonoPost.e_postId],
                     viewed: row[KemonoPost.e_viewed]
                 )

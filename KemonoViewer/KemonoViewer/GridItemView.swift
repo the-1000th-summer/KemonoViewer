@@ -13,12 +13,24 @@ struct GridItemView: View {
     let imageURL: URL
     
     var body: some View {
-        AsyncImage(url: imageURL) { image in
-            image
-                .resizable()
-                .scaledToFill()
-        } placeholder: {
-            ProgressView()
+//        AsyncImage(url: imageURL) { image in
+//            image
+//                .resizable()
+//                .scaledToFill()
+//        } placeholder: {
+//            ProgressView()
+//        }
+        AsyncImage(url: imageURL) { phase in
+            if let image = phase.image {
+                image // Displays the loaded image.
+                    .resizable()
+                    .scaledToFill()
+            } else if phase.error != nil {
+                Text(phase.error!.localizedDescription)
+//                Color.red // Indicates an error.
+            } else {
+                ProgressView() // Acts as a placeholder.
+            }
         }
         .frame(width: size, height: size)
         .id(imageURL)

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		7959EE2B2E10F43B00ACF809 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 7959EE2A2E10F43B00ACF809 /* SwiftyJSON */; };
 		7959EE362E11104600ACF809 /* ArtistListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7959EE352E11104600ACF809 /* ArtistListView.swift */; };
+		7973DC192E14451200ECD58D /* PostGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7973DC182E14451200ECD58D /* PostGridView.swift */; };
 		797E49E22E1125D600C3A3A7 /* PostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E49E12E1125D600C3A3A7 /* PostListView.swift */; };
 		797E4A132E11634700C3A3A7 /* PostImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E4A122E11634700C3A3A7 /* PostImageView.swift */; };
 		797E4A152E11649200C3A3A7 /* GridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E4A142E11649200C3A3A7 /* GridItemView.swift */; };
@@ -41,6 +42,7 @@
 
 /* Begin PBXFileReference section */
 		7959EE352E11104600ACF809 /* ArtistListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistListView.swift; sourceTree = "<group>"; };
+		7973DC182E14451200ECD58D /* PostGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostGridView.swift; sourceTree = "<group>"; };
 		797E49E12E1125D600C3A3A7 /* PostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostListView.swift; sourceTree = "<group>"; };
 		797E4A122E11634700C3A3A7 /* PostImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostImageView.swift; sourceTree = "<group>"; };
 		797E4A142E11649200C3A3A7 /* GridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridItemView.swift; sourceTree = "<group>"; };
@@ -127,6 +129,7 @@
 				7986A1352E105EE40008D9EE /* KContentSelectView.swift */,
 				7959EE352E11104600ACF809 /* ArtistListView.swift */,
 				797E49E12E1125D600C3A3A7 /* PostListView.swift */,
+				7973DC182E14451200ECD58D /* PostGridView.swift */,
 				797E4A122E11634700C3A3A7 /* PostImageView.swift */,
 				797E4A142E11649200C3A3A7 /* GridItemView.swift */,
 				797E4A162E118DF700C3A3A7 /* FullScreenImageView.swift */,
@@ -294,6 +297,7 @@
 			files = (
 				797E4A172E118DF700C3A3A7 /* FullScreenImageView.swift in Sources */,
 				79B3E8A92E10EEE600567F1D /* DatabaseManager.swift in Sources */,
+				7973DC192E14451200ECD58D /* PostGridView.swift in Sources */,
 				7986A10C2E105E1C0008D9EE /* ContentView.swift in Sources */,
 				797E4A132E11634700C3A3A7 /* PostImageView.swift in Sources */,
 				7986A10D2E105E1C0008D9EE /* KemonoViewerApp.swift in Sources */,

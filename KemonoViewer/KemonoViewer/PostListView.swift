@@ -47,6 +47,7 @@ struct PostListView: View {
         postsData[viewedPostIndex] = Post_show(
             name: originalPostData.name,
             folderName: originalPostData.folderName,
+            coverName: originalPostData.coverName,
             id: originalPostData.id,
             viewed: true
         )

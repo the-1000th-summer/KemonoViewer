@@ -22,33 +22,37 @@ struct PostImageView: View {
     var body: some View {
         ScrollView {
             if let postDirPath {
-                LazyVGrid(columns: gridColumns) {
-                    ForEach(imagesName.indices, id: \.self) { imageIndex in
-                        GeometryReader { geo in
-                            GridItemView(
-                                size: geo.size.width,
-                                imageURL: URL(filePath: postDirPath).appendingPathComponent(imagesName[imageIndex])
-                            )
-                                .onTapGesture {
-                                    let fsWindowData = ImagePointerData(
-                                        artistName: artistSelectedData!.name,
-                                        postsFolderName: postsData.map { $0.folderName },
-                                        postsId: postsData.map { $0.id },
-                                        currentPostImagesName: imagesName,
-                                        currentPostIndex: postSelectedIndex!,
-                                        currentImageIndex: imageIndex
-                                    )
-                                    openWindow(id: "fsViewer", value: fsWindowData)
-                                }
+                if imagesName.isEmpty {
+                    Text("No image in this post.")
+                } else {
+                    LazyVGrid(columns: gridColumns) {
+                        ForEach(imagesName.indices, id: \.self) { imageIndex in
+                            GeometryReader { geo in
+                                GridItemView(
+                                    size: geo.size.width,
+                                    imageURL: URL(filePath: postDirPath).appendingPathComponent(imagesName[imageIndex])
+                                )
+                                    .onTapGesture {
+                                        let fsWindowData = ImagePointerData(
+                                            artistName: artistSelectedData!.name,
+                                            postsFolderName: postsData.map { $0.folderName },
+                                            postsId: postsData.map { $0.id },
+                                            currentPostImagesName: imagesName,
+                                            currentPostIndex: postSelectedIndex!,
+                                            currentImageIndex: imageIndex
+                                        )
+                                        openWindow(id: "fsViewer", value: fsWindowData)
+                                    }
+                            }
+                            .cornerRadius(8.0)
+                            .aspectRatio(1, contentMode: .fit)
                         }
-                        .cornerRadius(8.0)
-                        .aspectRatio(1, contentMode: .fit)
                     }
                 }
             } else {
                 HStack {
                     Spacer()
-                    Text("lack post dir path in database.")
+                    Text("Select post to show image.")
                     Spacer()
                 }
                 
