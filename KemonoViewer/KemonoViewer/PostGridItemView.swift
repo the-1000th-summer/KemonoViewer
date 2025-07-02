@@ -1,0 +1,129 @@
+//
+//  GridItemView.swift
+//  KemonoViewer
+//
+//  Created on 2025/6/29.
+//
+
+import SwiftUI
+import Kingfisher
+import ImageIO
+
+struct PostGridItemView: View {
+    @Environment(\.openWindow) private var openWindow
+    let size: Double
+    let initialSize: Double
+    let imageURL: URL
+    @Binding var postData: Post_show
+    
+    var body: some View {
+        ZStack {
+            KFImage(imageURL)
+                .placeholder { ProgressView() }
+                .setProcessor(ShortSideDownsamplingProcessor(targetShortSide: initialSize))
+                .cacheMemoryOnly(true)
+                .resizable()
+                .scaledToFill()
+                .frame(width: size, height: size)
+            VStack {
+                Text(postData.name)
+                    .padding(5)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        Rectangle()
+                            .fill(Color.black.opacity(0.7))
+                    )
+                    
+                Spacer()
+                
+                Text(formatDateStr(dateData: postData.postDate) + "\n" + getAttachmentStr(attachmentNumber: postData.attNumber))
+                    .padding(5)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        Rectangle()
+                            .fill(Color.black.opacity(0.7))
+                    )
+            }
+            
+        }
+    }
+    
+    private func formatDateStr(dateData: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+        return dateFormatter.string(from: dateData)
+    }
+    
+    private func getAttachmentStr(attachmentNumber: Int) -> String {
+        switch attachmentNumber {
+        case 0:
+            return "No attachments"
+        case 1:
+            return "1 attachment"
+        default:
+            return "\(attachmentNumber) attachments"
+        }
+    }
+    
+}
+
+public struct ShortSideDownsamplingProcessor: ImageProcessor {
+    public let targetShortSide: CGFloat
+    public let identifier: String
+    
+    public init(targetShortSide: CGFloat) {
+        self.targetShortSide = targetShortSide
+        self.identifier = "com.onevcat.Kingfisher.ShortSideDownsamplingProcessor(\(targetShortSide))"
+    }
+    
+    public func process(item: Kingfisher.ImageProcessItem, options: Kingfisher.KingfisherParsedOptionsInfo) -> Kingfisher.KFCrossPlatformImage? {
+        switch item {
+        case .image(let image):
+            let originalSize = image.size
+            return downsample(
+                data: image.kf.data(format: .unknown) ?? Data(),
+                originalSize: originalSize,
+                scaleFactor: options.scaleFactor
+            )
+        case .data(let data):
+            guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+                  let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+                  let width = properties[kCGImagePropertyPixelWidth] as? CGFloat,
+                  let height = properties[kCGImagePropertyPixelHeight] as? CGFloat
+            else { return nil }
+            
+            return downsample(
+                data: data,
+                originalSize: CGSize(width: width, height: height),
+                scaleFactor: options.scaleFactor
+            )
+        }
+    }
+    
+    private func downsample(data: Data, originalSize: CGSize, scaleFactor: CGFloat) -> KFCrossPlatformImage? {
+        // 计算原始图片短边
+        let originalShortSide = min(originalSize.width, originalSize.height)
+        
+        // 如果原始短边小于目标值，不需要缩小
+//        guard originalShortSide > targetShortSide else {
+//            return KingfisherWrapper.image(data: data, options: nil)
+//        }
+        
+        // 计算缩放比例
+        let scale = targetShortSide / originalShortSide
+        
+        // 计算新尺寸 (保持比例)
+        let originalLongSide = max(originalSize.width, originalSize.height)
+        let targetLongSide = originalLongSide * scale
+        
+        return KingfisherWrapper.downsampledImage(data: data, to: CGSize(width: targetLongSide, height: targetLongSide), scale: scaleFactor)
+        
+    }
+}
+
+#Preview {
+    PostGridItemView(size: 200, initialSize: 200, imageURL: URL(filePath: "/Volumes/ACG/kemono/5924557/[2019-05-12]罠にかかった秋月修正/1.jpe"), postData: .constant(Post_show(
+        name: "罠にかかった秋月修正", folderName: "[2019-05-12]罠にかかった秋月修正", coverName: "notused.jpg", id: -1, attNumber: 1, postDate: Date(),  viewed: false
+    )))
+}

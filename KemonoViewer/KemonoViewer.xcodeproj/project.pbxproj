@@ -12,12 +12,14 @@
 		7973DC192E14451200ECD58D /* PostGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7973DC182E14451200ECD58D /* PostGridView.swift */; };
 		797E49E22E1125D600C3A3A7 /* PostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E49E12E1125D600C3A3A7 /* PostListView.swift */; };
 		797E4A132E11634700C3A3A7 /* PostImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E4A122E11634700C3A3A7 /* PostImageView.swift */; };
-		797E4A152E11649200C3A3A7 /* GridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E4A142E11649200C3A3A7 /* GridItemView.swift */; };
+		797E4A152E11649200C3A3A7 /* PostGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E4A142E11649200C3A3A7 /* PostGridItemView.swift */; };
 		797E4A172E118DF700C3A3A7 /* FullScreenImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E4A162E118DF700C3A3A7 /* FullScreenImageView.swift */; };
 		7986A10C2E105E1C0008D9EE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7986A1082E105E1C0008D9EE /* ContentView.swift */; };
 		7986A10D2E105E1C0008D9EE /* KemonoViewerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7986A10A2E105E1C0008D9EE /* KemonoViewerApp.swift */; };
 		7986A10E2E105E1C0008D9EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7986A1072E105E1C0008D9EE /* Assets.xcassets */; };
 		7986A1362E105EE40008D9EE /* KContentSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7986A1352E105EE40008D9EE /* KContentSelectView.swift */; };
+		79A627B12E15130B001F0212 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 79A627B02E15130B001F0212 /* Kingfisher */; };
+		79A627B32E1567D9001F0212 /* PostImageGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A627B22E1567D9001F0212 /* PostImageGridItemView.swift */; };
 		79B3E8A92E10EEE600567F1D /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79B3E8A82E10EEE600567F1D /* DatabaseManager.swift */; };
 		79B3E8B52E10F1F800567F1D /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 79B3E8B42E10F1F800567F1D /* SQLite */; };
 		79CB7BD72E124A9300FA7B77 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CB7BD62E124A9300FA7B77 /* Util.swift */; };
@@ -45,7 +47,7 @@
 		7973DC182E14451200ECD58D /* PostGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostGridView.swift; sourceTree = "<group>"; };
 		797E49E12E1125D600C3A3A7 /* PostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostListView.swift; sourceTree = "<group>"; };
 		797E4A122E11634700C3A3A7 /* PostImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostImageView.swift; sourceTree = "<group>"; };
-		797E4A142E11649200C3A3A7 /* GridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridItemView.swift; sourceTree = "<group>"; };
+		797E4A142E11649200C3A3A7 /* PostGridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostGridItemView.swift; sourceTree = "<group>"; };
 		797E4A162E118DF700C3A3A7 /* FullScreenImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenImageView.swift; sourceTree = "<group>"; };
 		7986A0BF2E105BBB0008D9EE /* KemonoViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KemonoViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7986A0CD2E105BBC0008D9EE /* KemonoViewerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KemonoViewerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -55,6 +57,7 @@
 		7986A1092E105E1C0008D9EE /* KemonoViewer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KemonoViewer.entitlements; sourceTree = "<group>"; };
 		7986A10A2E105E1C0008D9EE /* KemonoViewerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KemonoViewerApp.swift; sourceTree = "<group>"; };
 		7986A1352E105EE40008D9EE /* KContentSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KContentSelectView.swift; sourceTree = "<group>"; };
+		79A627B22E1567D9001F0212 /* PostImageGridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostImageGridItemView.swift; sourceTree = "<group>"; };
 		79B3E8A82E10EEE600567F1D /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		79CB7BD62E124A9300FA7B77 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -77,6 +80,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79A627B12E15130B001F0212 /* Kingfisher in Frameworks */,
 				7959EE2B2E10F43B00ACF809 /* SwiftyJSON in Frameworks */,
 				79B3E8B52E10F1F800567F1D /* SQLite in Frameworks */,
 			);
@@ -131,7 +135,8 @@
 				797E49E12E1125D600C3A3A7 /* PostListView.swift */,
 				7973DC182E14451200ECD58D /* PostGridView.swift */,
 				797E4A122E11634700C3A3A7 /* PostImageView.swift */,
-				797E4A142E11649200C3A3A7 /* GridItemView.swift */,
+				797E4A142E11649200C3A3A7 /* PostGridItemView.swift */,
+				79A627B22E1567D9001F0212 /* PostImageGridItemView.swift */,
 				797E4A162E118DF700C3A3A7 /* FullScreenImageView.swift */,
 				7986A10A2E105E1C0008D9EE /* KemonoViewerApp.swift */,
 			);
@@ -166,6 +171,7 @@
 			packageProductDependencies = (
 				79B3E8B42E10F1F800567F1D /* SQLite */,
 				7959EE2A2E10F43B00ACF809 /* SwiftyJSON */,
+				79A627B02E15130B001F0212 /* Kingfisher */,
 			);
 			productName = KemonoViewer;
 			productReference = 7986A0BF2E105BBB0008D9EE /* KemonoViewer.app */;
@@ -252,6 +258,7 @@
 			packageReferences = (
 				79B3E8B32E10F1F800567F1D /* XCRemoteSwiftPackageReference "SQLite.swift" */,
 				7959EE292E10F43B00ACF809 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
+				79A627AF2E15130B001F0212 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7986A0C02E105BBB0008D9EE /* Products */;
@@ -302,10 +309,11 @@
 				797E4A132E11634700C3A3A7 /* PostImageView.swift in Sources */,
 				7986A10D2E105E1C0008D9EE /* KemonoViewerApp.swift in Sources */,
 				7986A1362E105EE40008D9EE /* KContentSelectView.swift in Sources */,
-				797E4A152E11649200C3A3A7 /* GridItemView.swift in Sources */,
+				797E4A152E11649200C3A3A7 /* PostGridItemView.swift in Sources */,
 				79CB7BD72E124A9300FA7B77 /* Util.swift in Sources */,
 				797E49E22E1125D600C3A3A7 /* PostListView.swift in Sources */,
 				7959EE362E11104600ACF809 /* ArtistListView.swift in Sources */,
+				79A627B32E1567D9001F0212 /* PostImageGridItemView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -621,6 +629,14 @@
 				minimumVersion = 5.0.2;
 			};
 		};
+		79A627AF2E15130B001F0212 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.3.3;
+			};
+		};
 		79B3E8B32E10F1F800567F1D /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
@@ -636,6 +652,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7959EE292E10F43B00ACF809 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
+		};
+		79A627B02E15130B001F0212 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 79A627AF2E15130B001F0212 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 		79B3E8B42E10F1F800567F1D /* SQLite */ = {
 			isa = XCSwiftPackageProductDependency;

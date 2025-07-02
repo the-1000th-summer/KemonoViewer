@@ -28,9 +28,9 @@ struct PostImageView: View {
                     LazyVGrid(columns: gridColumns) {
                         ForEach(imagesName.indices, id: \.self) { imageIndex in
                             GeometryReader { geo in
-                                GridItemView(
+                                PostImageGridItemView(
                                     size: geo.size.width,
-                                    imageURL: URL(filePath: postDirPath).appendingPathComponent(imagesName[imageIndex])
+                                    imageURL: URL(filePath: postDirPath).appendingPathComponent(imagesName[imageIndex]),
                                 )
                                     .onTapGesture {
                                         let fsWindowData = ImagePointerData(

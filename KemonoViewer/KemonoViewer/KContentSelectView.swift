@@ -35,7 +35,7 @@ struct KContentSelectView: View {
                     PostTabView(selectedTab: $selectedTab)
                     if selectedTab == .imageTab {
                         PostGridView(postsData: $postsData, artistSelectedData: $artistSelectedData)
-                            .frame(maxWidth: .infinity)
+                            .frame(minWidth: 200, maxWidth: .infinity)
                     } else {
                         HSplitView {
                             PostListView(
@@ -43,6 +43,7 @@ struct KContentSelectView: View {
                                 postSelectedIndex: $postSelectedIndex,
                                 artistSelectedId: artistSelectedData?.id
                             )
+//                            .frame(idealWidth: 100)
 
                             PostImageView(
                                 postsData: $postsData,
@@ -50,6 +51,7 @@ struct KContentSelectView: View {
                                 postSelectedIndex: postSelectedIndex
                             )
                                 .frame(maxWidth: .infinity)
+//                                .layoutPriority(1)
                         }
                     }
                     

@@ -1,6 +1,15 @@
 {
-  "originHash" : "1f595a20e0ce8d0b4c00629ae2af53a5650d72c70a3e031a77b3b91f60d83a20",
+  "originHash" : "bab7aa1c1faf3dd32cf655b179582b831638ab787b842e457c561c4bf88fe3a8",
   "pins" : [
+    {
+      "identity" : "kingfisher",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/onevcat/Kingfisher.git",
+      "state" : {
+        "revision" : "010a06c4387cea2d13606222b6c08e0454e6dd2d",
+        "version" : "8.3.3"
+      }
+    },
     {
       "identity" : "sqlite.swift",
       "kind" : "remoteSourceControl",

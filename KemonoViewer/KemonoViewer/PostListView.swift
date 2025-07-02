@@ -49,6 +49,8 @@ struct PostListView: View {
             folderName: originalPostData.folderName,
             coverName: originalPostData.coverName,
             id: originalPostData.id,
+            attNumber: originalPostData.attNumber,
+            postDate: originalPostData.postDate,
             viewed: true
         )
         DatabaseManager.shared.tagViewedPost(viewedPostId: postsData[viewedPostIndex].id)

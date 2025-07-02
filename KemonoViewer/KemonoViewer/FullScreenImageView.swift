@@ -30,7 +30,7 @@ struct FullScreenImageView: View {
                     }
                     
                 } else {
-                    Text("no image")
+                    Text("No attachments.")
                 }
                 HStack {
                     Button("Next") {

@@ -134,7 +134,10 @@ struct Post_show {
     let folderName: String
     let coverName: String
     let id: Int64
+    let attNumber: Int
+    let postDate: Date
     let viewed: Bool
+    
 }
 
 
@@ -176,6 +179,8 @@ final class DataReader {
                 KemonoPost.e_postFolderName,
                 KemonoPost.e_coverImgFileName,
                 KemonoPost.e_postId,
+                KemonoPost.e_attachmentNumber,
+                KemonoPost.e_postDate,
                 KemonoPost.e_viewed
             ).filter(KemonoPost.e_artistIdRef == artistId)
 //            if notViewedFilterSwitch.state == .on {
@@ -187,6 +192,8 @@ final class DataReader {
                     folderName: row[KemonoPost.e_postFolderName],
                     coverName: row[KemonoPost.e_coverImgFileName],
                     id: row[KemonoPost.e_postId],
+                    attNumber: Int(row[KemonoPost.e_attachmentNumber]),
+                    postDate: row[KemonoPost.e_postDate],
                     viewed: row[KemonoPost.e_viewed]
                 )
                 postsData.append(currentPost)
