@@ -19,6 +19,8 @@ struct KContentSelectView: View {
     
     @State private var selectedTab: PostTab = .listTab
     
+    @State private var onlyShowNotViewedPost = false
+    
     var body: some View {
         VStack {
             HStack {
@@ -32,29 +34,46 @@ struct KContentSelectView: View {
             HSplitView {
                 ArtistListView(artistSelectedData: $artistSelectedData)
                 VStack {
-                    PostTabView(selectedTab: $selectedTab)
-                    if selectedTab == .imageTab {
-                        PostGridView(postsData: $postsData, artistSelectedData: $artistSelectedData)
-                            .frame(minWidth: 200, maxWidth: .infinity)
-                    } else {
-                        HSplitView {
-                            PostListView(
-                                postsData: $postsData,
-                                postSelectedIndex: $postSelectedIndex,
-                                artistSelectedId: artistSelectedData?.id
-                            )
-//                            .frame(idealWidth: 100)
-
-                            PostImageView(
-                                postsData: $postsData,
-                                artistSelectedData: $artistSelectedData,
-                                postSelectedIndex: postSelectedIndex
-                            )
-                                .frame(maxWidth: .infinity)
-//                                .layoutPriority(1)
+                    HStack {
+                        PostTabView(selectedTab: $selectedTab)
+                        Divider()
+//                            .frame(minWidth: 0)
+                        Toggle(isOn: $onlyShowNotViewedPost) {
+                            Text("Only show unread post")
                         }
                     }
-                    
+                    Group {
+                        if selectedTab == .imageTab {
+                            PostGridView(
+                                postsData: $postsData,
+                                artistSelectedData: $artistSelectedData,
+                                onlyShowNotViewedPost: onlyShowNotViewedPost
+                            )
+                                .frame(minWidth: 200, maxWidth: .infinity)
+                        } else {
+                            HSplitView {
+                                PostListView(
+                                    postsData: $postsData,
+                                    postSelectedIndex: $postSelectedIndex,
+                                    artistSelectedId: artistSelectedData?.id,
+                                    onlyShowNotViewedPost: onlyShowNotViewedPost
+                                )
+                                //  .frame(idealWidth: 100)
+                                
+                                
+
+                                PostImageView(
+                                    postsData: $postsData,
+                                    artistSelectedData: $artistSelectedData,
+                                    postSelectedIndex: postSelectedIndex
+                                )
+                                    .frame(maxWidth: .infinity)
+    //                                .layoutPriority(1)
+                            }
+                            
+                        }
+                    }
+                    .layoutPriority(1)
                 }
                 
             }

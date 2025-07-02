@@ -24,6 +24,8 @@ struct PostGridView: View {
     @State private var capturedSize: CGSize = .zero
     @State private var hasCapturedInitialSize = false
     
+    var onlyShowNotViewedPost: Bool
+    
     var body: some View {
         ScrollView {
             if let artistSelectedData {
@@ -49,9 +51,23 @@ struct PostGridView: View {
                         hasCapturedInitialSize = true
                     }
                 }
+                .onChange(of: onlyShowNotViewedPost) {
+                    refreshPostsData()
+                }
             }
         }
+        .onChange(of: artistSelectedData) {
+            refreshPostsData()
+        }
         
+    }
+    
+    private func refreshPostsData() {
+        if let artistSelectedData {
+            postsData = DataReader.readPostData(artistId: artistSelectedData.id, notViewedToggleisOn: onlyShowNotViewedPost) ?? []
+        } else {
+            postsData.removeAll()
+        }
     }
     
     private func getPostCoverURL(postIndex: Int, artistName: String) -> URL {

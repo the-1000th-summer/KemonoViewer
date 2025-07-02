@@ -166,7 +166,7 @@ final class DataReader {
         return artistsData
     }
     
-    static func readPostData(artistId: Int64) -> [Post_show]? {
+    static func readPostData(artistId: Int64, notViewedToggleisOn: Bool) -> [Post_show]? {
         guard let db = DatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return nil
@@ -183,9 +183,9 @@ final class DataReader {
                 KemonoPost.e_postDate,
                 KemonoPost.e_viewed
             ).filter(KemonoPost.e_artistIdRef == artistId)
-//            if notViewedFilterSwitch.state == .on {
-//                query = query.filter(KemonoPost.e_viewed == false)
-//            }
+            if notViewedToggleisOn {
+                query = query.filter(KemonoPost.e_viewed == false)
+            }
             for row in try db.prepare(query) {
                 let currentPost = Post_show(
                     name: row[KemonoPost.e_postName],
