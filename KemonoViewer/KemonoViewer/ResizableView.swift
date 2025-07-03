@@ -9,6 +9,7 @@ import SwiftUI
 
 struct Transform {
     var offset: CGSize = .zero
+    var scaleInPercent: Int = 100
 }
 
 func + (left: CGSize, right: CGSize) -> CGSize {
@@ -36,10 +37,12 @@ func / (left: CGSize, right: CGFloat) -> CGSize {
 }
 
 struct ResizableView: ViewModifier {
-    @Binding var transform: Transform
+    
     @State private var previousOffset: CGSize = .zero
     @State private var previousRotation: Angle = .zero
-    @State private var scale: CGFloat = 1.0
+    @Binding var transform: Transform
+    @ObservedObject var messageManager: StatusMessageManager
+    @State private var eventMonitor: Any?
     
     var dragGesture: some Gesture {
         DragGesture()
@@ -65,28 +68,38 @@ struct ResizableView: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .scaleEffect(scale)
+            .scaleEffect(CGFloat(transform.scaleInPercent) / 100)
             .offset(transform.offset)
             .gesture(dragGesture)
 //            .gesture(scaleGesture)
             .onAppear {
-                NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { event in
-                    if event.scrollingDeltaY > 0 && scale < 500 {
-                        scale += 0.1
-                    } else if event.scrollingDeltaY < 0 && scale > 0.19 {
-                        scale -= 0.1
+                eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { event in
+                    if event.scrollingDeltaY > 0 && transform.scaleInPercent < 500 {
+                        transform.scaleInPercent += 10
+                        messageManager.show(message: "\(transform.scaleInPercent)%")
+                    } else if event.scrollingDeltaY < 0 && transform.scaleInPercent > 10 {
+                        transform.scaleInPercent -= 10
+                        print(transform.scaleInPercent)
+                        messageManager.show(message: "\(transform.scaleInPercent)%")
                     }
                     return event
                 }
                 previousOffset = transform.offset
             }
+            .onDisappear {
+                if let eventMonitor {
+                    NSEvent.removeMonitor(eventMonitor)
+                }
+                eventMonitor = nil
+            }
     }
 }
 
 extension View {
-    func resizableView(transform: Binding<Transform>, viewScale: CGFloat = 1.0) -> some View {
+    func resizableView(transform: Binding<Transform>, messageManager: StatusMessageManager) -> some View {
         modifier(ResizableView(
             transform: transform,
+            messageManager: messageManager
         ))
     }
 }
@@ -97,7 +110,7 @@ struct ResizableView_Previews: PreviewProvider {
         var body: some View {
             RoundedRectangle(cornerRadius: 30.0)
                 .foregroundColor(Color.blue)
-                .resizableView(transform: $transform)
+                .resizableView(transform: $transform, messageManager: StatusMessageManager())
         }
     }
     static var previews: some View {

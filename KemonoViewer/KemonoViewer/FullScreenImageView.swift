@@ -26,8 +26,8 @@ struct FullScreenImageView: View {
                     AsyncImage(url: imagePointer.currentImageURL) { image in
                         image
                             .resizable()
-                            .resizableView(transform: $transform)
                             .scaledToFit()
+                            .resizableView(transform: $transform, messageManager: messageManager)
                     } placeholder: {
                         ProgressView()
                     }
