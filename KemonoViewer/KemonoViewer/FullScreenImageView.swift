@@ -14,7 +14,8 @@ struct FullScreenImageView: View {
     @StateObject private var slideManager = SlideShowManager()
 
     @FocusState private var focused: Bool
-    @State var transform = Transform()
+    @State private var transform = Transform()
+    @State private var isHoveringPathView = false
     
     @StateObject private var imagePointer = ImagePointer()
     @StateObject private var messageManager = StatusMessageManager()
@@ -28,22 +29,18 @@ struct FullScreenImageView: View {
                             .resizable()
                             .scaledToFit()
                             .resizableView(transform: $transform, messageManager: messageManager)
+                            .onChange(of: imagePointer.currentImageURL) {
+                                withAnimation(.easeIn(duration: 0.2)) {
+                                    transform = Transform()
+                                }
+                                
+                            }
                     } placeholder: {
                         ProgressView()
                     }
                     
                 } else {
                     Text("No attachments.")
-                }
-                HStack {
-                    Button("Previous") {
-                        showPreviousImage()
-                        slideManager.restart()
-                    }
-                    Button("Next") {
-                        showNextImage()
-                        slideManager.restart()
-                    }
                 }
             }
             .contextMenu {
@@ -96,23 +93,69 @@ struct FullScreenImageView: View {
                     .padding(.top, 100)
                     .padding(.trailing, 100)
             }
+            VStack {
+                Spacer()
+                HStack {
+                    Button(action: {
+                        showPreviousImage()
+                        slideManager.restart()
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .font(.largeTitle)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    Spacer()
+                    Button(action: {
+                        showNextImage()
+                        slideManager.restart()
+                    }) {
+                        Image(systemName: "chevron.right")
+                            .font(.largeTitle)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+                Spacer()
+            }
+            
+            VStack {
+                Spacer()
+                Text(
+                    "\(imagePointer.currentPostDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")"
+                )
+                .opacity(isHoveringPathView ? 1 : 0)
+                .padding(5)
+                .frame(maxWidth: .infinity)
+                .background(
+                    Rectangle()
+                        .fill(Color.black.opacity(isHoveringPathView ? 0.7 : 0))
+                )
+                .onHover { hovering in
+                    isHoveringPathView = hovering
+                    print(hovering)
+                }
+                .animation(.easeInOut, value: isHoveringPathView)
+            }
         }
     }
     
+//    private func getFileName(url: URL) -> String {
+//        return url.lastPathComponent
+//    }
+    
     private func showNextImage() {
-        let changedDirURL = imagePointer.nextImage()
-        if let changedDirURL {
+        let dirURLChanged = imagePointer.nextImage()
+        if dirURLChanged, let currentPostDirURL = imagePointer.currentPostDirURL {
             messageManager.show(
-                message: "下一个文件夹：\n" + changedDirURL.path(percentEncoded: false)
+                message: "下一个文件夹：\n" + currentPostDirURL.path(percentEncoded: false)
             )
         }
     }
     
     private func showPreviousImage() {
-        let changedDirURL = imagePointer.previousImage()
-        if let changedDirURL {
+        let dirURLChanged = imagePointer.previousImage()
+        if dirURLChanged, let currentPostDirURL = imagePointer.currentPostDirURL {
             messageManager.show(
-                message: "上一个文件夹：\n" + changedDirURL.path(percentEncoded: false)
+                message: "上一个文件夹：\n" + currentPostDirURL.path(percentEncoded: false)
             )
         }
     }

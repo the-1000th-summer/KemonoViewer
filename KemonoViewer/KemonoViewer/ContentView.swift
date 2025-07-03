@@ -7,107 +7,44 @@
 
 import SwiftUI
 
-struct SymbolTabView: View {
-    // 定义选项卡枚举，关联普通和填充版本的 SF Symbol
-    enum Tab: String, CaseIterable {
-        case home
-        case favorites
-        case search
-        case settings
-        
-        // 普通图标名称
-        var icon: String {
-            switch self {
-            case .home: return "house"
-            case .favorites: return "heart"
-            case .search: return "magnifyingglass"
-            case .settings: return "gear"
-            }
-        }
-        
-        // 填充版本图标名称
-        var fillIcon: String {
-            return icon + ".fill"
-        }
-        
-        // 标签文本
-        var label: String {
-            switch self {
-            case .home: return "首页"
-            case .favorites: return "收藏"
-            case .search: return "搜索"
-            case .settings: return "设置"
-            }
-        }
-        
-        // 关联的颜色
-        var color: Color {
-            switch self {
-            case .home: return .blue
-            case .favorites: return .pink
-            case .search: return .orange
-            case .settings: return .gray
-            }
-        }
-    }
-    
-    @State private var selectedTab: Tab = .home
+struct HoverView: View {
+    @State private var isHovering = false  // 悬停状态标记
     
     var body: some View {
-        VStack(spacing: 0) {
-            // 内容区域
-            Group {
-                switch selectedTab {
-                case .home: contentView(title: "首页", color: .blue)
-                case .favorites: contentView(title: "收藏夹", color: .pink)
-                case .search: contentView(title: "搜索", color: .orange)
-                case .settings: contentView(title: "设置", color: .gray)
-                }
+        // 主容器（悬停区域）
+        Rectangle()
+            .fill(Color.blue)
+            .frame(width: 200, height: 100)
+            .cornerRadius(10)
+            .onHover { hovering in
+                isHovering = hovering  // 鼠标进入/离开时更新状态
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
-            // 自定义标签栏
-            HStack {
-                ForEach(Tab.allCases, id: \.self) { tab in
-                    Button(action: {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            selectedTab = tab
-                        }
-                    }) {
-                        VStack {
-                            // 动态切换填充/非填充图标
-                            Image(systemName: selectedTab == tab ? tab.fillIcon : tab.icon)
-                                .font(.system(size: 22, weight: .semibold))
-                            
-                        }
-                        .foregroundColor(selectedTab == tab ? tab.color : .secondary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                }
-            }
-        }
+            .overlay(
+                // 条件显示悬浮提示视图
+                hoverOverlayView
+            )
     }
     
-    // 用于指示器的动画
-    @Namespace private var animation
-    
-    // 内容视图生成器
-    private func contentView(title: String, color: Color) -> some View {
-        VStack {
-            Text(title)
-                .font(.system(size: 48, weight: .bold))
-                .foregroundStyle(color.gradient)
-            
-            Text("当前选中：\(selectedTab.label)")
-                .font(.title3)
-                .padding(.top, 10)
-                .foregroundColor(.secondary)
+    // 鼠标悬停时显示的视图
+    private var hoverOverlayView: some View {
+        Group {
+            if isHovering {
+                Text("Hello! 👋")
+                    .padding(10)
+                    .background(Color.white.opacity(0.9))
+                    .cornerRadius(8)
+                    .shadow(radius: 3)
+                    .transition(.opacity)  // 添加淡入淡出效果
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(.easeInOut, value: isHovering) // 平滑动画
     }
+}
+
+// 预览
+#Preview {
+    HoverView()
+        .frame(width: 300, height: 200)
 }
 
 struct ContentView: View {
@@ -126,5 +63,5 @@ struct ContentView: View {
 
 #Preview {
 //    ContentView()
-    SymbolTabView()
+    HoverView()
 }
