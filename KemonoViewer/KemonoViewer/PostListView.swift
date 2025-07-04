@@ -14,7 +14,8 @@ struct PostListView: View {
     var artistSelectedId: Int64?
     var onlyShowNotViewedPost: Bool
     
-    private let pub = NotificationCenter.default.publisher(for: .updatePostTableViewData)
+    private let pub = NotificationCenter.default.publisher(for: .updateNewViewedPostData)
+    private let viewedPub = NotificationCenter.default.publisher(for: .updateAllPostViewedStatus)
     
     var body: some View {
         List(postsData.indices, id: \.self, selection: $postSelectedIndex) { postCurrentIndex in
@@ -24,7 +25,11 @@ struct PostListView: View {
                     .opacity(postsData[postCurrentIndex].viewed ? 0 : 1)
                 Text(postsData[postCurrentIndex].name)
             }
-            
+            .contextMenu {
+                Button("标记为未读") {
+                    newNotViewedPost(notViewedPostIndex: postCurrentIndex)
+                }
+            }
         }
         .onChange(of: artistSelectedId) {
             refreshPostsData()
@@ -41,6 +46,9 @@ struct PostListView: View {
         .onReceive(pub) { notification in
             guard let viewedPostIndex = notification.userInfo?["viewedPostIndex"] as? Int else { return }
             newViewedPost(viewedPostIndex: viewedPostIndex)
+        }
+        .onReceive(viewedPub) { notification in
+            refreshPostsData()
         }
     }
     
@@ -63,7 +71,21 @@ struct PostListView: View {
             postDate: originalPostData.postDate,
             viewed: true
         )
-        DatabaseManager.shared.tagViewedPost(viewedPostId: postsData[viewedPostIndex].id)
+        DatabaseManager.shared.tagPost(postId: postsData[viewedPostIndex].id, viewed: true)
+    }
+    
+    private func newNotViewedPost(notViewedPostIndex: Int) {
+        let originalPostData = postsData[notViewedPostIndex]
+        postsData[notViewedPostIndex] = Post_show(
+            name: originalPostData.name,
+            folderName: originalPostData.folderName,
+            coverName: originalPostData.coverName,
+            id: originalPostData.id,
+            attNumber: originalPostData.attNumber,
+            postDate: originalPostData.postDate,
+            viewed: false
+        )
+        DatabaseManager.shared.tagPost(postId: postsData[notViewedPostIndex].id, viewed: false)
     }
     
 }

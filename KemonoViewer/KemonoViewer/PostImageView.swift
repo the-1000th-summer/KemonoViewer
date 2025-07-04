@@ -23,7 +23,7 @@ struct PostImageView: View {
         ScrollView {
             if let postDirPath {
                 if imagesName.isEmpty {
-                    Text("No image in this post.")
+                    Text("No attachments in this post.")
                 } else {
                     LazyVGrid(columns: gridColumns) {
                         ForEach(imagesName.indices, id: \.self) { imageIndex in

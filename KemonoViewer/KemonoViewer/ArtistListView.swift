@@ -20,6 +20,22 @@ struct ArtistListView: View {
     var body: some View {
         List(artistsData, id: \.self, selection: $artistSelectedData) { artistData in
             Text(artistData.name)
+                .contextMenu {
+                    Button("标记为全部已读") {
+                        tagArtistAllPost(artistData: artistData, viewed: true)
+                        NotificationCenter.default.post(
+                            name: .updateAllPostViewedStatus,
+                            object: nil
+                        )
+                    }
+                    Button("标记为全部未读") {
+                        tagArtistAllPost(artistData: artistData, viewed: false)
+                        NotificationCenter.default.post(
+                            name: .updateAllPostViewedStatus,
+                            object: nil
+                        )
+                    }
+                }
         }
         .onAppear {
             artistsData = DataReader.readArtistData() ?? []
@@ -29,6 +45,10 @@ struct ArtistListView: View {
 //            print("Selected: \(selectedId)")
 //        }
         
+    }
+    
+    private func tagArtistAllPost(artistData: Artist_show, viewed: Bool) {
+        DatabaseManager.shared.tagArtist(artistId: artistData.id, viewed: viewed)
     }
 }
 

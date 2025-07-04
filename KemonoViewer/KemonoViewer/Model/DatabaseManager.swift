@@ -119,14 +119,25 @@ final class DatabaseManager {
         }
     }
     
-    func tagViewedPost(viewedPostId: Int64) {
+    func tagArtist(artistId: Int64, viewed: Bool) {
         do {
-            try db?.run(KemonoPost.postTable.filter(KemonoPost.e_postId == viewedPostId).update(KemonoPost.e_viewed <- true))
+            try db?.run(KemonoPost.postTable.filter(KemonoPost.e_artistIdRef == artistId).update(KemonoPost.e_viewed <- viewed))
         } catch {
             print(error.localizedDescription)
             return
         }
     }
+    
+    func tagPost(postId: Int64, viewed: Bool) {
+        do {
+            try db?.run(KemonoPost.postTable.filter(KemonoPost.e_postId == postId).update(KemonoPost.e_viewed <- viewed))
+        } catch {
+            print(error.localizedDescription)
+            return
+        }
+    }
+    
+    
 }
 
 struct Post_show {
@@ -327,6 +338,12 @@ final class ImagePointer: ObservableObject {
             currentPostIndex += 1
             currentPostImagesName = getImagesName(postId: postsId[currentPostIndex])
             
+            NotificationCenter.default.post(
+                name: .updateNewViewedPostData,
+                object: nil,
+                userInfo: ["viewedPostIndex": currentPostIndex]
+            )
+            
             // no attachments in current post
             if currentPostImagesName.isEmpty {
                 currentImageIndex = -2
@@ -338,12 +355,6 @@ final class ImagePointer: ObservableObject {
             
             // has attachment(s) in current post
             currentImageIndex = 0
-            
-            NotificationCenter.default.post(
-                name: .updatePostTableViewData,
-                object: nil,
-                userInfo: ["viewedPostIndex": currentPostIndex]
-            )
             
             currentPostDirURL = getCurrentPostDirURL()
             currentImageURL = getCurrentImageURL()
@@ -372,6 +383,12 @@ final class ImagePointer: ObservableObject {
             currentPostIndex -= 1
             currentPostImagesName = getImagesName(postId: postsId[currentPostIndex])
             
+            NotificationCenter.default.post(
+                name: .updateNewViewedPostData,
+                object: nil,
+                userInfo: ["viewedPostIndex": currentPostIndex]
+            )
+            
             // no attachments in current post
             if currentPostImagesName.isEmpty {
                 currentImageIndex = -2
@@ -383,12 +400,6 @@ final class ImagePointer: ObservableObject {
             
             // has attachment(s) in current post
             currentImageIndex = currentPostImagesName.count - 1
-            
-            NotificationCenter.default.post(
-                name: .updatePostTableViewData,
-                object: nil,
-                userInfo: ["viewedPostIndex": currentPostIndex]
-            )
             
             currentPostDirURL = getCurrentPostDirURL()
             currentImageURL = getCurrentImageURL()
@@ -420,6 +431,7 @@ final class ImagePointer: ObservableObject {
 }
 
 extension Notification.Name {
-    static let updatePostTableViewData = Notification.Name("UpdatePostTableViewDataNotification")
+    static let updateNewViewedPostData = Notification.Name("UpdateNewViewedPostDataNotification")
+    static let updateAllPostViewedStatus = Notification.Name("updateAllPostViewedStatusNotification")
 }
 
