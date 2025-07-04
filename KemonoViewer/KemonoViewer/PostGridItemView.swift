@@ -11,41 +11,55 @@ import ImageIO
 
 struct PostGridItemView: View {
     @Environment(\.openWindow) private var openWindow
+    @Binding var postData: Post_show
     let size: Double
     let initialSize: Double
     let imageURL: URL
-    @Binding var postData: Post_show
+    let isSelected: Bool
+    let onTap: () -> Void
     
     var body: some View {
-        ZStack {
-            KFImage(imageURL)
-                .placeholder { ProgressView() }
-                .setProcessor(ShortSideDownsamplingProcessor(targetShortSide: initialSize))
-                .cacheMemoryOnly(true)
-                .resizable()
-                .scaledToFill()
-                .frame(width: size, height: size)
-            VStack {
-                Text(postData.name)
-                    .padding(5)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(
-                        Rectangle()
-                            .fill(Color.black.opacity(0.7))
-                    )
-                    
-                Spacer()
-                
-                Text(formatDateStr(dateData: postData.postDate) + "\n" + getAttachmentStr(attachmentNumber: postData.attNumber))
-                    .padding(5)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(
-                        Rectangle()
-                            .fill(Color.black.opacity(0.7))
-                    )
+        Button(action: {
+            onTap()
+        }) {
+            ZStack(alignment: .topTrailing) {
+                KFImage(imageURL)
+                    .placeholder { ProgressView() }
+                    .setProcessor(ShortSideDownsamplingProcessor(targetShortSide: initialSize))
+                    .cacheMemoryOnly(true)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: size, height: size)
+                VStack {
+                    Text(postData.name)
+                        .padding(5)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            Rectangle()
+                                .fill(Color.black.opacity(0.7))
+                        )
+                    Spacer()
+                    Text(formatDateStr(dateData: postData.postDate) + "\n" + getAttachmentStr(attachmentNumber: postData.attNumber))
+                        .padding(5)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            Rectangle()
+                                .fill(Color.black.opacity(0.7))
+                        )
+                }
+                Image(systemName: "circlebadge.fill")
+                    .padding(.top, 2)
+                    .padding(.trailing, 2)
+                    .foregroundStyle(.blue)
+                    .opacity(postData.viewed ? 0 : 1)
             }
-            
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 3)
+            )
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
         }
+        .buttonStyle(PlainButtonStyle())
     }
     
     private func formatDateStr(dateData: Date) -> String {
@@ -123,7 +137,7 @@ public struct ShortSideDownsamplingProcessor: ImageProcessor {
 }
 
 #Preview {
-    PostGridItemView(size: 200, initialSize: 200, imageURL: URL(filePath: "/Volumes/ACG/kemono/5924557/[2019-05-12]罠にかかった秋月修正/1.jpe"), postData: .constant(Post_show(
+    PostGridItemView(postData: .constant(Post_show(
         name: "罠にかかった秋月修正", folderName: "[2019-05-12]罠にかかった秋月修正", coverName: "notused.jpg", id: -1, attNumber: 1, postDate: Date(),  viewed: false
-    )))
+    )), size: 200, initialSize: 200, imageURL: URL(filePath: "/Volumes/ACG/kemono/5924557/[2019-05-12]罠にかかった秋月修正/1.jpe"), isSelected: true, onTap: {})
 }

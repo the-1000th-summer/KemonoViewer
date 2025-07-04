@@ -28,21 +28,23 @@ struct PostImageView: View {
                     LazyVGrid(columns: gridColumns) {
                         ForEach(imagesName.indices, id: \.self) { imageIndex in
                             GeometryReader { geo in
-                                PostImageGridItemView(
-                                    size: geo.size.width,
-                                    imageURL: URL(filePath: postDirPath).appendingPathComponent(imagesName[imageIndex]),
-                                )
-                                    .onTapGesture {
-                                        let fsWindowData = ImagePointerData(
-                                            artistName: artistSelectedData!.name,
-                                            postsFolderName: postsData.map { $0.folderName },
-                                            postsId: postsData.map { $0.id },
-                                            currentPostImagesName: imagesName,
-                                            currentPostIndex: postSelectedIndex!,
-                                            currentImageIndex: imageIndex
-                                        )
-                                        openWindow(id: "fsViewer", value: fsWindowData)
-                                    }
+                                Button(action: {
+                                    let fsWindowData = ImagePointerData(
+                                        artistName: artistSelectedData!.name,
+                                        postsFolderName: postsData.map { $0.folderName },
+                                        postsId: postsData.map { $0.id },
+                                        currentPostImagesName: imagesName,
+                                        currentPostIndex: postSelectedIndex!,
+                                        currentImageIndex: imageIndex
+                                    )
+                                    openWindow(id: "fsViewer", value: fsWindowData)
+                                }) {
+                                    PostImageGridItemView(
+                                        size: geo.size.width,
+                                        imageURL: URL(filePath: postDirPath).appendingPathComponent(imagesName[imageIndex]),
+                                    )
+                                }
+                                .buttonStyle(PlainButtonStyle())
                             }
                             .cornerRadius(8.0)
                             .aspectRatio(1, contentMode: .fit)

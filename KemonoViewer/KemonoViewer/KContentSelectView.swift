@@ -43,15 +43,16 @@ struct KContentSelectView: View {
                         }
                     }
                     Group {
-                        if selectedTab == .imageTab {
-                            PostGridView(
-                                postsData: $postsData,
-                                artistSelectedData: $artistSelectedData,
-                                onlyShowNotViewedPost: onlyShowNotViewedPost
-                            )
+                        HSplitView {
+                            if selectedTab == .imageTab {
+                                PostGridView(
+                                    postsData: $postsData,
+                                    artistSelectedData: $artistSelectedData,
+                                    postSelectedIndex: $postSelectedIndex,
+                                    onlyShowNotViewedPost: onlyShowNotViewedPost
+                                )
                                 .frame(minWidth: 200, maxWidth: .infinity)
-                        } else {
-                            HSplitView {
+                            } else {
                                 PostListView(
                                     postsData: $postsData,
                                     postSelectedIndex: $postSelectedIndex,
@@ -59,22 +60,20 @@ struct KContentSelectView: View {
                                     onlyShowNotViewedPost: onlyShowNotViewedPost
                                 )
                                 //  .frame(idealWidth: 100)
-                                
-                                
-
-                                PostImageView(
-                                    postsData: $postsData,
-                                    artistSelectedData: $artistSelectedData,
-                                    postSelectedIndex: postSelectedIndex
-                                )
-                                    .frame(maxWidth: .infinity)
-    //                                .layoutPriority(1)
                             }
+                            PostImageView(
+                                postsData: $postsData,
+                                artistSelectedData: $artistSelectedData,
+                                postSelectedIndex: postSelectedIndex
+                            )
+                            .frame(maxWidth: .infinity)
+                            //                                .layoutPriority(1)
                             
                         }
                     }
                     .layoutPriority(1)
                 }
+                .layoutPriority(1)
                 
             }
         }

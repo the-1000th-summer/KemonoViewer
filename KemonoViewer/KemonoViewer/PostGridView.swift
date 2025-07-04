@@ -19,6 +19,7 @@ struct PostGridView: View {
     private static let initialColumns = 3
     @Binding var postsData: [Post_show]
     @Binding var artistSelectedData: Artist_show?
+    @Binding var postSelectedIndex: Int?
     @State private var gridColumns = Array(repeating: GridItem(.flexible()), count: initialColumns)
     
     @State private var capturedSize: CGSize = .zero
@@ -33,10 +34,15 @@ struct PostGridView: View {
                     ForEach(postsData.indices, id: \.self) { postIndex in
                         GeometryReader { geo in
                             PostGridItemView(
+                                postData: $postsData[postIndex],
                                 size: geo.size.width,
                                 initialSize: capturedSize.width,
                                 imageURL: getPostCoverURL(postIndex: postIndex, artistName: artistSelectedData.name),
-                                postData: $postsData[postIndex]
+                                isSelected: postSelectedIndex == postIndex,
+                                onTap: {
+                                    postSelectedIndex = postIndex
+                                    newViewedPost(viewedPostIndex: postIndex)
+                                }
                             )
                             .preference(key: SizePreferenceKey.self, value: geo.size)
                             
@@ -53,6 +59,7 @@ struct PostGridView: View {
                 }
                 .onChange(of: onlyShowNotViewedPost) {
                     refreshPostsData()
+                    postSelectedIndex = nil
                 }
             }
         }
@@ -60,6 +67,20 @@ struct PostGridView: View {
             refreshPostsData()
         }
         
+    }
+    
+    private func newViewedPost(viewedPostIndex: Int) {
+        let originalPostData = postsData[viewedPostIndex]
+        postsData[viewedPostIndex] = Post_show(
+            name: originalPostData.name,
+            folderName: originalPostData.folderName,
+            coverName: originalPostData.coverName,
+            id: originalPostData.id,
+            attNumber: originalPostData.attNumber,
+            postDate: originalPostData.postDate,
+            viewed: true
+        )
+        DatabaseManager.shared.tagViewedPost(viewedPostId: postsData[viewedPostIndex].id)
     }
     
     private func refreshPostsData() {

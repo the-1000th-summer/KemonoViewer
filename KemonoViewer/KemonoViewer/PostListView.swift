@@ -20,6 +20,7 @@ struct PostListView: View {
         List(postsData.indices, id: \.self, selection: $postSelectedIndex) { postCurrentIndex in
             HStack {
                 Image(systemName: "circlebadge.fill")
+                    .foregroundStyle(.blue)
                     .opacity(postsData[postCurrentIndex].viewed ? 0 : 1)
                 Text(postsData[postCurrentIndex].name)
             }
