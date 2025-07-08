@@ -10,6 +10,7 @@
 		7959EE2B2E10F43B00ACF809 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 7959EE2A2E10F43B00ACF809 /* SwiftyJSON */; };
 		7959EE362E11104600ACF809 /* ArtistListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7959EE352E11104600ACF809 /* ArtistListView.swift */; };
 		7973DC192E14451200ECD58D /* PostGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7973DC182E14451200ECD58D /* PostGridView.swift */; };
+		7974C51E2E1829B700F8E9DC /* DatabaseManagerExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7974C51D2E1829B700F8E9DC /* DatabaseManagerExt.swift */; };
 		797E49E22E1125D600C3A3A7 /* PostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E49E12E1125D600C3A3A7 /* PostListView.swift */; };
 		797E4A132E11634700C3A3A7 /* PostImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E4A122E11634700C3A3A7 /* PostImageView.swift */; };
 		797E4A152E11649200C3A3A7 /* PostGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E4A142E11649200C3A3A7 /* PostGridItemView.swift */; };
@@ -46,6 +47,7 @@
 /* Begin PBXFileReference section */
 		7959EE352E11104600ACF809 /* ArtistListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistListView.swift; sourceTree = "<group>"; };
 		7973DC182E14451200ECD58D /* PostGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostGridView.swift; sourceTree = "<group>"; };
+		7974C51D2E1829B700F8E9DC /* DatabaseManagerExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManagerExt.swift; sourceTree = "<group>"; };
 		797E49E12E1125D600C3A3A7 /* PostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostListView.swift; sourceTree = "<group>"; };
 		797E4A122E11634700C3A3A7 /* PostImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostImageView.swift; sourceTree = "<group>"; };
 		797E4A142E11649200C3A3A7 /* PostGridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostGridItemView.swift; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 			isa = PBXGroup;
 			children = (
 				79B3E8A82E10EEE600567F1D /* DatabaseManager.swift */,
+				7974C51D2E1829B700F8E9DC /* DatabaseManagerExt.swift */,
 				79CB7BD62E124A9300FA7B77 /* Util.swift */,
 			);
 			path = Model;
@@ -305,6 +308,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7974C51E2E1829B700F8E9DC /* DatabaseManagerExt.swift in Sources */,
 				797E4A172E118DF700C3A3A7 /* FullScreenImageView.swift in Sources */,
 				79B3E8A92E10EEE600567F1D /* DatabaseManager.swift in Sources */,
 				7973DC192E14451200ECD58D /* PostGridView.swift in Sources */,

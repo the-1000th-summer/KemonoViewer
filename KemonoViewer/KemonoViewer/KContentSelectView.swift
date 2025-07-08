@@ -21,15 +21,25 @@ struct KContentSelectView: View {
     
     @State private var onlyShowNotViewedPost = false
     
+    @State private var isProcessing = false
+    @State private var readingProgress: Double = 0.0
+    @State private var currentTask: Task<Void, Never>?
+    
     var body: some View {
+        
         VStack {
             HStack {
-                Button("Load Data") {}
-                    .padding()
+                Button("Load Data") {
+                    isProcessing = true
+                    currentTask = Task {
+                        await DatabaseManager.shared.writeKemonoDataToDatabase(isProcessing: $isProcessing, progress: $readingProgress)
+                    }
+                    isProcessing = false
+                }
+                .padding()
                 Button("Show Data") {}
                     .padding()
                 Spacer()
-                
             }
             HSplitView {
                 ArtistListView(artistSelectedData: $artistSelectedData)
@@ -37,7 +47,7 @@ struct KContentSelectView: View {
                     HStack {
                         PostTabView(selectedTab: $selectedTab)
                         Divider()
-//                            .frame(minWidth: 0)
+                        //                            .frame(minWidth: 0)
                         Toggle(isOn: $onlyShowNotViewedPost) {
                             Text("Only show unread post")
                         }
@@ -77,7 +87,15 @@ struct KContentSelectView: View {
                 
             }
         }
+        .sheet(isPresented: $isProcessing) {
+            ProgressView("Processing...", value: readingProgress, total: 1.0)
+                .progressViewStyle(LinearProgressViewStyle())
+                .padding()
+                .interactiveDismissDisabled()
+        }
+        
     }
+    
 }
 
 struct PostTabView: View {
@@ -98,7 +116,7 @@ struct PostTabView: View {
                             .font(.title)
                     }
                     .foregroundColor(selectedTab == tab ? .blue : .secondary)
-//                    .frame(maxWidth: .infinity)
+                    //                    .frame(maxWidth: .infinity)
                     .padding(.vertical, 1)
                     .contentShape(Rectangle())
                 }

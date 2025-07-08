@@ -6,7 +6,9 @@
 //
 
 import Foundation
+import SwiftUI
 import SQLite
+import SwiftyJSON
 
 struct Artist {
     static let artistTable = Table("artist")
@@ -37,8 +39,10 @@ struct KemonoImage {
 final class DatabaseManager {
     static let shared = DatabaseManager()
     private var db: Connection?
+    private let dateFormatter = DateFormatter()
     
     private init() {
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
         initDatabase()
     }
     
@@ -47,7 +51,7 @@ final class DatabaseManager {
     }
     
     private func initDatabase() {
-        let dbFilePath = "/Volumes/imagesShown/images.sqlite3"
+        let dbFilePath = "/Volumes/imagesShown/images_python.sqlite3"
         let fm = FileManager.default
         
         if fm.fileExists(atPath: dbFilePath) {
@@ -73,7 +77,7 @@ final class DatabaseManager {
         
         do {
             try db.run(Artist.artistTable.create { t in
-                t.column(Artist.e_artistId, primaryKey: .autoincrement)
+                t.column(Artist.e_artistId, primaryKey: true)
                 t.column(Artist.e_artistName)
                 t.column(Artist.e_service)
             })
@@ -85,7 +89,7 @@ final class DatabaseManager {
         // post
         do {
             try db.run(KemonoPost.postTable.create { t in
-                t.column(KemonoPost.e_postId, primaryKey: .autoincrement)
+                t.column(KemonoPost.e_postId, primaryKey: true)
                 t.column(KemonoPost.e_artistIdRef)
                 t.column(KemonoPost.e_postName)
                 t.column(KemonoPost.e_postDate)
@@ -105,7 +109,7 @@ final class DatabaseManager {
         // image
         do {
             try db.run(KemonoImage.imageTable.create { t in
-                t.column(KemonoImage.e_imageId, primaryKey: .autoincrement)
+                t.column(KemonoImage.e_imageId, primaryKey: true)
                 t.column(KemonoImage.e_postIdRef)
                 t.column(KemonoImage.e_imageName)
                 
@@ -137,7 +141,103 @@ final class DatabaseManager {
         }
     }
     
+    func writeKemonoDataToDatabase(isProcessing: SwiftUI.Binding<Bool>, progress: SwiftUI.Binding<Double>) async {
+        
+        await MainActor.run {
+            isProcessing.wrappedValue = true
+            progress.wrappedValue = 0.0
+        }
+        
+        let inputFolderPath = "/Volumes/ACG/kemono"
+        
+        guard let db = DatabaseManager.shared.getConnection() else {
+            print("数据库初始化失败")
+            return
+        }
+        
+        guard let artistsName = getSubdirectoryNames(atPath: inputFolderPath) else { return }
+        for (i, artistName) in artistsName.enumerated() {
+            let artistDirPath = URL(filePath: inputFolderPath).appendingPathComponent(artistName).path(percentEncoded: false)
+            if let postsName = getSubdirectoryNames(atPath: artistDirPath) {
+                var artistId: Int64? = nil
+                var a = 0
+                try! db.transaction {
+                    for postName in postsName.prefix(10) {
+                        let currentPostDirPath = URL(filePath:artistDirPath).appendingPathComponent(postName).path(percentEncoded: false)
+                        
+                        artistId = handleOnePost(postDirPath: currentPostDirPath, artistId: artistId)
+                        a += 1
+                        print(a)
+                    }
+                }
+            }
+            
+            await MainActor.run {
+                progress.wrappedValue = Double(i) / Double(artistsName.count)
+            }
+                    
+        }
+        
+        await MainActor.run {
+            isProcessing.wrappedValue = false
+        }
+    }
     
+    func handleOnePost(postDirPath: String, artistId: Int64?) -> Int64? {
+        let postJsonFileURL = URL(filePath: postDirPath).appendingPathComponent("post.json")
+        guard let jsonFileData = try? Data(contentsOf: postJsonFileURL) else {
+            print("打开Json文件失败")
+            return nil
+        }
+        guard let jsonObj = try? JSON(data: jsonFileData) else {
+            print("转换为Json对象失败")
+            return nil
+        }
+        guard let db else {
+            print("数据库初始化失败")
+            return nil
+        }
+        
+        var artistId_upload: Int64? = nil
+        do {
+            // artist data
+            let artistName = URL(filePath: postDirPath).deletingLastPathComponent().lastPathComponent
+            if let artistId {
+                artistId_upload = artistId
+            } else {
+                artistId_upload = try db.run(Artist.artistTable.insert(
+                    Artist.e_artistName <- artistName,
+                    Artist.e_service <- jsonObj["service"].stringValue
+                ))
+            }
+
+            // post data
+            let postDateStr = jsonObj["published"].stringValue + "Z"
+            let postDate = dateFormatter.date(from: postDateStr)!
+            let postId = try db.run(KemonoPost.postTable.insert(
+                KemonoPost.e_artistIdRef <- artistId_upload!,
+                KemonoPost.e_postName <- jsonObj["title"].stringValue,
+                KemonoPost.e_postDate <- postDate,
+                KemonoPost.e_coverImgFileName <- jsonObj["id"].stringValue + "_" + jsonObj["file"]["name"].stringValue,
+                KemonoPost.e_postFolderName <- URL(filePath: postDirPath).lastPathComponent,
+                KemonoPost.e_attachmentNumber <- Int64(jsonObj["attachments"].arrayValue.count)
+            ))
+            
+            // attachment data
+            for (i, attachment) in jsonObj["attachments"].arrayValue.enumerated() {
+                let fileExt = URL(filePath: attachment["name"].stringValue).pathExtension
+                try db.run(KemonoImage.imageTable.insert(
+                    KemonoImage.e_postIdRef <- postId,
+                    KemonoImage.e_imageName <- String(i+1) + "." + fileExt
+                ))
+            }
+        } catch {
+            print("save:", error.localizedDescription)
+        }
+        
+        return artistId_upload
+        
+    }
 }
 
 struct Post_show {
@@ -302,6 +402,14 @@ final class ImagePointer: ObservableObject {
         currentPostDirURL = getCurrentPostDirURL()
         currentImageURL = getCurrentImageURL()
 //        return nil
+    }
+    
+    func isFirstPost() -> Bool {
+        return currentPostIndex == 0 && (currentImageIndex == -2 || currentImageIndex == 0)
+    }
+    
+    func isLastPost() -> Bool {
+        return currentPostIndex == postsFolderName.count - 1 && (currentImageIndex == -2 || currentImageIndex == currentPostImagesName.count - 1)
     }
     
     private func getCurrentPostDirURL() -> URL? {

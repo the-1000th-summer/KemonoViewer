@@ -149,6 +149,11 @@ struct FullScreenImageView: View {
                 message: "下一个文件夹：\n" + currentPostDirURL.path(percentEncoded: false)
             )
         }
+        if !dirURLChanged && imagePointer.isLastPost() {
+            messageManager.show(
+                message: "已经是最后一张图片"
+            )
+        }
     }
     
     private func showPreviousImage() {
@@ -156,6 +161,11 @@ struct FullScreenImageView: View {
         if dirURLChanged, let currentPostDirURL = imagePointer.currentPostDirURL {
             messageManager.show(
                 message: "上一个文件夹：\n" + currentPostDirURL.path(percentEncoded: false)
+            )
+        }
+        if !dirURLChanged && imagePointer.isFirstPost() {
+            messageManager.show(
+                message: "已经是第一张图片"
             )
         }
     }
