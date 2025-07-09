@@ -7,10 +7,12 @@
 
 import SwiftUI
 import Kingfisher
+import UniformTypeIdentifiers
 
 struct PostImageGridItemView: View {
     let size: Double
     let imageURL: URL
+    @State private var loadPsdFile = false
     
     var body: some View {
 //        AsyncImage(url: imageURL) { phase in
@@ -24,14 +26,75 @@ struct PostImageGridItemView: View {
 //                ProgressView()  // Acts as a placeholder.
 //            }
 //        }
-        KFImage(imageURL)
-            .placeholder { ProgressView() }
-            .cacheMemoryOnly(true)
-            .memoryCacheExpiration(.expired) // no cache
-            .diskCacheExpiration(.expired)   // no cache
-            .resizable()
-            .scaledToFill()
-            .frame(width: size, height: size)
+        Group {
+            if ((imageURL.pathExtension == "psd" || imageURL.pathExtension == "psb")) && !loadPsdFile {
+                VStack {
+                    Image(systemName: "document.fill")
+                    Text("Adobe photoshop file")
+                    Button("load") {
+                        loadPsdFile = true
+                    }
+                }
+                .frame(width: size, height: size)
+            } else if ((UTType(filenameExtension: imageURL.pathExtension)?.conforms(to: .image)) ?? false) {
+                KFImage(imageURL)
+                    .placeholder { ProgressView() }
+                    .onFailureView {
+                        VStack {
+                            Image(systemName: "exclamationmark.triangle")
+                            Text("Image load failed.")
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                    .cacheMemoryOnly(true)
+                    .memoryCacheExpiration(.expired) // no cache
+                    .diskCacheExpiration(.expired)   // no cache
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: size, height: size)
+            } else {
+                VStack {
+                    Image("custom.document.fill.badge.questionmark")
+                        .font(.largeTitle)
+                    Text("\(imageURL.lastPathComponent)\nNot an image file")
+                }
+                .frame(width: size, height: size)
+            }
+            
+        }
+        
+    }
+    
+    private func getErrorTxt(err: KingfisherError) -> String {
+        switch err.errorCode {
+        case 5003:
+            return "File: \(imageURL.lastPathComponent) not exists."
+        case 4001:
+            return "Not a valid image file: \(imageURL.lastPathComponent)."
+        default:
+            return "\(err.errorCode)rrr\n" + (err.errorDescription ?? "")
+        }
+    }
+}
+
+extension KingfisherError {
+    public var errorDes2: String {
+        switch self {
+        case .imageSettingError(let reason): return reason.errorDesc2
+        default:
+            return "not handled error"
+        }
+    }
+}
+
+extension KingfisherError.ImageSettingErrorReason {
+    var errorDesc2: String {
+        switch self {
+        case .dataProviderError(_, let error):
+            return "\(error.localizedDescription)"
+        default:
+            return "not handled error"
+        }
     }
 }
 

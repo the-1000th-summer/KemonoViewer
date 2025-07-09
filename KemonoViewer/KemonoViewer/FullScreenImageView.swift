@@ -24,20 +24,42 @@ struct FullScreenImageView: View {
         ZStack(alignment: .topTrailing) {
             VStack {
                 if imagePointer.currentImageURL != nil {
-                    AsyncImage(url: imagePointer.currentImageURL) { image in
-                        image
-                            .resizable()
-                            .scaledToFit()
-                            .resizableView(transform: $transform, messageManager: messageManager)
-                            .onChange(of: imagePointer.currentImageURL) {
-                                withAnimation(.easeIn(duration: 0.2)) {
-                                    transform = Transform()
+                    AsyncImage(url: imagePointer.currentImageURL) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .resizableView(transform: $transform, messageManager: messageManager)
+                                .onChange(of: imagePointer.currentImageURL) {
+                                    withAnimation(.easeIn(duration: 0.2)) {
+                                        transform = Transform()
+                                    }
+                                    
                                 }
-                                
+                        } else if phase.error != nil {
+                            VStack {
+                                Image(systemName: "photo.badge.exclamationmark")
+                                Text("Error: " + phase.error!.localizedDescription)
                             }
-                    } placeholder: {
-                        ProgressView()
+                            .font(.largeTitle)
+                        } else {
+                            ProgressView()  // Acts as a placeholder.
+                        }
                     }
+//                    AsyncImage(url: imagePointer.currentImageURL) { image in
+//                        image
+//                            .resizable()
+//                            .scaledToFit()
+//                            .resizableView(transform: $transform, messageManager: messageManager)
+//                            .onChange(of: imagePointer.currentImageURL) {
+//                                withAnimation(.easeIn(duration: 0.2)) {
+//                                    transform = Transform()
+//                                }
+//                                
+//                            }
+//                    } placeholder: {
+//                        ProgressView()
+//                    }
                     
                 } else {
                     Text("No attachments.")

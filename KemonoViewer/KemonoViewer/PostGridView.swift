@@ -33,23 +33,25 @@ struct PostGridView: View {
                 LazyVGrid(columns: gridColumns) {
                     ForEach(postsData.indices, id: \.self) { postIndex in
                         GeometryReader { geo in
-                            PostGridItemView(
-                                postData: $postsData[postIndex],
-                                size: geo.size.width,
-                                initialSize: capturedSize.width,
-                                imageURL: getPostCoverURL(postIndex: postIndex, artistName: artistSelectedData.name),
-                                isSelected: postSelectedIndex == postIndex,
-                                onTap: {
-                                    postSelectedIndex = postIndex
-                                    newViewedPost(viewedPostIndex: postIndex)
-                                }
-                            )
-                            .preference(key: SizePreferenceKey.self, value: geo.size)
-                            .contextMenu {
-                                Button("标记为未读") {
-                                    newNotViewedPost(notViewedPostIndex: postIndex)
+                            Button(action: {
+                                postSelectedIndex = postIndex
+                                newViewedPost(viewedPostIndex: postIndex)
+                            }) {
+                                PostGridItemView(
+                                    postData: postsData[postIndex],
+                                    size: geo.size.width,
+                                    initialSize: capturedSize.width,
+                                    imageURL: getPostCoverURL(postIndex: postIndex, artistName: artistSelectedData.name),
+                                    isSelected: postSelectedIndex == postIndex
+                                )
+                                .preference(key: SizePreferenceKey.self, value: geo.size)
+                                .contextMenu {
+                                    Button("标记为未读") {
+                                        newNotViewedPost(notViewedPostIndex: postIndex)
+                                    }
                                 }
                             }
+                            .buttonStyle(PlainButtonStyle())
                         }
                         .cornerRadius(8.0)
                         .aspectRatio(1, contentMode: .fit)
@@ -67,9 +69,7 @@ struct PostGridView: View {
                 }
             }
         }
-        .onChange(of: artistSelectedData) {
-            refreshPostsData()
-        }
+        
         
     }
     

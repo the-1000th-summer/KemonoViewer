@@ -22,6 +22,8 @@ Pods/
 ._*
 *.bak
 
-/KemonoViewer_AppKit/
 __pycache__/
+
+/KemonoViewer_AppKit/
+
 

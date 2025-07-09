@@ -31,9 +31,6 @@ struct PostListView: View {
                 }
             }
         }
-        .onChange(of: artistSelectedId) {
-            refreshPostsData()
-        }
         .onChange(of: onlyShowNotViewedPost) {
             refreshPostsData()
             postSelectedIndex = nil

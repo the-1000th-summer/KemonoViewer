@@ -41,9 +41,6 @@ struct ArtistListView: View {
             artistsData = DataReader.readArtistData() ?? []
         }
         .navigationTitle("Oceans")
-//        .onChange(of: selectedId) {
-//            print("Selected: \(selectedId)")
-//        }
         
     }
     

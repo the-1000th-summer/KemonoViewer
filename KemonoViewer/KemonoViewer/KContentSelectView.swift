@@ -43,11 +43,11 @@ struct KContentSelectView: View {
             }
             HSplitView {
                 ArtistListView(artistSelectedData: $artistSelectedData)
+                    .frame(minWidth: 150)
                 VStack {
                     HStack {
                         PostTabView(selectedTab: $selectedTab)
                         Divider()
-                        //                            .frame(minWidth: 0)
                         Toggle(isOn: $onlyShowNotViewedPost) {
                             Text("Only show unread post")
                         }
@@ -77,7 +77,6 @@ struct KContentSelectView: View {
                                 postSelectedIndex: postSelectedIndex
                             )
                             .frame(maxWidth: .infinity)
-                            //                                .layoutPriority(1)
                             
                         }
                     }
@@ -86,6 +85,11 @@ struct KContentSelectView: View {
                 .layoutPriority(1)
                 
             }
+            .onChange(of: artistSelectedData) {
+                refreshPostsData()
+                postSelectedIndex = nil
+            }
+            
         }
         .sheet(isPresented: $isProcessing) {
             ProgressView("Processing...", value: readingProgress, total: 1.0)
@@ -94,6 +98,14 @@ struct KContentSelectView: View {
                 .interactiveDismissDisabled()
         }
         
+    }
+    
+    private func refreshPostsData() {
+        if let artistSelectedData {
+            postsData = DataReader.readPostData(artistId: artistSelectedData.id, notViewedToggleisOn: onlyShowNotViewedPost) ?? []
+        } else {
+            postsData = []
+        }
     }
     
 }

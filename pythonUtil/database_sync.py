@@ -132,7 +132,7 @@ class DatabaseManager:
         print("数据处理完成")
 
     def handleOnePost(self, postDirPath: str, artistId=None):
-        """处理单个帖子目录"""
+        """ 处理单个帖子目录 """
         postJsonFilePath = os.path.join(postDirPath, "post.json")
 
         # 读取并解析 JSON 文件
@@ -169,7 +169,7 @@ class DatabaseManager:
                 artist=artist,
                 name=jsonData.get("title", "Untitled"),
                 post_date=post_date,
-                cover_img_file_name=f"{jsonData['id']}_{jsonData['file']['name']}",
+                cover_img_file_name=f"{jsonData['id']}_{jsonData['file']['name']}" if jsonData['file']['name'] else "",
                 post_folder_name=os.path.basename(postDirPath),
                 attachment_number=len(jsonData.get("attachments", []))
             )
