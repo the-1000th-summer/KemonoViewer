@@ -8,6 +8,51 @@
 import SwiftUI
 import Kingfisher
 import UniformTypeIdentifiers
+import QuickLookThumbnailing
+
+
+struct ThumbnailImageView: View {
+    let url: URL
+    let initialSize: Double
+
+    @State private var thumbnail: CGImage? = nil
+
+    var body: some View {
+        Group {
+            if thumbnail != nil {
+                ZStack {
+                    Image(self.thumbnail!, scale: NSScreen.main!.backingScaleFactor, label: Text("PDF"))
+                        .resizable()
+                        .scaledToFill()
+                    Image(systemName: "play.circle.fill")
+                        .font(.largeTitle)
+                }
+            } else {
+                ProgressView()
+                  .onAppear(perform: generateThumbnail)
+            }
+        }
+    }
+
+    private func generateThumbnail() {
+        let size: CGSize = CGSize(width: initialSize, height: initialSize)
+        let request = QLThumbnailGenerator.Request(fileAt: url, size: size, scale: NSScreen.main!.backingScaleFactor, representationTypes: .thumbnail)
+        let generator = QLThumbnailGenerator.shared
+        
+        generator.generateRepresentations(for: request) { (thumbnail, type, error) in
+            DispatchQueue.main.async {
+                if thumbnail == nil || error != nil {
+                    
+                    assert(false, "Thumbnail failed to generate")
+                } else {
+                    DispatchQueue.main.async { // << required !!
+                        self.thumbnail = thumbnail!.cgImage  // here !!
+                    }
+                }
+            }
+        }
+    }
+}
 
 struct PostImageGridItemView: View {
     let size: Double
@@ -52,6 +97,12 @@ struct PostImageGridItemView: View {
                     .resizable()
                     .scaledToFill()
                     .frame(width: size, height: size)
+            } else if (UTType(filenameExtension: imageURL.pathExtension)?.conforms(to: .movie) ?? false) {
+                ZStack {
+                    ThumbnailImageView(url: imageURL, initialSize: size)
+                        .frame(width: size, height: size)
+                }
+                
             } else {
                 VStack {
                     Image("custom.document.fill.badge.questionmark")
@@ -99,5 +150,7 @@ extension KingfisherError.ImageSettingErrorReason {
 }
 
 #Preview {
-    PostImageGridItemView(size: 200, imageURL: URL(filePath: "/Volumes/ACG/kemono/5924557/[2019-05-12]罠にかかった秋月修正/1.jpe"))
+    PostImageGridItemView(size: 200, imageURL: URL(filePath: "/Volumes/ACG/kemono/flou/[2019-02-06]Vlasé (Hair)  wip  preview/3.mp4"))
+//    "/Volumes/ACG/kemono/flou/[2019-02-06]Vlasé (Hair)  wip  preview/3.mp4"
+//    "/Volumes/ACG/kemono/5924557/[2019-05-12]罠にかかった秋月修正/1.jpe"
 }

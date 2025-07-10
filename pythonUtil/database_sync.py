@@ -115,12 +115,17 @@ class DatabaseManager:
             postNames = self.getSubdirectoryNames(artistDirPath)
             if not postNames:
                 continue
-
+            print(artistName)
             with db.atomic() as transaction:
                 artistId = None
 
+                if artistName != 'flou':
+                    postNames = postNames.copy()[:10]
+                else:
+                    postNames = postNames.copy()[70:100]
+
                 # 限制每个艺术家只处理前10个帖子（可选）
-                for postName in postNames[:10]:
+                for postName in postNames:
                     postDirPath = os.path.join(artistDirPath, postName)
                     artistId = self.handleOnePost(postDirPath, artistId)
 

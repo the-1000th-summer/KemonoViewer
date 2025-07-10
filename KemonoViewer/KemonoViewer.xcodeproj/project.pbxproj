@@ -15,6 +15,7 @@
 		797E4A132E11634700C3A3A7 /* PostImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E4A122E11634700C3A3A7 /* PostImageView.swift */; };
 		797E4A152E11649200C3A3A7 /* PostGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E4A142E11649200C3A3A7 /* PostGridItemView.swift */; };
 		797E4A172E118DF700C3A3A7 /* FullScreenImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E4A162E118DF700C3A3A7 /* FullScreenImageView.swift */; };
+		798575692E1EA0D2009B0CDA /* GifImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 798575682E1EA0D2009B0CDA /* GifImageView.swift */; };
 		7986A10C2E105E1C0008D9EE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7986A1082E105E1C0008D9EE /* ContentView.swift */; };
 		7986A10D2E105E1C0008D9EE /* KemonoViewerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7986A10A2E105E1C0008D9EE /* KemonoViewerApp.swift */; };
 		7986A10E2E105E1C0008D9EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7986A1072E105E1C0008D9EE /* Assets.xcassets */; };
@@ -52,6 +53,7 @@
 		797E4A122E11634700C3A3A7 /* PostImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostImageView.swift; sourceTree = "<group>"; };
 		797E4A142E11649200C3A3A7 /* PostGridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostGridItemView.swift; sourceTree = "<group>"; };
 		797E4A162E118DF700C3A3A7 /* FullScreenImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenImageView.swift; sourceTree = "<group>"; };
+		798575682E1EA0D2009B0CDA /* GifImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GifImageView.swift; sourceTree = "<group>"; };
 		7986A0BF2E105BBB0008D9EE /* KemonoViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KemonoViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7986A0CD2E105BBC0008D9EE /* KemonoViewerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KemonoViewerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7986A0D72E105BBC0008D9EE /* KemonoViewerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KemonoViewerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -134,6 +136,7 @@
 				7986A1072E105E1C0008D9EE /* Assets.xcassets */,
 				7986A1092E105E1C0008D9EE /* KemonoViewer.entitlements */,
 				7986A1082E105E1C0008D9EE /* ContentView.swift */,
+				798575682E1EA0D2009B0CDA /* GifImageView.swift */,
 				79E04C842E167470002932DF /* ResizableView.swift */,
 				7986A1352E105EE40008D9EE /* KContentSelectView.swift */,
 				7959EE352E11104600ACF809 /* ArtistListView.swift */,
@@ -314,6 +317,7 @@
 				7973DC192E14451200ECD58D /* PostGridView.swift in Sources */,
 				7986A10C2E105E1C0008D9EE /* ContentView.swift in Sources */,
 				797E4A132E11634700C3A3A7 /* PostImageView.swift in Sources */,
+				798575692E1EA0D2009B0CDA /* GifImageView.swift in Sources */,
 				7986A10D2E105E1C0008D9EE /* KemonoViewerApp.swift in Sources */,
 				7986A1362E105EE40008D9EE /* KContentSelectView.swift in Sources */,
 				797E4A152E11649200C3A3A7 /* PostGridItemView.swift in Sources */,

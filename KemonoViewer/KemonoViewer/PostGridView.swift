@@ -26,6 +26,8 @@ struct PostGridView: View {
     @State private var hasCapturedInitialSize = false
     
     var onlyShowNotViewedPost: Bool
+    private let pub = NotificationCenter.default.publisher(for: .updateNewViewedPostData)
+    private let viewedPub = NotificationCenter.default.publisher(for: .updateAllPostViewedStatus)
     
     var body: some View {
         ScrollView {
@@ -62,6 +64,13 @@ struct PostGridView: View {
                         capturedSize = size
                         hasCapturedInitialSize = true
                     }
+                }
+                .onReceive(pub) { notification in
+                    guard let viewedPostIndex = notification.userInfo?["viewedPostIndex"] as? Int else { return }
+                    newViewedPost(viewedPostIndex: viewedPostIndex)
+                }
+                .onReceive(viewedPub) { notification in
+                    refreshPostsData()
                 }
                 .onChange(of: onlyShowNotViewedPost) {
                     refreshPostsData()

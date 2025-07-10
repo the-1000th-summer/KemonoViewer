@@ -6,6 +6,32 @@
 //
 
 import SwiftUI
+import AVKit
+import Kingfisher
+import UniformTypeIdentifiers
+
+class PlayerViewModel: ObservableObject {
+    @Published var avPlayer: AVPlayer?
+    
+    func loadFromUrl(url: URL) {
+        avPlayer = AVPlayer(url: url)
+    }
+}
+
+struct CustomPlayerView: View {
+    var url : URL
+    @StateObject private var playerViewModel = PlayerViewModel()
+
+    var body: some View {
+        ZStack {
+            if let avPlayer = playerViewModel.avPlayer {
+                VideoPlayer(player: avPlayer)
+            }
+        }.onAppear {
+            playerViewModel.loadFromUrl(url: url)
+        }
+    }
+}
 
 struct FullScreenImageView: View {
     
@@ -22,45 +48,74 @@ struct FullScreenImageView: View {
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            VStack {
-                if imagePointer.currentImageURL != nil {
-                    AsyncImage(url: imagePointer.currentImageURL) { phase in
-                        if let image = phase.image {
-                            image
-                                .resizable()
-                                .scaledToFit()
-                                .resizableView(transform: $transform, messageManager: messageManager)
-                                .onChange(of: imagePointer.currentImageURL) {
-                                    withAnimation(.easeIn(duration: 0.2)) {
-                                        transform = Transform()
-                                    }
-                                    
-                                }
-                        } else if phase.error != nil {
-                            VStack {
-                                Image(systemName: "photo.badge.exclamationmark")
-                                Text("Error: " + phase.error!.localizedDescription)
+            Group {
+                if let currentURL = imagePointer.currentImageURL {
+                    if (UTType(filenameExtension: currentURL.pathExtension)?.conforms(to: .image) ?? false) {
+                        if (UTType(filenameExtension: currentURL.pathExtension)?.conforms(to: .gif) ?? false) {
+//                            GifImageView(imageURL: imagePointer.currentImageURL!)
+                            KFAnimatedImage(source:
+                                .provider(LocalFileImageDataProvider(fileURL: currentURL))
+                            )
+                            .configure { view in
+                                view.imageScaling = .scaleProportionallyUpOrDown
                             }
-                            .font(.largeTitle)
+//                            GIFImageView2(gifURL: imagePointer.currentImageURL!)
+//                                .frame(minWidth: 10, minHeight: 10)
+                            .resizableView(transform: $transform, messageManager: messageManager)
+                            .scaledToFit()
+                            .focusable()
+                            .focused($focused)
+                            .onAppear {
+                                focused = true
+                            }
                         } else {
-                            ProgressView()  // Acts as a placeholder.
+                            AsyncImage(url: currentURL) { phase in
+                                if let image = phase.image {
+                                    image
+                                        .resizable()
+                                        .scaledToFit()
+                                        .resizableView(transform: $transform, messageManager: messageManager)
+                                        .onChange(of: currentURL) {
+                                            withAnimation(.easeIn(duration: 0.2)) {
+                                                transform = Transform()
+                                            }
+                                            
+                                        }
+                                } else if phase.error != nil {
+                                    VStack {
+                                        Image(systemName: "photo.badge.exclamationmark")
+                                        Text("Error: " + phase.error!.localizedDescription)
+                                    }
+                                    .font(.largeTitle)
+                                } else {
+                                    ProgressView()  // Acts as a placeholder.
+                                }
+                            }
+                            .focusable()
+                            .focused($focused)
+                            .onAppear {
+                                focused = true
+                            }
+                        }
+                    } else if (UTType(filenameExtension: currentURL.pathExtension)?.conforms(to: .movie) ?? false) {
+                        CustomPlayerView(url: currentURL)
+                            .focusable()
+                            .focused($focused)
+                            .onAppear {
+                                focused = true
+                            }
+                    } else {
+                        VStack {
+                            Image("custom.document.fill.badge.questionmark")
+                                .font(.largeTitle)
+                            Text("\(currentURL.lastPathComponent)\nNot an image file")
+                        }
+                        .focusable()
+                        .focused($focused)
+                        .onAppear {
+                            focused = true
                         }
                     }
-//                    AsyncImage(url: imagePointer.currentImageURL) { image in
-//                        image
-//                            .resizable()
-//                            .scaledToFit()
-//                            .resizableView(transform: $transform, messageManager: messageManager)
-//                            .onChange(of: imagePointer.currentImageURL) {
-//                                withAnimation(.easeIn(duration: 0.2)) {
-//                                    transform = Transform()
-//                                }
-//                                
-//                            }
-//                    } placeholder: {
-//                        ProgressView()
-//                    }
-                    
                 } else {
                     Text("No attachments.")
                 }
@@ -72,6 +127,9 @@ struct FullScreenImageView: View {
             }
             // 保证视图扩展到窗口边缘，Text view在正常位置
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+//            .focusable()
+//            .focused($focused)
+//            .focusEffectDisabled()
             .onAppear {
                 imagePointer.loadData(imagePointerData: imagePointerData)
                 if let window = NSApplication.shared.keyWindow {
@@ -79,9 +137,6 @@ struct FullScreenImageView: View {
                 }
                 focused = true
             }
-            .focusable()
-            .focused($focused)
-            .focusEffectDisabled()
             .onKeyPress("[", phases: [.down, .repeat]) { keyPress in
                 if keyPress.phase == .down {
                     DispatchQueue.main.async {  // In order to eliminate the warning
@@ -163,6 +218,7 @@ struct FullScreenImageView: View {
 //    private func getFileName(url: URL) -> String {
 //        return url.lastPathComponent
 //    }
+    
     
     private func showNextImage() {
         let dirURLChanged = imagePointer.nextImage()
