@@ -16,6 +16,13 @@ class PlayerViewModel: ObservableObject {
     func loadFromUrl(url: URL) {
         avPlayer = AVPlayer(url: url)
     }
+    
+    func play() {
+        avPlayer?.play()
+    }
+    func pause() {
+        avPlayer?.pause()
+    }
 }
 
 struct CustomPlayerView: View {
@@ -23,13 +30,21 @@ struct CustomPlayerView: View {
     @StateObject private var playerViewModel = PlayerViewModel()
 
     var body: some View {
-        ZStack {
+        VStack {
             if let avPlayer = playerViewModel.avPlayer {
                 VideoPlayer(player: avPlayer)
+                    .onAppear {
+                        playerViewModel.play()
+                    }
+                    .onDisappear {
+                        playerViewModel.pause()
+                    }
             }
+            Text("sdfsdf")
         }.onAppear {
             playerViewModel.loadFromUrl(url: url)
         }
+        
     }
 }
 
@@ -38,84 +53,63 @@ struct FullScreenImageView: View {
     let imagePointerData: ImagePointerData
     
     @StateObject private var slideManager = SlideShowManager()
-
-    @FocusState private var focused: Bool
     @State private var transform = Transform()
     @State private var isHoveringPathView = false
     
     @StateObject private var imagePointer = ImagePointer()
     @StateObject private var messageManager = StatusMessageManager()
     
-    var body: some View {
-        ZStack(alignment: .topTrailing) {
-            Group {
-                if let currentURL = imagePointer.currentImageURL {
-                    if (UTType(filenameExtension: currentURL.pathExtension)?.conforms(to: .image) ?? false) {
-                        if (UTType(filenameExtension: currentURL.pathExtension)?.conforms(to: .gif) ?? false) {
-//                            GifImageView(imageURL: imagePointer.currentImageURL!)
-                            KFAnimatedImage(source:
-                                .provider(LocalFileImageDataProvider(fileURL: currentURL))
-                            )
-                            .configure { view in
-                                view.imageScaling = .scaleProportionallyUpOrDown
-                            }
-//                            GIFImageView2(gifURL: imagePointer.currentImageURL!)
-//                                .frame(minWidth: 10, minHeight: 10)
-                            .resizableView(transform: $transform, messageManager: messageManager)
+    @ViewBuilder
+    private func mediaView(for mediaURL: URL) -> some View {
+        if (UTType(filenameExtension: mediaURL.pathExtension)?.conforms(to: .image) ?? false) {
+            if (UTType(filenameExtension: mediaURL.pathExtension)?.conforms(to: .gif) ?? false) {
+                KFAnimatedImage(source:
+                    .provider(LocalFileImageDataProvider(fileURL: mediaURL))
+                )
+                .configure { view in
+                    view.imageScaling = .scaleProportionallyUpOrDown
+                }
+                .resizableView(transform: $transform, messageManager: messageManager)
+                .scaledToFit()
+            } else {
+                AsyncImage(url: mediaURL) { phase in
+                    if let image = phase.image {
+                        image
+                            .resizable()
                             .scaledToFit()
-                            .focusable()
-                            .focused($focused)
-                            .onAppear {
-                                focused = true
-                            }
-                        } else {
-                            AsyncImage(url: currentURL) { phase in
-                                if let image = phase.image {
-                                    image
-                                        .resizable()
-                                        .scaledToFit()
-                                        .resizableView(transform: $transform, messageManager: messageManager)
-                                        .onChange(of: currentURL) {
-                                            withAnimation(.easeIn(duration: 0.2)) {
-                                                transform = Transform()
-                                            }
-                                            
-                                        }
-                                } else if phase.error != nil {
-                                    VStack {
-                                        Image(systemName: "photo.badge.exclamationmark")
-                                        Text("Error: " + phase.error!.localizedDescription)
-                                    }
-                                    .font(.largeTitle)
-                                } else {
-                                    ProgressView()  // Acts as a placeholder.
+                            .resizableView(transform: $transform, messageManager: messageManager)
+                            .onChange(of: mediaURL) {
+                                withAnimation(.easeIn(duration: 0.2)) {
+                                    transform = Transform()
                                 }
                             }
-                            .focusable()
-                            .focused($focused)
-                            .onAppear {
-                                focused = true
-                            }
-                        }
-                    } else if (UTType(filenameExtension: currentURL.pathExtension)?.conforms(to: .movie) ?? false) {
-                        CustomPlayerView(url: currentURL)
-                            .focusable()
-                            .focused($focused)
-                            .onAppear {
-                                focused = true
-                            }
-                    } else {
+                    } else if phase.error != nil {
                         VStack {
-                            Image("custom.document.fill.badge.questionmark")
-                                .font(.largeTitle)
-                            Text("\(currentURL.lastPathComponent)\nNot an image file")
+                            Image(systemName: "photo.badge.exclamationmark")
+                            Text("Error: " + phase.error!.localizedDescription)
                         }
-                        .focusable()
-                        .focused($focused)
-                        .onAppear {
-                            focused = true
-                        }
+                        .font(.largeTitle)
+                    } else {
+                        ProgressView()  // Acts as a placeholder.
                     }
+                }
+            }
+        } else if (UTType(filenameExtension: mediaURL.pathExtension)?.conforms(to: .movie) ?? false) {
+            CustomPlayerView(url: mediaURL)
+        } else {
+            VStack {
+                Image("custom.document.fill.badge.questionmark")
+                    .font(.largeTitle)
+                Text("\(mediaURL.lastPathComponent)\nNot an image file")
+            }
+        }
+    }
+    
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            VStack {
+                if let currentURL = imagePointer.currentImageURL {
+                    mediaView(for: currentURL)
                 } else {
                     Text("No attachments.")
                 }
@@ -127,33 +121,11 @@ struct FullScreenImageView: View {
             }
             // 保证视图扩展到窗口边缘，Text view在正常位置
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-//            .focusable()
-//            .focused($focused)
-//            .focusEffectDisabled()
             .onAppear {
                 imagePointer.loadData(imagePointerData: imagePointerData)
                 if let window = NSApplication.shared.keyWindow {
                     window.toggleFullScreen(nil)
                 }
-                focused = true
-            }
-            .onKeyPress("[", phases: [.down, .repeat]) { keyPress in
-                if keyPress.phase == .down {
-                    DispatchQueue.main.async {  // In order to eliminate the warning
-                        showPreviousImage()
-                        slideManager.restart()
-                    }
-                }
-                return .handled
-            }
-            .onKeyPress("]", phases: [.down, .repeat]) { keyPress in
-                if keyPress.phase == .down {
-                    DispatchQueue.main.async {  // In order to eliminate the warning
-                        showNextImage()
-                        slideManager.restart()
-                    }
-                }
-                return .handled
             }
             
             if messageManager.isVisible {
@@ -181,6 +153,7 @@ struct FullScreenImageView: View {
                             .font(.largeTitle)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .keyboardShortcut("[", modifiers: .command)
                     Spacer()
                     Button(action: {
                         showNextImage()
@@ -190,6 +163,7 @@ struct FullScreenImageView: View {
                             .font(.largeTitle)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .keyboardShortcut("]", modifiers: .command)
                 }
                 Spacer()
             }
