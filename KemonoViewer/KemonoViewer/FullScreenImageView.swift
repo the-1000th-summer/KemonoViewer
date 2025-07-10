@@ -10,6 +10,53 @@ import AVKit
 import Kingfisher
 import UniformTypeIdentifiers
 
+class CustomAVPlayerView: AVPlayerView {
+    private var scrollMonitor: Any?
+    
+    // 仅拦截滚轮导致的进度条移动
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        guard scrollMonitor == nil, window != nil else { return }
+        
+        // 注册本地监视器，拦截所有滚轮事件
+        scrollMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] evt in
+            guard let self = self, let win = self.window else {
+                return evt
+            }
+            
+            // 把事件坐标转换到当前 view
+            let locationInWindow = evt.locationInWindow
+            let pointInView = self.convert(locationInWindow, from: nil)
+            
+            // 如果滚轮事件落在视频视图区域内，就吞掉（返回 nil）
+            if self.bounds.contains(pointInView) {
+                return nil
+            }
+            
+            // 否则照常处理
+            return evt
+        }
+    }
+
+
+}
+
+// 2. 包装为 SwiftUI 视图
+struct CustomVideoPlayer: NSViewRepresentable {
+    let player: AVPlayer
+    
+    func makeNSView(context: Context) -> CustomAVPlayerView {
+        let view = CustomAVPlayerView()
+        view.player = player
+//        view.controlsStyle = .floating  保留默认控制条
+        return view
+    }
+    
+    func updateNSView(_ nsView: CustomAVPlayerView, context: Context) {
+        nsView.player = player
+    }
+}
+
 class PlayerViewModel: ObservableObject {
     @Published var avPlayer: AVPlayer?
     
@@ -30,20 +77,23 @@ struct CustomPlayerView: View {
     @StateObject private var playerViewModel = PlayerViewModel()
 
     var body: some View {
-        VStack {
-            if let avPlayer = playerViewModel.avPlayer {
-                VideoPlayer(player: avPlayer)
-                    .onAppear {
-                        playerViewModel.play()
-                    }
-                    .onDisappear {
-                        playerViewModel.pause()
-                    }
+        ZStack {
+            Color.clear
+            VStack {
+                if let avPlayer = playerViewModel.avPlayer {
+                    CustomVideoPlayer(player: avPlayer)
+                        .onAppear {
+                            playerViewModel.play()
+                        }
+                        .onDisappear {
+                            playerViewModel.pause()
+                        }
+                }
+            }.onAppear {
+                playerViewModel.loadFromUrl(url: url)
             }
-            Text("sdfsdf")
-        }.onAppear {
-            playerViewModel.loadFromUrl(url: url)
         }
+        
         
     }
 }
@@ -96,6 +146,7 @@ struct FullScreenImageView: View {
             }
         } else if (UTType(filenameExtension: mediaURL.pathExtension)?.conforms(to: .movie) ?? false) {
             CustomPlayerView(url: mediaURL)
+                .resizableView(transform: $transform, messageManager: messageManager)
         } else {
             VStack {
                 Image("custom.document.fill.badge.questionmark")
@@ -182,7 +233,6 @@ struct FullScreenImageView: View {
                 )
                 .onHover { hovering in
                     isHoveringPathView = hovering
-                    print(hovering)
                 }
                 .animation(.easeInOut, value: isHoveringPathView)
             }

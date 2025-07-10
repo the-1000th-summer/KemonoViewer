@@ -43,18 +43,19 @@ struct ResizableView: ViewModifier {
     @Binding var transform: Transform
     
     @ObservedObject var messageManager: StatusMessageManager
-    @State private var eventMonitor: Any?
+    @State private var scaleEventMonitor: Any?
+    @State private var dragEventMonitor: Any?
     
     
-    var dragGesture: some Gesture {
-        DragGesture()
-            .onChanged { value in
-                transform.offset = value.translation + transform.previousOffset
-            }
-            .onEnded { _ in
-                transform.previousOffset = transform.offset
-            }
-    }
+//    var dragGesture: some Gesture {
+//        DragGesture()
+//            .onChanged { value in
+//                transform.offset = value.translation + transform.previousOffset
+//            }
+//            .onEnded { _ in
+//                transform.previousOffset = transform.offset
+//            }
+//    }
 
 //    var scaleGesture: some Gesture {
 //        MagnificationGesture()
@@ -72,12 +73,11 @@ struct ResizableView: ViewModifier {
         content
             .scaleEffect(CGFloat(transform.scaleInPercent) / 100)
             .offset(transform.offset)
-            .gesture(dragGesture)
+//            .gesture(dragGesture)
 //            .gesture(scaleGesture)
             .onAppear {
                 transform = Transform()
-//                transform.previousOffset = .zero
-                eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { event in
+                scaleEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { event in
                     if event.scrollingDeltaY > 0 && transform.scaleInPercent < 500 {
                         transform.scaleInPercent += 10
                         messageManager.show(message: "\(transform.scaleInPercent)%")
@@ -87,13 +87,19 @@ struct ResizableView: ViewModifier {
                     }
                     return event
                 }
-                transform.previousOffset = transform.offset
+                
+                dragEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .leftMouseDragged) { event in
+                    transform.offset = transform.offset + CGSize(width: event.deltaX, height: event.deltaY)
+                    return event
+                }
             }
             .onDisappear {
-                if let eventMonitor {
-                    NSEvent.removeMonitor(eventMonitor)
+                if let scaleEventMonitor, let dragEventMonitor {
+                    NSEvent.removeMonitor(scaleEventMonitor)
+                    NSEvent.removeMonitor(dragEventMonitor)
                 }
-                eventMonitor = nil
+                scaleEventMonitor = nil
+                dragEventMonitor = nil
             }
     }
 }
