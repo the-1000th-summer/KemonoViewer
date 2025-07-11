@@ -9,6 +9,7 @@ import SwiftUI
 import AVKit
 import Kingfisher
 import UniformTypeIdentifiers
+import Combine
 
 class CustomAVPlayerView: AVPlayerView {
     private var scrollMonitor: Any?
@@ -32,13 +33,10 @@ class CustomAVPlayerView: AVPlayerView {
             if self.bounds.contains(pointInView) {
                 return nil
             }
-            
             // 否则照常处理
             return evt
         }
     }
-
-
 }
 
 // 2. 包装为 SwiftUI 视图
@@ -48,7 +46,7 @@ struct CustomVideoPlayer: NSViewRepresentable {
     func makeNSView(context: Context) -> CustomAVPlayerView {
         let view = CustomAVPlayerView()
         view.player = player
-//        view.controlsStyle = .floating  保留默认控制条
+//        view.controlsStyle = .floating
         return view
     }
     
@@ -57,44 +55,41 @@ struct CustomVideoPlayer: NSViewRepresentable {
     }
 }
 
-class PlayerViewModel: ObservableObject {
-    @Published var avPlayer: AVPlayer?
-    
-    func loadFromUrl(url: URL) {
-        avPlayer = AVPlayer(url: url)
-    }
-    
-    func play() {
-        avPlayer?.play()
-    }
-    func pause() {
-        avPlayer?.pause()
-    }
-}
 
 struct CustomPlayerView: View {
-    var url : URL
-    @StateObject private var playerViewModel = PlayerViewModel()
-
+    var url: URL
+    @ObservedObject var slideShowManager: SlideShowManager
+    @ObservedObject var playerManager: VideoPlayerManager
+    
+    let postPlayAction: (() -> Void)
+    
     var body: some View {
         ZStack {
-            Color.clear
+            Color.clear        // 保证鼠标在视频范围内能正常缩放
             VStack {
-                if let avPlayer = playerViewModel.avPlayer {
+                if let avPlayer = playerManager.avPlayer {
                     CustomVideoPlayer(player: avPlayer)
                         .onAppear {
-                            playerViewModel.play()
+                            slideShowManager.setMovieCompleted(completed: false)
+                            playerManager.setupPlaybackObserver()
+                            playerManager.play()
                         }
                         .onDisappear {
-                            playerViewModel.pause()
+                            playerManager.pause()
+                        }
+                        .onChange(of: url) {
+                            
+                            playerManager.loadFromUrl(url: url, timeInterval: slideShowManager.currentInterval, postPlayAction: self.postPlayAction)
+                            slideShowManager.setMovieCompleted(completed: false)
+                            playerManager.setupPlaybackObserver()
+                            playerManager.play()
                         }
                 }
             }.onAppear {
-                playerViewModel.loadFromUrl(url: url)
+                slideShowManager.pauseForMovie()
+                playerManager.loadFromUrl(url: url, timeInterval: slideShowManager.currentInterval, postPlayAction: self.postPlayAction)
             }
         }
-        
-        
     }
 }
 
@@ -103,6 +98,8 @@ struct FullScreenImageView: View {
     let imagePointerData: ImagePointerData
     
     @StateObject private var slideManager = SlideShowManager()
+    @StateObject private var playerManager = VideoPlayerManager()
+    
     @State private var transform = Transform()
     @State private var isHoveringPathView = false
     
@@ -145,8 +142,11 @@ struct FullScreenImageView: View {
                 }
             }
         } else if (UTType(filenameExtension: mediaURL.pathExtension)?.conforms(to: .movie) ?? false) {
-            CustomPlayerView(url: mediaURL)
-                .resizableView(transform: $transform, messageManager: messageManager)
+            CustomPlayerView(url: mediaURL, slideShowManager: slideManager, playerManager: playerManager) {
+                slideManager.setMovieCompleted(completed: true)
+                slideManager.restart()
+            }
+            .resizableView(transform: $transform, messageManager: messageManager)
         } else {
             VStack {
                 Image("custom.document.fill.badge.questionmark")
@@ -166,8 +166,11 @@ struct FullScreenImageView: View {
                 }
             }
             .contextMenu {
-                ContextMenuView(manager: slideManager) {
-                    showNextImage()
+                ContextMenuView(manager: slideManager, playerManager: playerManager) {
+                    if slideManager.getMovieCompleted() {
+                        showNextImage()
+                    }
+                    
                 }
             }
             // 保证视图扩展到窗口边缘，Text view在正常位置
@@ -239,22 +242,20 @@ struct FullScreenImageView: View {
         }
     }
     
-//    private func getFileName(url: URL) -> String {
-//        return url.lastPathComponent
-//    }
-    
     
     private func showNextImage() {
         let dirURLChanged = imagePointer.nextImage()
+        
+
         if dirURLChanged, let currentPostDirURL = imagePointer.currentPostDirURL {
             messageManager.show(
                 message: "下一个文件夹：\n" + currentPostDirURL.path(percentEncoded: false)
             )
         }
         if !dirURLChanged && imagePointer.isLastPost() {
-            messageManager.show(
-                message: "已经是最后一张图片"
-            )
+            messageManager.show(message: "已经是最后一张图片")
+        } else {
+            setMovieCompleted()
         }
     }
     
@@ -269,6 +270,17 @@ struct FullScreenImageView: View {
             messageManager.show(
                 message: "已经是第一张图片"
             )
+        } else {
+            setMovieCompleted()
+        }
+    }
+    
+    private func setMovieCompleted() {
+        if let currentImageURL = imagePointer.currentImageURL, (UTType(filenameExtension: currentImageURL.pathExtension)?.conforms(to: .movie) ?? false) {
+            slideManager.setMovieCompleted(completed: false)
+            slideManager.pauseForMovie()
+        } else {
+            slideManager.setMovieCompleted(completed: true)
         }
     }
 }
@@ -284,73 +296,4 @@ struct FullScreenImageView: View {
     )
 }
 
-class SlideShowManager: ObservableObject {
-    private var timer: Timer?
-    @Published var currentInterval: TimeInterval = 0
-    var timerAction: (() -> Void)?
-    
-    func start(interval: TimeInterval, action: @escaping () -> Void) {
-        timerAction = action
-        currentInterval = interval
-        
-        restart()
-    }
-    
-    func restart() {
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(
-            withTimeInterval: currentInterval,
-            repeats: true
-        ) { [weak self] _ in
-            self?.timerAction?()
-        }
-    }
-    
-    func stop() {
-        timer?.invalidate()
-        timer = nil
-        currentInterval = 0
-    }
-    
-    deinit {
-        stop()
-    }
-}
 
-struct ContextMenuView: View {
-    @ObservedObject var manager: SlideShowManager
-    let slideTimerAction: () -> Void
-    private let timeIntervalList: [TimeInterval] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 60, 90]
-    
-    var body: some View {
-        Menu("幻灯片放映") {
-            Button(action: {
-                manager.stop()
-            }) {
-                HStack {
-                    Image(systemName: "checkmark")
-                        .tint(.primary.opacity(
-                            manager.currentInterval == 0 ? 1 : 0
-                        ))
-                    Text("停止放映")
-                }
-            }
-            
-            ForEach(timeIntervalList, id: \.self) { timeIntervalInSecond in
-                Button(action: {
-                    manager.start(interval: timeIntervalInSecond) {
-                        slideTimerAction()
-                    }
-                }) {
-                    HStack {
-                        Image(systemName: "checkmark")
-                            .tint(.primary.opacity(
-                                manager.currentInterval == timeIntervalInSecond ? 1 : 0
-                            ))
-                        Text("\(Int(timeIntervalInSecond))秒")
-                    }
-                }
-            }
-        }
-    }
-}

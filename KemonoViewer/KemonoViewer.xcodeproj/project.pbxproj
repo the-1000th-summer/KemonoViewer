@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7950F0BC2E20A5AD00B57A95 /* SlideShowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7950F0BB2E20A5AD00B57A95 /* SlideShowManager.swift */; };
+		7950F0BE2E20A68B00B57A95 /* ContextMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7950F0BD2E20A68B00B57A95 /* ContextMenuView.swift */; };
 		7959EE2B2E10F43B00ACF809 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 7959EE2A2E10F43B00ACF809 /* SwiftyJSON */; };
 		7959EE362E11104600ACF809 /* ArtistListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7959EE352E11104600ACF809 /* ArtistListView.swift */; };
 		7973DC192E14451200ECD58D /* PostGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7973DC182E14451200ECD58D /* PostGridView.swift */; };
@@ -22,6 +24,7 @@
 		7986A1362E105EE40008D9EE /* KContentSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7986A1352E105EE40008D9EE /* KContentSelectView.swift */; };
 		79A627B12E15130B001F0212 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 79A627B02E15130B001F0212 /* Kingfisher */; };
 		79A627B32E1567D9001F0212 /* PostImageGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A627B22E1567D9001F0212 /* PostImageGridItemView.swift */; };
+		79AB58222E1FFD990038384E /* VideoPlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79AB58212E1FFD990038384E /* VideoPlayerManager.swift */; };
 		79B3E8A92E10EEE600567F1D /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79B3E8A82E10EEE600567F1D /* DatabaseManager.swift */; };
 		79B3E8B52E10F1F800567F1D /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 79B3E8B42E10F1F800567F1D /* SQLite */; };
 		79CB7BD72E124A9300FA7B77 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CB7BD62E124A9300FA7B77 /* Util.swift */; };
@@ -46,6 +49,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7950F0BB2E20A5AD00B57A95 /* SlideShowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideShowManager.swift; sourceTree = "<group>"; };
+		7950F0BD2E20A68B00B57A95 /* ContextMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuView.swift; sourceTree = "<group>"; };
 		7959EE352E11104600ACF809 /* ArtistListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistListView.swift; sourceTree = "<group>"; };
 		7973DC182E14451200ECD58D /* PostGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostGridView.swift; sourceTree = "<group>"; };
 		7974C51D2E1829B700F8E9DC /* DatabaseManagerExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManagerExt.swift; sourceTree = "<group>"; };
@@ -63,6 +68,7 @@
 		7986A10A2E105E1C0008D9EE /* KemonoViewerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KemonoViewerApp.swift; sourceTree = "<group>"; };
 		7986A1352E105EE40008D9EE /* KContentSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KContentSelectView.swift; sourceTree = "<group>"; };
 		79A627B22E1567D9001F0212 /* PostImageGridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostImageGridItemView.swift; sourceTree = "<group>"; };
+		79AB58212E1FFD990038384E /* VideoPlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerManager.swift; sourceTree = "<group>"; };
 		79B3E8A82E10EEE600567F1D /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		79CB7BD62E124A9300FA7B77 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		79E04C842E167470002932DF /* ResizableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizableView.swift; sourceTree = "<group>"; };
@@ -146,6 +152,9 @@
 				797E4A122E11634700C3A3A7 /* PostImageView.swift */,
 				79A627B22E1567D9001F0212 /* PostImageGridItemView.swift */,
 				797E4A162E118DF700C3A3A7 /* FullScreenImageView.swift */,
+				7950F0BD2E20A68B00B57A95 /* ContextMenuView.swift */,
+				7950F0BB2E20A5AD00B57A95 /* SlideShowManager.swift */,
+				79AB58212E1FFD990038384E /* VideoPlayerManager.swift */,
 				7986A10A2E105E1C0008D9EE /* KemonoViewerApp.swift */,
 			);
 			path = KemonoViewer;
@@ -313,8 +322,10 @@
 			files = (
 				7974C51E2E1829B700F8E9DC /* DatabaseManagerExt.swift in Sources */,
 				797E4A172E118DF700C3A3A7 /* FullScreenImageView.swift in Sources */,
+				79AB58222E1FFD990038384E /* VideoPlayerManager.swift in Sources */,
 				79B3E8A92E10EEE600567F1D /* DatabaseManager.swift in Sources */,
 				7973DC192E14451200ECD58D /* PostGridView.swift in Sources */,
+				7950F0BC2E20A5AD00B57A95 /* SlideShowManager.swift in Sources */,
 				7986A10C2E105E1C0008D9EE /* ContentView.swift in Sources */,
 				797E4A132E11634700C3A3A7 /* PostImageView.swift in Sources */,
 				798575692E1EA0D2009B0CDA /* GifImageView.swift in Sources */,
@@ -324,6 +335,7 @@
 				79CB7BD72E124A9300FA7B77 /* Util.swift in Sources */,
 				797E49E22E1125D600C3A3A7 /* PostListView.swift in Sources */,
 				7959EE362E11104600ACF809 /* ArtistListView.swift in Sources */,
+				7950F0BE2E20A68B00B57A95 /* ContextMenuView.swift in Sources */,
 				79A627B32E1567D9001F0212 /* PostImageGridItemView.swift in Sources */,
 				79E04C852E167470002932DF /* ResizableView.swift in Sources */,
 			);
