@@ -20,12 +20,13 @@ struct PostGridView: View {
     @Binding var postsData: [Post_show]
     @Binding var artistSelectedData: Artist_show?
     @Binding var postSelectedIndex: Int?
+    
     @State private var gridColumns = Array(repeating: GridItem(.flexible()), count: initialColumns)
     
     @State private var capturedSize: CGSize = .zero
     @State private var hasCapturedInitialSize = false
     
-    var onlyShowNotViewedPost: Bool
+    var queryConfig: QueryConfig
     private let pub = NotificationCenter.default.publisher(for: .updateNewViewedPostData)
     private let viewedPub = NotificationCenter.default.publisher(for: .updateAllPostViewedStatus)
     
@@ -72,10 +73,6 @@ struct PostGridView: View {
                 .onReceive(viewedPub) { notification in
                     refreshPostsData()
                 }
-                .onChange(of: onlyShowNotViewedPost) {
-                    refreshPostsData()
-                    postSelectedIndex = nil
-                }
             }
         }
         
@@ -112,7 +109,7 @@ struct PostGridView: View {
     
     private func refreshPostsData() {
         if let artistSelectedData {
-            postsData = DataReader.readPostData(artistId: artistSelectedData.id, notViewedToggleisOn: onlyShowNotViewedPost) ?? []
+            postsData = DataReader.readPostData(artistId: artistSelectedData.id, queryConfig: queryConfig) ?? []
         } else {
             postsData.removeAll()
         }

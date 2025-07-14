@@ -44,18 +44,18 @@ struct ResizableView: ViewModifier {
     
     @ObservedObject var messageManager: StatusMessageManager
     @State private var scaleEventMonitor: Any?
-    @State private var dragEventMonitor: Any?
+//    @State private var dragEventMonitor: Any?
     
     
-//    var dragGesture: some Gesture {
-//        DragGesture()
-//            .onChanged { value in
-//                transform.offset = value.translation + transform.previousOffset
-//            }
-//            .onEnded { _ in
-//                transform.previousOffset = transform.offset
-//            }
-//    }
+    var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                transform.offset = value.translation + transform.previousOffset
+            }
+            .onEnded { _ in
+                transform.previousOffset = transform.offset
+            }
+    }
 
 //    var scaleGesture: some Gesture {
 //        MagnificationGesture()
@@ -73,7 +73,7 @@ struct ResizableView: ViewModifier {
         content
             .scaleEffect(CGFloat(transform.scaleInPercent) / 100)
             .offset(transform.offset)
-//            .gesture(dragGesture)
+            .gesture(dragGesture)
 //            .gesture(scaleGesture)
             .onAppear {
                 transform = Transform()
@@ -88,18 +88,18 @@ struct ResizableView: ViewModifier {
                     return event
                 }
                 
-                dragEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .leftMouseDragged) { event in
-                    transform.offset = transform.offset + CGSize(width: event.deltaX, height: event.deltaY)
-                    return event
-                }
+//                dragEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .leftMouseDragged) { event in
+//                    transform.offset = transform.offset + CGSize(width: event.deltaX, height: event.deltaY)
+//                    return event
+//                }
             }
             .onDisappear {
-                if let scaleEventMonitor, let dragEventMonitor {
+                if let scaleEventMonitor {
                     NSEvent.removeMonitor(scaleEventMonitor)
-                    NSEvent.removeMonitor(dragEventMonitor)
+//                    NSEvent.removeMonitor(dragEventMonitor)
                 }
                 scaleEventMonitor = nil
-                dragEventMonitor = nil
+//                dragEventMonitor = nil
             }
     }
 }

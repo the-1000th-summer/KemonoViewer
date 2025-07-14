@@ -12,7 +12,7 @@ struct PostListView: View {
     
     @Binding var postSelectedIndex: Int?
     var artistSelectedId: Int64?
-    var onlyShowNotViewedPost: Bool
+    var queryConfig: QueryConfig
     
     private let pub = NotificationCenter.default.publisher(for: .updateNewViewedPostData)
     private let viewedPub = NotificationCenter.default.publisher(for: .updateAllPostViewedStatus)
@@ -31,10 +31,6 @@ struct PostListView: View {
                 }
             }
         }
-        .onChange(of: onlyShowNotViewedPost) {
-            refreshPostsData()
-            postSelectedIndex = nil
-        }
         .onChange(of: postSelectedIndex) {
             if let postSelectedIndex {
                 newViewedPost(viewedPostIndex: postSelectedIndex)
@@ -51,7 +47,7 @@ struct PostListView: View {
     
     private func refreshPostsData() {
         if let artistSelectedId {
-            postsData = DataReader.readPostData(artistId: artistSelectedId, notViewedToggleisOn: onlyShowNotViewedPost) ?? []
+            postsData = DataReader.readPostData(artistId: artistSelectedId, queryConfig: queryConfig) ?? []
         } else {
             postsData.removeAll()
         }

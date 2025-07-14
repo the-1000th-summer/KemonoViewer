@@ -12,6 +12,22 @@ enum PostTab: String, CaseIterable {
     case imageTab = "square.grid.2x2"
 }
 
+struct QueryConfig: Equatable {
+    enum SortKey: String, CaseIterable {
+        case date = "post_date"
+        case postTitle = "name"
+    }
+    
+    enum SortOrder: String, CaseIterable {
+        case ascending = "arrowtriangle.up.fill"
+        case descending = "arrowtriangle.down.fill"
+    }
+    
+    var sortKey: SortKey = .date
+    var sortOrder: SortOrder = .ascending
+    var onlyShowNotViewedPost: Bool = false
+}
+
 struct KContentSelectView: View {
     @State private var artistSelectedData: Artist_show?
     @State private var postSelectedIndex: Int?
@@ -19,7 +35,8 @@ struct KContentSelectView: View {
     
     @State private var selectedTab: PostTab = .listTab
     
-    @State private var onlyShowNotViewedPost = false
+//    @State private var onlyShowNotViewedPost = false
+    @State private var queryConfig = QueryConfig()
     
     @State private var isProcessing = false
     @State private var readingProgress: Double = 0.0
@@ -32,13 +49,21 @@ struct KContentSelectView: View {
                 Button("Load Data") {
                     isProcessing = true
                     currentTask = Task {
-                        await DatabaseManager.shared.writeKemonoDataToDatabase(isProcessing: $isProcessing, progress: $readingProgress)
+                        await DataWriter.writeKemonoDataToDatabase(isProcessing: $isProcessing, progress: $readingProgress)
                     }
                     isProcessing = false
                 }
                 .padding()
-                Button("Show Data") {}
-                    .padding()
+                Button("Load data 2") {
+//                    isProcessing = true
+                    currentTask = Task {
+                        await DataWriter.getDataFromKemonoApi(isProcessing: $isProcessing, progress: $readingProgress)
+                    }
+//                    DataWriter.getDataFromKemonoApi(isProcessing: $isProcessing, progress: $readingProgress)
+                    
+//                    isProcessing = false
+                }
+                .padding()
                 Spacer()
             }
             HSplitView {
@@ -48,10 +73,9 @@ struct KContentSelectView: View {
                     HStack {
                         PostTabView(selectedTab: $selectedTab)
                         Divider()
-                        Toggle(isOn: $onlyShowNotViewedPost) {
-                            Text("Only show unread post")
-                        }
+                        PostQueryView(queryConfig: $queryConfig)
                     }
+                    .padding([.leading, .trailing])
                     Group {
                         HSplitView {
                             if selectedTab == .imageTab {
@@ -59,7 +83,7 @@ struct KContentSelectView: View {
                                     postsData: $postsData,
                                     artistSelectedData: $artistSelectedData,
                                     postSelectedIndex: $postSelectedIndex,
-                                    onlyShowNotViewedPost: onlyShowNotViewedPost
+                                    queryConfig: queryConfig
                                 )
                                 .frame(minWidth: 200, maxWidth: .infinity)
                             } else {
@@ -67,7 +91,7 @@ struct KContentSelectView: View {
                                     postsData: $postsData,
                                     postSelectedIndex: $postSelectedIndex,
                                     artistSelectedId: artistSelectedData?.id,
-                                    onlyShowNotViewedPost: onlyShowNotViewedPost
+                                    queryConfig: queryConfig
                                 )
                                 //  .frame(idealWidth: 100)
                             }
@@ -89,7 +113,10 @@ struct KContentSelectView: View {
                 refreshPostsData()
                 postSelectedIndex = nil
             }
-            
+            .onChange(of: queryConfig) {
+                refreshPostsData()
+                postSelectedIndex = nil
+            }
         }
         .sheet(isPresented: $isProcessing) {
             ProgressView("Processing...", value: readingProgress, total: 1.0)
@@ -102,12 +129,36 @@ struct KContentSelectView: View {
     
     private func refreshPostsData() {
         if let artistSelectedData {
-            postsData = DataReader.readPostData(artistId: artistSelectedData.id, notViewedToggleisOn: onlyShowNotViewedPost) ?? []
+            postsData = DataReader.readPostData(artistId: artistSelectedData.id, queryConfig: queryConfig) ?? []
         } else {
             postsData = []
         }
     }
     
+}
+
+struct PostQueryView: View {
+    @Binding var queryConfig: QueryConfig
+    
+    var body: some View {
+        HStack {
+            Picker("Sort by", selection: $queryConfig.sortKey) {
+                ForEach(QueryConfig.SortKey.allCases, id: \.self) { sortKey in
+                    Text(sortKey.rawValue)
+                }
+            }
+            Picker("Order", selection: $queryConfig.sortOrder) {
+                ForEach(QueryConfig.SortOrder.allCases, id: \.self) { sortOrder in
+                    Image(systemName: sortOrder.rawValue)
+                }
+            }
+            .pickerStyle(.segmented)
+            Toggle(isOn: $queryConfig.onlyShowNotViewedPost) {
+                Text("Only show unread post")
+            }
+        }
+        
+    }
 }
 
 struct PostTabView: View {

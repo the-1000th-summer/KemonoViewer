@@ -39,10 +39,8 @@ struct KemonoImage {
 final class DatabaseManager {
     static let shared = DatabaseManager()
     private var db: Connection?
-    private let dateFormatter = DateFormatter()
     
     private init() {
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
         initDatabase()
     }
     
@@ -141,7 +139,68 @@ final class DatabaseManager {
         }
     }
     
-    func writeKemonoDataToDatabase(isProcessing: SwiftUI.Binding<Bool>, progress: SwiftUI.Binding<Double>) async {
+    
+}
+
+struct Post_show {
+    let name: String
+    let folderName: String
+    let coverName: String
+    let id: Int64
+    let attNumber: Int
+    let postDate: Date
+    let viewed: Bool
+}
+
+struct Artist_write {
+    let name: String
+    let kemonoID: String
+    let service: String
+}
+
+final class DataWriter {
+    private static let sharedFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        formatter.timeZone = TimeZone(abbreviation: "UTC")
+        return formatter
+    }()
+    
+    static func getArtistIdAndService(artistDirPath: String) -> Artist_write? {
+        guard let postsName = getSubdirectoryNames(atPath: artistDirPath), !postsName.isEmpty else { return nil }
+        let firstPostJsonFileURL = URL(filePath: artistDirPath).appendingPathComponent(postsName[0]).appendingPathComponent("post.json")
+        guard let jsonFileData = try? Data(contentsOf: firstPostJsonFileURL) else {
+            print("打开Json文件失败")
+            return nil
+        }
+        guard let jsonObj = try? JSON(data: jsonFileData) else {
+            print("转换为Json对象失败")
+            return nil
+        }
+        
+        let service = jsonObj["service"].stringValue
+        let userId = jsonObj["user"].stringValue
+        return Artist_write(name: URL(filePath: artistDirPath).lastPathComponent, kemonoID: userId, service: service)
+    }
+    
+    static func writeArtistDataToDatabase(artistData: Artist_write) -> Int64? {
+        guard let db = DatabaseManager.shared.getConnection() else {
+            print("数据库初始化失败")
+            return nil
+        }
+        do {
+            let artistId_upload = try db.run(Artist.artistTable.insert(
+                Artist.e_artistName <- artistData.name,
+                Artist.e_service <- artistData.service
+            ))
+            return artistId_upload
+        } catch {
+            print("save artist data error:", error.localizedDescription)
+            return nil
+        }
+    }
+    
+    static func writeKemonoDataToDatabase(isProcessing: SwiftUI.Binding<Bool>, progress: SwiftUI.Binding<Double>) async {
         
         await MainActor.run {
             isProcessing.wrappedValue = true
@@ -158,68 +217,69 @@ final class DatabaseManager {
         guard let artistsName = getSubdirectoryNames(atPath: inputFolderPath) else { return }
         for (i, artistName) in artistsName.enumerated() {
             let artistDirPath = URL(filePath: inputFolderPath).appendingPathComponent(artistName).path(percentEncoded: false)
+            
             if let postsName = getSubdirectoryNames(atPath: artistDirPath) {
-                var artistId: Int64? = nil
-                var a = 0
+
                 try! db.transaction {
+                    
+                    guard let artistData = getArtistIdAndService(artistDirPath: getArtistDirPath(artistName: artistName)) else { return }
+                    
+                    guard let artistId = writeArtistDataToDatabase(artistData: artistData) else {
+                        print("Write artist data to database failed.")
+                        return
+                    }
+                    
                     for postName in postsName.prefix(10) {
                         let currentPostDirPath = URL(filePath:artistDirPath).appendingPathComponent(postName).path(percentEncoded: false)
                         
-                        artistId = handleOnePost(postDirPath: currentPostDirPath, artistId: artistId)
-                        a += 1
-                        print(a)
+                        let currentPostJsonFileURL = URL(filePath: currentPostDirPath).appendingPathComponent("post.json")
+                        guard let currentJsonFileData = try? Data(contentsOf: currentPostJsonFileURL) else {
+                            print("\(currentPostJsonFileURL.path(percentEncoded: false)): 打开Json文件失败")
+                            continue
+                        }
+                        guard let jsonObj = try? JSON(data: currentJsonFileData) else {
+                            print("转换为Json对象失败")
+                            return
+                        }
+                        writePostDataToDatabase(artistID: artistId, postData: jsonObj)
                     }
                 }
             }
-            
             await MainActor.run {
                 progress.wrappedValue = Double(i) / Double(artistsName.count)
             }
-                    
         }
-        
         await MainActor.run {
             isProcessing.wrappedValue = false
         }
     }
     
-    func handleOnePost(postDirPath: String, artistId: Int64?) -> Int64? {
-        let postJsonFileURL = URL(filePath: postDirPath).appendingPathComponent("post.json")
-        guard let jsonFileData = try? Data(contentsOf: postJsonFileURL) else {
-            print("打开Json文件失败")
-            return nil
+    static func writePostBatchesDataToDatabase(artistId: Int64, postBatchesData: [JSON]) {
+        for oneBatchData in postBatchesData {
+            for onePostData in oneBatchData {
+                writePostDataToDatabase(artistID: artistId, postData: onePostData.1)
+            }
+            
         }
-        guard let jsonObj = try? JSON(data: jsonFileData) else {
-            print("转换为Json对象失败")
-            return nil
-        }
-        guard let db else {
+    }
+    
+    static func writePostDataToDatabase(artistID: Int64, postData jsonObj: JSON) {
+        
+        guard let db = DatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
-            return nil
+            return
         }
         
-        var artistId_upload: Int64? = nil
         do {
-            // artist data
-            let artistName = URL(filePath: postDirPath).deletingLastPathComponent().lastPathComponent
-            if let artistId {
-                artistId_upload = artistId
-            } else {
-                artistId_upload = try db.run(Artist.artistTable.insert(
-                    Artist.e_artistName <- artistName,
-                    Artist.e_service <- jsonObj["service"].stringValue
-                ))
-            }
-
             // post data
-            let postDateStr = jsonObj["published"].stringValue + "Z"
-            let postDate = dateFormatter.date(from: postDateStr)!
+            let postDateStr = String(jsonObj["published"].stringValue.split(separator: ".")[0]) + "Z"
+            let postDate = sharedFormatter.date(from: postDateStr)!
             let postId = try db.run(KemonoPost.postTable.insert(
-                KemonoPost.e_artistIdRef <- artistId_upload!,
+                KemonoPost.e_artistIdRef <- artistID,
                 KemonoPost.e_postName <- jsonObj["title"].stringValue,
                 KemonoPost.e_postDate <- postDate,
                 KemonoPost.e_coverImgFileName <- jsonObj["id"].stringValue + "_" + jsonObj["file"]["name"].stringValue,
-                KemonoPost.e_postFolderName <- URL(filePath: postDirPath).lastPathComponent,
+                KemonoPost.e_postFolderName <- "",
                 KemonoPost.e_attachmentNumber <- Int64(jsonObj["attachments"].arrayValue.count)
             ))
             
@@ -232,25 +292,113 @@ final class DatabaseManager {
                 ))
             }
         } catch {
-            print("save:", error.localizedDescription)
+            print("Save post data error:", error.localizedDescription)
+        }
+    }
+    
+    static func getDataFromKemonoApi(isProcessing: SwiftUI.Binding<Bool>, progress: SwiftUI.Binding<Double>) async {
+        
+        await MainActor.run {
+            isProcessing.wrappedValue = true
+            progress.wrappedValue = 0.0
         }
         
-        return artistId_upload
+        guard let db = DatabaseManager.shared.getConnection() else {
+            print("数据库初始化失败")
+            return
+        }
         
+        let inputFolderPath = "/Volumes/ACG/kemono"
+        let batchSize = 5
+        
+        guard let artistsName = getSubdirectoryNames(atPath: inputFolderPath) else { return }
+        
+        
+        for batchStart in stride(from: 0, to: artistsName.count, by: batchSize) {
+            let batchIds = Array(batchStart..<min(batchStart+batchSize, artistsName.count))
+            
+            let batchData = await withTaskGroup(of: (Int, [JSON]?).self) { group -> [(Int, [JSON])] in
+                for id in batchIds {
+                    group.addTask {
+                        let artistDirPath = getArtistDirPath(artistName: artistsName[id])
+                        
+                        var jsons: [JSON] = []
+                        var page = 1
+                        while true {
+                            do {
+                                guard let url = getArtistPostsApi(artistDirPath: artistDirPath, page: page) else { return (-1, nil) }
+                                let fetcheddata = try await fetchData(from: url)
+                                guard let jsonObj = try? JSON(data: fetcheddata) else {
+                                    print("转换为Json对象失败")
+                                    return (id, nil)
+                                }
+                                if jsonObj.isEmpty {
+                                    break
+                                }
+                                jsons.append(jsonObj)
+                                page += 1
+                            } catch {
+                                print("获取ID \(id)失败: \(error)")
+                                return (id, nil)
+                            }
+                        }
+                        return (id, jsons)
+                    }
+                }
+                var results = [(Int, [JSON])]()
+                for await (id, jsonData) in group {
+                    if let jsonData {
+                        results.append((id, jsonData))
+                    }
+                }
+                return results
+            }
+            
+            let sortedBatch = batchData.sorted(by: { $0.0 < $1.0 })
+            
+            try! db.transaction {
+                for oneDataInBatch in sortedBatch {
+                    guard let artistData = getArtistIdAndService(artistDirPath: getArtistDirPath(artistName: artistsName[oneDataInBatch.0])) else { continue }
+                    
+                    guard let artistId = writeArtistDataToDatabase(artistData: artistData) else { continue }
+                    writePostBatchesDataToDatabase(artistId: artistId, postBatchesData: oneDataInBatch.1)
+                    
+                }
+            }
+            await MainActor.run {
+                progress.wrappedValue = Double(batchStart) / Double(artistsName.count)
+            }
+        }
+            
+        await MainActor.run {
+            isProcessing.wrappedValue = false
+        }
+    }
+    
+    static func getArtistDirPath(artistName: String) -> String {
+        let inputFolderPath = "/Volumes/ACG/kemono"
+        return URL(filePath: inputFolderPath).appendingPathComponent(artistName).path(percentEncoded: false)
+    }
+    
+    static func getArtistPostsApi(artistDirPath: String, page: Int) -> URL? {
+        guard let artistData = getArtistIdAndService(artistDirPath: artistDirPath) else { return nil}
+        
+        var urlStr = "https://kemono.su/api/v1/\(artistData.service)/user/\(artistData.kemonoID)"
+        if page > 1 {
+            urlStr += "?o=\((page-1)*50)"
+        }
+        return URL(string: urlStr)
+    }
+    
+    static func fetchData(from apiUrl: URL) async throws -> Data {
+        let (data, response) = try await URLSession.shared.data(from: apiUrl)
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw URLError(.badServerResponse)
+        }
+        return data
     }
 }
-
-struct Post_show {
-    let name: String
-    let folderName: String
-    let coverName: String
-    let id: Int64
-    let attNumber: Int
-    let postDate: Date
-    let viewed: Bool
-    
-}
-
 
 final class DataReader {
     static func readArtistData() -> [Artist_show]? {
@@ -277,26 +425,35 @@ final class DataReader {
         return artistsData
     }
     
-    static func readPostData(artistId: Int64, notViewedToggleisOn: Bool) -> [Post_show]? {
+    static func readPostData(artistId: Int64, queryConfig: QueryConfig) -> [Post_show]? {
         guard let db = DatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return nil
         }
         var postsData = [Post_show]()
         
+        
+        var query = KemonoPost.postTable.select(
+            KemonoPost.e_postName,
+            KemonoPost.e_postFolderName,
+            KemonoPost.e_coverImgFileName,
+            KemonoPost.e_postId,
+            KemonoPost.e_attachmentNumber,
+            KemonoPost.e_postDate,
+            KemonoPost.e_viewed
+        ).filter(KemonoPost.e_artistIdRef == artistId)
+        switch queryConfig.sortKey {
+        case .date:
+            query = query.order(queryConfig.sortOrder == .ascending ? KemonoPost.e_postDate.asc : KemonoPost.e_postDate.desc)
+        case .postTitle:
+            query = query.order(queryConfig.sortOrder == .ascending ? KemonoPost.e_postName.asc : KemonoPost.e_postName.desc)
+        }
+        if queryConfig.onlyShowNotViewedPost {
+            query = query.filter(KemonoPost.e_viewed == false)
+        }
+        
         do {
-            var query = KemonoPost.postTable.select(
-                KemonoPost.e_postName,
-                KemonoPost.e_postFolderName,
-                KemonoPost.e_coverImgFileName,
-                KemonoPost.e_postId,
-                KemonoPost.e_attachmentNumber,
-                KemonoPost.e_postDate,
-                KemonoPost.e_viewed
-            ).filter(KemonoPost.e_artistIdRef == artistId)
-            if notViewedToggleisOn {
-                query = query.filter(KemonoPost.e_viewed == false)
-            }
+            
             for row in try db.prepare(query) {
                 let currentPost = Post_show(
                     name: row[KemonoPost.e_postName],

@@ -15,28 +15,28 @@ class CustomAVPlayerView: AVPlayerView {
     private var scrollMonitor: Any?
     
     // 仅拦截滚轮导致的进度条移动
-    override func viewDidMoveToWindow() {
-        super.viewDidMoveToWindow()
-        guard scrollMonitor == nil, window != nil else { return }
-        
-        // 注册本地监视器，拦截所有滚轮事件
-        scrollMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] evt in
-            guard let self = self, let win = self.window else {
-                return evt
-            }
-            
-            // 把事件坐标转换到当前 view
-            let locationInWindow = evt.locationInWindow
-            let pointInView = self.convert(locationInWindow, from: nil)
-            
-            // 如果滚轮事件落在视频视图区域内，就吞掉（返回 nil）
-            if self.bounds.contains(pointInView) {
-                return nil
-            }
-            // 否则照常处理
-            return evt
-        }
-    }
+//    override func viewDidMoveToWindow() {
+//        super.viewDidMoveToWindow()
+//        guard scrollMonitor == nil, window != nil else { return }
+//        
+//        // 注册本地监视器，拦截所有滚轮事件
+//        scrollMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] evt in
+//            guard let self = self, let win = self.window else {
+//                return evt
+//            }
+//            
+//            // 把事件坐标转换到当前 view
+//            let locationInWindow = evt.locationInWindow
+//            let pointInView = self.convert(locationInWindow, from: nil)
+//            
+//            // 如果滚轮事件落在视频视图区域内，就吞掉（返回 nil）
+//            if self.bounds.contains(pointInView) {
+//                return nil
+//            }
+//            // 否则照常处理
+//            return evt
+//        }
+//    }
 }
 
 // 2. 包装为 SwiftUI 视图
@@ -65,7 +65,6 @@ struct CustomPlayerView: View {
     
     var body: some View {
         ZStack {
-            Color.clear        // 保证鼠标在视频范围内能正常缩放
             VStack {
                 if let avPlayer = playerManager.avPlayer {
                     CustomVideoPlayer(player: avPlayer)
@@ -89,6 +88,7 @@ struct CustomPlayerView: View {
                 slideShowManager.pauseForMovie()
                 playerManager.loadFromUrl(url: url, timeInterval: slideShowManager.currentInterval, postPlayAction: self.postPlayAction)
             }
+            
         }
     }
 }
@@ -102,6 +102,7 @@ struct FullScreenImageView: View {
     
     @State private var transform = Transform()
     @State private var isHoveringPathView = false
+    @State private var fileNotFoundPresented = false
     
     @StateObject private var imagePointer = ImagePointer()
     @StateObject private var messageManager = StatusMessageManager()
@@ -152,6 +153,16 @@ struct FullScreenImageView: View {
                 Image("custom.document.fill.badge.questionmark")
                     .font(.largeTitle)
                 Text("\(mediaURL.lastPathComponent)\nNot an image file")
+                Button("Show in Finder") {
+                    if localFileExists(at: mediaURL) {
+                        NSWorkspace.shared.activateFileViewerSelecting([mediaURL])
+                    } else {
+                        fileNotFoundPresented = true
+                    }
+                }.popover(isPresented: $fileNotFoundPresented, arrowEdge: .bottom) {
+                    Text("File not found in local filesystem.")
+                        .padding()
+                }
             }
         }
     }
@@ -242,6 +253,13 @@ struct FullScreenImageView: View {
         }
     }
     
+    private func localFileExists(at url: URL) -> Bool {
+        guard url.isFileURL else { return false }
+        
+        let fileManager = FileManager.default
+        return fileManager.fileExists(atPath: url.path)
+    }
+
     
     private func showNextImage() {
         let dirURLChanged = imagePointer.nextImage()
