@@ -303,6 +303,8 @@ final class DataWriter {
             progress.wrappedValue = 0.0
         }
         
+        print("dfdf")
+        
         guard let db = DatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return

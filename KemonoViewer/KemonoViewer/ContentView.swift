@@ -113,7 +113,9 @@ struct ContentView: View {
             Button("Kemono content") {
                 openWindow(id: "viewer")
             }
-            
+            Button("Kemono Renamer") {
+                openWindow(id: "renamer")
+            }
         }
         .padding()
     }

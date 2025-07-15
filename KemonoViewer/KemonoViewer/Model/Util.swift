@@ -9,6 +9,10 @@ import Foundation
 import SQLite
 import SwiftUI
 
+struct Constants {
+    static let kemonoBaseDir = "/Volumes/ACG/kemono"
+}
+
 class StatusMessageManager: ObservableObject {
     @Published var message: String = ""
     @Published var isVisible: Bool = false
@@ -48,10 +52,8 @@ class StatusMessageManager: ObservableObject {
     }
 }
 
-func getSubdirectoryNames(atPath path: String) -> [String]? {
+func getSubdirectoryNames(atURL directoryURL: URL) -> [String]? {
     let fileManager = FileManager.default
-    let directoryURL = URL(filePath: path)
-    
     do {
         // 获取目录下所有内容（文件和文件夹）
         let contents = try fileManager.contentsOfDirectory(
@@ -68,4 +70,9 @@ func getSubdirectoryNames(atPath path: String) -> [String]? {
         print("获取目录失败: \(error.localizedDescription)")
         return nil
     }
+}
+
+func getSubdirectoryNames(atPath path: String) -> [String]? {
+    let directoryURL = URL(filePath: path)
+    return getSubdirectoryNames(atURL: directoryURL)
 }

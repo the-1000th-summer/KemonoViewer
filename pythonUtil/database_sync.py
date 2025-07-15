@@ -87,22 +87,12 @@ class DatabaseManager:
             date_str = date_str.rstrip('Z')
             return datetime.datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S.%f')
 
-    def getSubdirectoryNames(self, inputDirPath: str):
-        """获取指定路径下的所有子目录名称"""
-        try:
-            return sorted([d for d in os.listdir(inputDirPath) if os.path.isdir(os.path.join(inputDirPath, d))])
-        except Exception as e:
-            print(f"获取子目录失败: {e}")
-            return None
-
     def writeKemonoDataToDatabase(self):
-        input_folder_path = "/Volumes/ACG/kemono"
-
         if db is None:
             print("数据库初始化失败")
             return
 
-        artistNames = self.getSubdirectoryNames(input_folder_path)
+        artistNames = self.getSubdirectoryNames(Config.KEMONO_BASEPATH)
         if not artistNames:
             print("未找到艺术家目录")
             return
@@ -110,21 +100,15 @@ class DatabaseManager:
         print(f"发现 {len(artistNames)} 位艺术家")
 
         for i, artistName in enumerate(artistNames):
-            artistDirPath = os.path.join(input_folder_path, artistName)
-            # 获取艺术家下的所有帖子目录
-            postNames = self.getSubdirectoryNames(artistDirPath)
-            if not postNames:
-                continue
-            print(artistName)
+
+            self.handleOneArtist(artistName)
+
+
             with db.atomic() as transaction:
                 artistId = None
 
-                if artistName != 'flou':
-                    postNames = postNames.copy()[:10]
-                else:
-                    postNames = postNames.copy()[70:100]
 
-                # 限制每个艺术家只处理前10个帖子（可选）
+
                 for postName in postNames:
                     postDirPath = os.path.join(artistDirPath, postName)
                     artistId = self.handleOnePost(postDirPath, artistId)
@@ -135,6 +119,16 @@ class DatabaseManager:
                         print(f"处理帖子失败，已回滚: {postDirPath}")
                         break
         print("数据处理完成")
+
+
+    def handleOneArtist(self, artistName: str):
+        artistDirPath = os.path.join(Config.KEMONO_BASEPATH, artistName)
+        postNames = self.getSubdirectoryNames(artistDirPath)
+        # 没有帖子时跳过
+        if not postNames:
+            return
+
+
 
     def handleOnePost(self, postDirPath: str, artistId=None):
         """ 处理单个帖子目录 """
