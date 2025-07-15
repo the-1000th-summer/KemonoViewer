@@ -103,8 +103,10 @@ class DatabaseManager:
         print(f"发现 {len(artistNames)} 位艺术家")
 
         for i, artistName in enumerate(artistNames):
+            print(f'{artistName}: ', flush=True, end='')
             with db.atomic() as transaction:
                 self.handleOneArtist(artistName)
+            print('', flush=True)
 
         print("数据处理完成")
 
@@ -153,6 +155,10 @@ class DatabaseManager:
         for postName in postsName_notProcessed:
             postDirPath = os.path.join(Config.KEMONO_BASEPATH, artist_SQLObj.name, postName)
             self.handleOnePost(postDirPath, artist_SQLObj)
+            print('.', flush=True, end='')
+
+        if not postsName_notProcessed:
+            print('(No new posts)', flush=True, end='')
 
     def getNotProcessedPostsName(self, artistName: str, postsName_currentService, latestDateTimeInDb):
         notProcessedPostsName = []
@@ -185,10 +191,10 @@ class DatabaseManager:
     def handleNewArtist(self, artistKemonoId: str, artistName: str, postService: str, postsName):
         newArtist_SQLObj = self.writeArtistDataToDatabase(artistKemonoId, artistName, postService)
         postsName_currentService = self.getPostsNameOfService(postsName, postService)
-        print(artistName)
         for postName in postsName_currentService:
             postDirPath = os.path.join(Config.KEMONO_BASEPATH, artistName, postName)
             self.handleOnePost(postDirPath, newArtist_SQLObj)
+            print('.', flush=True, end='')
 
             # 如果处理成功，打印成功信息
             # print(f"成功处理帖子: {postDirPath})")
