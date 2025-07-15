@@ -191,7 +191,7 @@ class DatabaseManager:
             self.handleOnePost(postDirPath, newArtist_SQLObj)
 
             # 如果处理成功，打印成功信息
-            print(f"成功处理帖子: {postDirPath})")
+            # print(f"成功处理帖子: {postDirPath})")
 
     def writeArtistDataToDatabase(self, artistKemonoId: str, artistName: str, postService: str):
         return Artist.create(
@@ -278,6 +278,3 @@ class DatabaseManager:
 if __name__ == "__main__":
     dbManager = DatabaseManager()
     dbManager.writeKemonoDataToDatabase()
-
-
-
