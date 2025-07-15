@@ -49,7 +49,7 @@ final class DatabaseManager {
     }
     
     private func initDatabase() {
-        let dbFilePath = "/Volumes/imagesShown/images_python.sqlite3"
+        let dbFilePath = "/Volumes/imagesShown/images.sqlite3"
         let fm = FileManager.default
         
         if fm.fileExists(atPath: dbFilePath) {
