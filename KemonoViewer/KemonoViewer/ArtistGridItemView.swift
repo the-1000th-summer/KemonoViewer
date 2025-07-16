@@ -60,41 +60,48 @@ struct ArtistGridItemView: View {
     let isSelected: Bool
     
     var body: some View {
-        ZStack(alignment: .leading) {
-            
-            KFImage(URL(string: "https://img.kemono.su/banners/\(artistData.service)/\(artistData.kemonoId)"))
-                .resizable()
-                .overlay(
-                    LinearGradient(colors: [
-                        Color.black.opacity(0.5),
-                        Color.black.opacity(0.8),
-                    ], startPoint: .top, endPoint: .bottom)
-                )
-                .scaledToFill()
-                .frame(width: size.width, height: size.height)
-            HStack {
-                KFImage(URL(string: "https://img.kemono.su/icons/\(artistData.service)/\(artistData.kemonoId)"))
+        ZStack(alignment: .topTrailing) {
+            ZStack(alignment: .leading) {
+                
+                KFImage(URL(string: "https://img.kemono.su/banners/\(artistData.service)/\(artistData.kemonoId)"))
                     .resizable()
+                    .overlay(
+                        LinearGradient(colors: [
+                            Color.black.opacity(0.5),
+                            Color.black.opacity(0.8),
+                        ], startPoint: .top, endPoint: .bottom)
+                    )
                     .scaledToFill()
-                    .frame(width: 80.0, height: 80.0)
-                    .cornerRadius(10.0)
-                    .padding(.leading, 25)
-                    .padding(.trailing, 10)
-                VStack(alignment: .leading) {
-                    Text(ServiceTitleColor(rawValue: artistData.service)?.title ?? "Unknown")
-                        .font(.system(size: 15))
-                        .fontWeight(.bold)
-                        .padding(4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(ServiceTitleColor(rawValue: artistData.service)?.color ?? .black)
-                        )
-                    
-                    Text(artistData.name)
-                        .font(.system(size: 25))
-                        .fontWeight(.light)
+                    .frame(width: size.width, height: size.height)
+                HStack {
+                    KFImage(URL(string: "https://img.kemono.su/icons/\(artistData.service)/\(artistData.kemonoId)"))
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 80.0, height: 80.0)
+                        .cornerRadius(10.0)
+                        .padding(.leading, 25)
+                        .padding(.trailing, 10)
+                    VStack(alignment: .leading) {
+                        Text(ServiceTitleColor(rawValue: artistData.service)?.title ?? "Unknown")
+                            .font(.system(size: 15))
+                            .fontWeight(.bold)
+                            .padding(4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 5)
+                                    .fill(ServiceTitleColor(rawValue: artistData.service)?.color ?? .black)
+                            )
+                        
+                        Text(artistData.name)
+                            .font(.system(size: 25))
+                            .fontWeight(.light)
+                    }
                 }
             }
+            Image(systemName: "circlebadge.fill")
+                .padding(.top, 2)
+                .padding(.trailing, 2)
+                .foregroundStyle(.blue)
+                .opacity(artistData.hasNotviewed ? 1 : 0)
         }
         .overlay(
             RoundedRectangle(cornerRadius: 8)
@@ -109,6 +116,7 @@ struct ArtistGridItemView: View {
             name: "Belko",
             service: "fanbox",
             kemonoId: "39123643",
+            hasNotviewed: false,
             id: 1
         ),
         size: CGSize(width: 480, height: 130),

@@ -31,21 +31,25 @@ struct QueryConfig: Equatable {
 struct KContentSelectView: View {
     @State private var artistsData = [Artist_show]()
     @State private var artistSelectedData: Artist_show?
-    @State private var postSelectedIndex: Int?
+    
     @State private var postsData = [Post_show]()
+    @State private var postSelectedIndex: Int?
     
     @State private var selectedTab: PostTab = .listTab
     @State private var selectedArtistTab: PostTab = .listTab
     
-//    @State private var onlyShowNotViewedPost = false
     @State private var queryConfig = QueryConfig()
     
     @State private var isProcessing = false
     @State private var readingProgress: Double = 0.0
     @State private var currentTask: Task<Void, Never>?
     
+    @State private var isLoadingArtists = false
+    @State private var isLoadingPosts = false
+    
+    
+    
     var body: some View {
-        
         VStack {
             HStack {
                 Button("Load Data") {
@@ -71,17 +75,30 @@ struct KContentSelectView: View {
             HSplitView {
                 VStack {
                     PostTabView(selectedTab: $selectedArtistTab)
-                    if selectedArtistTab == .listTab {
-                        ArtistListView(artistsData: $artistsData, artistSelectedData: $artistSelectedData)
-                            .frame(minWidth: 150)
+                    if isLoadingArtists {
+                        VStack {
+                            Spacer()
+                            ProgressView()
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity)
                     } else {
-                        ArtistRichListView(artistsData: $artistsData, artistSelectedData: $artistSelectedData)
-                            .frame(minWidth: 200, maxWidth: 480)
+                        if selectedArtistTab == .listTab {
+                            ArtistListView(artistsData: $artistsData, artistSelectedData: $artistSelectedData)
+                                .frame(minWidth: 150)
+                        } else {
+                            ArtistRichListView(artistsData: $artistsData, artistSelectedData: $artistSelectedData)
+                                .frame(minWidth: 200, maxWidth: 480)
+                        }
                     }
                     
                 }
                 .onAppear {
-                    artistsData = DataReader.readArtistData() ?? []
+                    isLoadingArtists = true
+                    Task {
+                        artistsData = await DataReader.readArtistData() ?? []
+                        isLoadingArtists = false
+                    }
                 }
                 VStack {
                     HStack {
@@ -90,8 +107,16 @@ struct KContentSelectView: View {
                         PostQueryView(queryConfig: $queryConfig)
                     }
                     .padding([.leading, .trailing])
-                    Group {
-                        HSplitView {
+                    
+                    HStack {
+                        if isLoadingPosts {
+                            VStack {
+                                Spacer()
+                                ProgressView()
+                                Spacer()
+                            }
+                            .frame(maxWidth: .infinity)
+                        } else {
                             if selectedTab == .imageTab {
                                 PostGridView(
                                     postsData: $postsData,
@@ -109,26 +134,36 @@ struct KContentSelectView: View {
                                 )
                                 //  .frame(idealWidth: 100)
                             }
-                            PostImageView(
-                                postsData: $postsData,
-                                artistSelectedData: $artistSelectedData,
-                                postSelectedIndex: postSelectedIndex
-                            )
-                            .frame(maxWidth: .infinity)
-                            
                         }
+                        
+                        PostImageView(
+                            postsData: $postsData,
+                            artistSelectedData: $artistSelectedData,
+                            postSelectedIndex: postSelectedIndex
+                        )
+                        .frame(maxWidth: .infinity)
                     }
                     .layoutPriority(1)
+                    
+                    
                 }
                 .layoutPriority(1)
                 
             }
             .onChange(of: artistSelectedData) {
-                refreshPostsData()
+                isLoadingPosts = true
+                Task {
+                    await refreshPostsData()
+                    isLoadingPosts = false
+                }
+                
                 postSelectedIndex = nil
             }
             .onChange(of: queryConfig) {
-                refreshPostsData()
+                Task {
+                    await refreshPostsData()
+                    isLoadingPosts = false
+                }
                 postSelectedIndex = nil
             }
         }
@@ -141,7 +176,7 @@ struct KContentSelectView: View {
         
     }
     
-    private func refreshPostsData() {
+    private func refreshPostsData() async {
         if let artistSelectedData {
             postsData = DataReader.readPostData(artistId: artistSelectedData.id, queryConfig: queryConfig) ?? []
         } else {

@@ -11,6 +11,7 @@ struct Artist_show: Hashable {
     let name: String
     let service: String
     let kemonoId: String
+    let hasNotviewed: Bool
     let id: Int64
 }
 
@@ -20,23 +21,28 @@ struct ArtistListView: View {
     
     var body: some View {
         List(artistsData, id: \.self, selection: $artistSelectedData) { artistData in
-            Text(artistData.name)
-                .contextMenu {
-                    Button("标记为全部已读") {
-                        tagArtistAllPost(artistData: artistData, viewed: true)
-                        NotificationCenter.default.post(
-                            name: .updateAllPostViewedStatus,
-                            object: nil
-                        )
-                    }
-                    Button("标记为全部未读") {
-                        tagArtistAllPost(artistData: artistData, viewed: false)
-                        NotificationCenter.default.post(
-                            name: .updateAllPostViewedStatus,
-                            object: nil
-                        )
-                    }
+            HStack {
+                Image(systemName: "circlebadge.fill")
+                    .foregroundStyle(.blue)
+                    .opacity(artistData.hasNotviewed ? 1 : 0)
+                Text(artistData.name)
+            }
+            .contextMenu {
+                Button("标记为全部已读") {
+                    tagArtistAllPost(artistData: artistData, viewed: true)
+                    NotificationCenter.default.post(
+                        name: .updateAllPostViewedStatus,
+                        object: nil
+                    )
                 }
+                Button("标记为全部未读") {
+                    tagArtistAllPost(artistData: artistData, viewed: false)
+                    NotificationCenter.default.post(
+                        name: .updateAllPostViewedStatus,
+                        object: nil
+                    )
+                }
+            }
         }
         .navigationTitle("Oceans")
         

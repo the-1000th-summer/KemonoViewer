@@ -405,30 +405,40 @@ final class DataWriter {
 }
 
 final class DataReader {
-    static func readArtistData() -> [Artist_show]? {
+    static func readArtistData() async -> [Artist_show]? {
         guard let db = DatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return nil
         }
-        var artistsData = [Artist_show]()
+
+        let query = """
+        SELECT
+          a."name",
+          a."service",
+          a."kemono_artist_id",
+          a."id",
+          EXISTS(
+            SELECT 1
+            FROM "kemonoPost"
+            WHERE "artist_id" = a."id" AND "viewed" = 0
+          ) AS has_unviewed
+        FROM "artist" AS a
+        """
         
         do {
-            for row in try db.prepare(Artist.artistTable.select(Artist.e_artistName, Artist.e_service, Artist.e_kemonoArtistId, Artist.e_artistId)) {
-                artistsData.append(Artist_show(
-                    name: row[Artist.e_artistName],
-                    service: row[Artist.e_service],
-                    kemonoId: row[Artist.e_kemonoArtistId],
-                    id: row[Artist.e_artistId]
-                ))
+            return try db.prepare(query).map { row in
+                Artist_show(
+                    name: row[0] as! String,
+                    service: row[1] as! String,
+                    kemonoId: row[2] as! String,
+                    hasNotviewed: (row[4] as! Int64 == 1),
+                    id: row[3] as! Int64
+                )
             }
-//            artistsName = try db.prepare(Artist.artistTable.select(Artist.e_artistName)).map { row in
-//                return row[Artist.e_artistName] // 返回 String? 类型
-//            }
         } catch {
             print(error.localizedDescription)
         }
-        
-        return artistsData
+        return nil
     }
     
     static func readPostData(artistId: Int64, queryConfig: QueryConfig) -> [Post_show]? {
