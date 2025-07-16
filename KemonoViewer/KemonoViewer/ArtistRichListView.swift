@@ -9,22 +9,24 @@ import SwiftUI
 
 struct ArtistRichListView: View {
     @Binding var artistsData: [Artist_show]
-    @Binding var artistSelectedData: Artist_show?
+//    @Binding var artistSelectedData: Artist_show?
+    @Binding var artistSelectedIndex: Int?
+    
     private static let initialColumns = 1
     @State private var gridColumns = Array(repeating: GridItem(.flexible()), count: initialColumns)
     
     var body: some View {
         ScrollView {
             LazyVGrid(columns: gridColumns) {
-                ForEach(artistsData, id: \.self) { artistData in
+                ForEach(artistsData.indices, id: \.self) { artistIndex in
                     GeometryReader { geo in
                         Button(action: {
-                            artistSelectedData = artistData
+                            artistSelectedIndex = artistIndex
                         }) {
                             ArtistGridItemView(
-                                artistData: artistData,
+                                artistData: artistsData[artistIndex],
                                 size: geo.size,
-                                isSelected: artistData.id == (artistSelectedData?.id ?? 0)
+                                isSelected: (artistSelectedIndex != nil) ? artistsData[artistIndex].id == (artistsData[artistSelectedIndex!].id) : false
                             )
                             .contentShape(Rectangle())
                         }
@@ -32,18 +34,20 @@ struct ArtistRichListView: View {
                         .frame(width: geo.size.width)
                         .contextMenu {
                             Button("标记为全部已读") {
-                                tagArtistAllPost(artistData: artistData, viewed: true)
+                                tagArtistAllPost(artistData: artistsData[artistIndex], viewed: true)
                                 NotificationCenter.default.post(
                                     name: .updateAllPostViewedStatus,
                                     object: nil
                                 )
+                                refreshArtistData(artistIndex: artistIndex, hasNotViewed: false)
                             }
                             Button("标记为全部未读") {
-                                tagArtistAllPost(artistData: artistData, viewed: false)
+                                tagArtistAllPost(artistData: artistsData[artistIndex], viewed: false)
                                 NotificationCenter.default.post(
                                     name: .updateAllPostViewedStatus,
                                     object: nil
                                 )
+                                refreshArtistData(artistIndex: artistIndex, hasNotViewed: true)
                             }
                         }
                     }
@@ -52,6 +56,17 @@ struct ArtistRichListView: View {
                 }
             }
         }
+    }
+    
+    private func refreshArtistData(artistIndex: Int, hasNotViewed: Bool) {
+        let artistData = artistsData[artistIndex]
+        artistsData[artistIndex] = Artist_show(
+            name: artistData.name,
+            service: artistData.service,
+            kemonoId: artistData.kemonoId,
+            hasNotviewed: hasNotViewed,
+            id: artistData.id
+        )
     }
     
     private func tagArtistAllPost(artistData: Artist_show, viewed: Bool) {

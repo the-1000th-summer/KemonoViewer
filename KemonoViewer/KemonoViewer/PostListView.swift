@@ -27,18 +27,18 @@ struct PostListView: View {
             }
             .contextMenu {
                 Button("标记为未读") {
-                    newNotViewedPost(notViewedPostIndex: postCurrentIndex)
+                    newViewedStatusPost(postIndex: postCurrentIndex, viewed: false)
                 }
             }
         }
         .onChange(of: postSelectedIndex) {
             if let postSelectedIndex {
-                newViewedPost(viewedPostIndex: postSelectedIndex)
+                newViewedStatusPost(postIndex: postSelectedIndex, viewed: true)
             }
         }
         .onReceive(pub) { notification in
             guard let viewedPostIndex = notification.userInfo?["viewedPostIndex"] as? Int else { return }
-            newViewedPost(viewedPostIndex: viewedPostIndex)
+            newViewedStatusPost(postIndex: viewedPostIndex, viewed: true)
         }
         .onReceive(viewedPub) { notification in
             refreshPostsData()
@@ -53,32 +53,18 @@ struct PostListView: View {
         }
     }
     
-    private func newViewedPost(viewedPostIndex: Int) {
-        let originalPostData = postsData[viewedPostIndex]
-        postsData[viewedPostIndex] = Post_show(
+    private func newViewedStatusPost(postIndex: Int, viewed: Bool) {
+        let originalPostData = postsData[postIndex]
+        postsData[postIndex] = Post_show(
             name: originalPostData.name,
             folderName: originalPostData.folderName,
             coverName: originalPostData.coverName,
             id: originalPostData.id,
             attNumber: originalPostData.attNumber,
             postDate: originalPostData.postDate,
-            viewed: true
+            viewed: viewed
         )
-        DatabaseManager.shared.tagPost(postId: postsData[viewedPostIndex].id, viewed: true)
-    }
-    
-    private func newNotViewedPost(notViewedPostIndex: Int) {
-        let originalPostData = postsData[notViewedPostIndex]
-        postsData[notViewedPostIndex] = Post_show(
-            name: originalPostData.name,
-            folderName: originalPostData.folderName,
-            coverName: originalPostData.coverName,
-            id: originalPostData.id,
-            attNumber: originalPostData.attNumber,
-            postDate: originalPostData.postDate,
-            viewed: false
-        )
-        DatabaseManager.shared.tagPost(postId: postsData[notViewedPostIndex].id, viewed: false)
+        DatabaseManager.shared.tagPost(postId: postsData[postIndex].id, viewed: viewed)
     }
     
 }

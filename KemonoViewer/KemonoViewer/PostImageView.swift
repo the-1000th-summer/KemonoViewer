@@ -15,7 +15,7 @@ struct PostImageView: View {
     @State private var postDirPath: String? = nil
     
     @Binding var postsData: [Post_show]
-    @Binding var artistSelectedData: Artist_show?
+    let artistName: String
     
     var postSelectedIndex: Int?
     
@@ -30,7 +30,7 @@ struct PostImageView: View {
                             GeometryReader { geo in
                                 Button(action: {
                                     let fsWindowData = ImagePointerData(
-                                        artistName: artistSelectedData!.name,
+                                        artistName: artistName,
                                         postsFolderName: postsData.map { $0.folderName },
                                         postsId: postsData.map { $0.id },
                                         currentPostImagesName: imagesName,

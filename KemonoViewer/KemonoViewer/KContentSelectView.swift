@@ -30,7 +30,8 @@ struct QueryConfig: Equatable {
 
 struct KContentSelectView: View {
     @State private var artistsData = [Artist_show]()
-    @State private var artistSelectedData: Artist_show?
+//    @State private var artistSelectedData: Artist_show?
+    @State private var artistSelectedIndex: Int?
     
     @State private var postsData = [Post_show]()
     @State private var postSelectedIndex: Int?
@@ -84,10 +85,10 @@ struct KContentSelectView: View {
                         .frame(maxWidth: .infinity)
                     } else {
                         if selectedArtistTab == .listTab {
-                            ArtistListView(artistsData: $artistsData, artistSelectedData: $artistSelectedData)
+                            ArtistListView(artistsData: $artistsData, artistSelectedIndex: $artistSelectedIndex)
                                 .frame(minWidth: 150)
                         } else {
-                            ArtistRichListView(artistsData: $artistsData, artistSelectedData: $artistSelectedData)
+                            ArtistRichListView(artistsData: $artistsData, artistSelectedIndex: $artistSelectedIndex)
                                 .frame(minWidth: 200, maxWidth: 480)
                         }
                     }
@@ -120,7 +121,7 @@ struct KContentSelectView: View {
                             if selectedTab == .imageTab {
                                 PostGridView(
                                     postsData: $postsData,
-                                    artistSelectedData: $artistSelectedData,
+                                    artistSelectedData: (artistSelectedIndex != nil) ? artistsData[artistSelectedIndex!] : nil,
                                     postSelectedIndex: $postSelectedIndex,
                                     queryConfig: queryConfig
                                 )
@@ -129,7 +130,7 @@ struct KContentSelectView: View {
                                 PostListView(
                                     postsData: $postsData,
                                     postSelectedIndex: $postSelectedIndex,
-                                    artistSelectedId: artistSelectedData?.id,
+                                    artistSelectedId: (artistSelectedIndex != nil) ? artistsData[artistSelectedIndex!].id : nil,
                                     queryConfig: queryConfig
                                 )
                                 //  .frame(idealWidth: 100)
@@ -138,7 +139,7 @@ struct KContentSelectView: View {
                         
                         PostImageView(
                             postsData: $postsData,
-                            artistSelectedData: $artistSelectedData,
+                            artistName: (artistSelectedIndex != nil) ? artistsData[artistSelectedIndex!].name : "(No artist name)",
                             postSelectedIndex: postSelectedIndex
                         )
                         .frame(maxWidth: .infinity)
@@ -150,7 +151,7 @@ struct KContentSelectView: View {
                 .layoutPriority(1)
                 
             }
-            .onChange(of: artistSelectedData) {
+            .onChange(of: artistSelectedIndex) {
                 isLoadingPosts = true
                 Task {
                     await refreshPostsData()
@@ -177,8 +178,8 @@ struct KContentSelectView: View {
     }
     
     private func refreshPostsData() async {
-        if let artistSelectedData {
-            postsData = DataReader.readPostData(artistId: artistSelectedData.id, queryConfig: queryConfig) ?? []
+        if let artistSelectedIndex {
+            postsData = DataReader.readPostData(artistId: artistsData[artistSelectedIndex].id, queryConfig: queryConfig) ?? []
         } else {
             postsData = []
         }

@@ -17,35 +17,49 @@ struct Artist_show: Hashable {
 
 struct ArtistListView: View {
     @Binding var artistsData: [Artist_show]
-    @Binding var artistSelectedData: Artist_show?
+//    @Binding var artistSelectedData: Artist_show?
+    @Binding var artistSelectedIndex: Int?
     
     var body: some View {
-        List(artistsData, id: \.self, selection: $artistSelectedData) { artistData in
+        List(artistsData.indices, id: \.self, selection: $artistSelectedIndex) { artistIndex in
             HStack {
                 Image(systemName: "circlebadge.fill")
                     .foregroundStyle(.blue)
-                    .opacity(artistData.hasNotviewed ? 1 : 0)
-                Text(artistData.name)
+                    .opacity(artistsData[artistIndex].hasNotviewed ? 1 : 0)
+                Text(artistsData[artistIndex].name)
             }
             .contextMenu {
                 Button("标记为全部已读") {
-                    tagArtistAllPost(artistData: artistData, viewed: true)
+                    tagArtistAllPost(artistData: artistsData[artistIndex], viewed: true)
                     NotificationCenter.default.post(
                         name: .updateAllPostViewedStatus,
                         object: nil
                     )
+                    refreshArtistData(artistIndex: artistIndex, hasNotViewed: false)
                 }
                 Button("标记为全部未读") {
-                    tagArtistAllPost(artistData: artistData, viewed: false)
+                    tagArtistAllPost(artistData: artistsData[artistIndex], viewed: false)
                     NotificationCenter.default.post(
                         name: .updateAllPostViewedStatus,
                         object: nil
                     )
+                    refreshArtistData(artistIndex: artistIndex, hasNotViewed: true)
                 }
             }
         }
         .navigationTitle("Oceans")
         
+    }
+    
+    private func refreshArtistData(artistIndex: Int, hasNotViewed: Bool) {
+        let artistData = artistsData[artistIndex]
+        artistsData[artistIndex] = Artist_show(
+            name: artistData.name,
+            service: artistData.service,
+            kemonoId: artistData.kemonoId,
+            hasNotviewed: hasNotViewed,
+            id: artistData.id
+        )
     }
     
     private func tagArtistAllPost(artistData: Artist_show, viewed: Bool) {
