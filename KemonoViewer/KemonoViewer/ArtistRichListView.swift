@@ -64,7 +64,7 @@ struct ArtistRichListView: View {
             name: artistData.name,
             service: artistData.service,
             kemonoId: artistData.kemonoId,
-            hasNotviewed: hasNotViewed,
+            hasNotViewed: hasNotViewed,
             id: artistData.id
         )
     }

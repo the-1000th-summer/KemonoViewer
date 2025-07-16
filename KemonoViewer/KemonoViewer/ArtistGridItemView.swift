@@ -101,7 +101,7 @@ struct ArtistGridItemView: View {
                 .padding(.top, 2)
                 .padding(.trailing, 2)
                 .foregroundStyle(.blue)
-                .opacity(artistData.hasNotviewed ? 1 : 0)
+                .opacity(artistData.hasNotViewed ? 1 : 0)
         }
         .overlay(
             RoundedRectangle(cornerRadius: 8)
@@ -116,7 +116,7 @@ struct ArtistGridItemView: View {
             name: "Belko",
             service: "fanbox",
             kemonoId: "39123643",
-            hasNotviewed: false,
+            hasNotViewed: false,
             id: 1
         ),
         size: CGSize(width: 480, height: 130),

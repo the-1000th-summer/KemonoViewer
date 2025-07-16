@@ -11,7 +11,7 @@ struct Artist_show: Hashable {
     let name: String
     let service: String
     let kemonoId: String
-    let hasNotviewed: Bool
+    let hasNotViewed: Bool
     let id: Int64
 }
 
@@ -25,7 +25,7 @@ struct ArtistListView: View {
             HStack {
                 Image(systemName: "circlebadge.fill")
                     .foregroundStyle(.blue)
-                    .opacity(artistsData[artistIndex].hasNotviewed ? 1 : 0)
+                    .opacity(artistsData[artistIndex].hasNotViewed ? 1 : 0)
                 Text(artistsData[artistIndex].name)
             }
             .contextMenu {
@@ -57,7 +57,7 @@ struct ArtistListView: View {
             name: artistData.name,
             service: artistData.service,
             kemonoId: artistData.kemonoId,
-            hasNotviewed: hasNotViewed,
+            hasNotViewed: hasNotViewed,
             id: artistData.id
         )
     }

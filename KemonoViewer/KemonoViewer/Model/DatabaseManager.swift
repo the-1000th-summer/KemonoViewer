@@ -132,7 +132,7 @@ final class DatabaseManager {
         }
     }
     
-    func tagPost(postId: Int64, viewed: Bool) {
+    func tagPost(postId: Int64, viewed: Bool) async {
         do {
             try db?.run(KemonoPost.postTable.filter(KemonoPost.e_postId == postId).update(KemonoPost.e_viewed <- viewed))
         } catch {
@@ -441,7 +441,7 @@ final class DataReader {
                     name: row[0] as! String,
                     service: row[1] as! String,
                     kemonoId: row[2] as! String,
-                    hasNotviewed: (row[4] as! Int64 == 1),
+                    hasNotViewed: (row[4] as! Int64 == 1),
                     id: row[3] as! Int64
                 )
             }

@@ -27,8 +27,9 @@ struct PostGridView: View {
     @State private var hasCapturedInitialSize = false
     
     var queryConfig: PostQueryConfig
-    private let pub = NotificationCenter.default.publisher(for: .updateNewViewedPostData)
-    private let viewedPub = NotificationCenter.default.publisher(for: .updateAllPostViewedStatus)
+    let tagNotViewAction: (Int, Bool) -> Void
+
+    
     
     var body: some View {
         ScrollView {
@@ -38,7 +39,6 @@ struct PostGridView: View {
                         GeometryReader { geo in
                             Button(action: {
                                 postSelectedIndex = postIndex
-                                newViewedStatusPost(postIndex: postIndex, viewed: true)
                             }) {
                                 PostGridItemView(
                                     postData: postsData[postIndex],
@@ -51,7 +51,7 @@ struct PostGridView: View {
                                 .preference(key: SizePreferenceKey.self, value: geo.size)
                                 .contextMenu {
                                     Button("标记为未读") {
-                                        newViewedStatusPost(postIndex: postIndex, viewed: false)
+                                        tagNotViewAction(postIndex, false)
                                     }
                                 }
                             }
@@ -67,31 +67,8 @@ struct PostGridView: View {
                         hasCapturedInitialSize = true
                     }
                 }
-                .onReceive(pub) { notification in
-                    guard let viewedPostIndex = notification.userInfo?["viewedPostIndex"] as? Int else { return }
-                    newViewedStatusPost(postIndex: viewedPostIndex, viewed: true)
-                }
-                .onReceive(viewedPub) { notification in
-                    refreshPostsData()
-                }
             }
         }
-        
-        
-    }
-    
-    private func newViewedStatusPost(postIndex: Int, viewed: Bool) {
-        let originalPostData = postsData[postIndex]
-        postsData[postIndex] = Post_show(
-            name: originalPostData.name,
-            folderName: originalPostData.folderName,
-            coverName: originalPostData.coverName,
-            id: originalPostData.id,
-            attNumber: originalPostData.attNumber,
-            postDate: originalPostData.postDate,
-            viewed: viewed
-        )
-        DatabaseManager.shared.tagPost(postId: postsData[postIndex].id, viewed: viewed)
     }
     
     private func refreshPostsData() {
