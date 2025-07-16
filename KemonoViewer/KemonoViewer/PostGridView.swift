@@ -26,7 +26,7 @@ struct PostGridView: View {
     @State private var capturedSize: CGSize = .zero
     @State private var hasCapturedInitialSize = false
     
-    var queryConfig: QueryConfig
+    var queryConfig: PostQueryConfig
     private let pub = NotificationCenter.default.publisher(for: .updateNewViewedPostData)
     private let viewedPub = NotificationCenter.default.publisher(for: .updateAllPostViewedStatus)
     

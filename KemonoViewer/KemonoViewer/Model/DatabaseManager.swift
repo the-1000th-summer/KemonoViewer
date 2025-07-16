@@ -405,13 +405,13 @@ final class DataWriter {
 }
 
 final class DataReader {
-    static func readArtistData() async -> [Artist_show]? {
+    static func readArtistData(queryConfig: ArtistQueryConfig) async -> [Artist_show]? {
         guard let db = DatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return nil
         }
-
-        let query = """
+        
+        var sqlStr = """
         SELECT
           a."name",
           a."service",
@@ -424,9 +424,19 @@ final class DataReader {
           ) AS has_unviewed
         FROM "artist" AS a
         """
+        if queryConfig.onlyShowNotFullyViewedArtist {
+            sqlStr += """
+                
+                WHERE EXISTS (
+                  SELECT 1
+                  FROM "kemonoPost"
+                  WHERE "artist_id" = a."id" AND "viewed" = 0
+                )
+                """
+        }
         
         do {
-            return try db.prepare(query).map { row in
+            return try db.prepare(sqlStr).map { row in
                 Artist_show(
                     name: row[0] as! String,
                     service: row[1] as! String,
@@ -441,7 +451,7 @@ final class DataReader {
         return nil
     }
     
-    static func readPostData(artistId: Int64, queryConfig: QueryConfig) -> [Post_show]? {
+    static func readPostData(artistId: Int64, queryConfig: PostQueryConfig) -> [Post_show]? {
         guard let db = DatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return nil
@@ -488,7 +498,7 @@ final class DataReader {
         return postsData
     }
     
-    static func readImageData(postId: Int64) -> ([String]?, String?) {
+    static func readImageData(postId: Int64) async -> ([String]?, String?) {
         var imagesName = [String]()
         
         guard let db = DatabaseManager.shared.getConnection() else {

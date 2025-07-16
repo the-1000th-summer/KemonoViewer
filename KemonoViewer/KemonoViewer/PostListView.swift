@@ -12,7 +12,7 @@ struct PostListView: View {
     
     @Binding var postSelectedIndex: Int?
     var artistSelectedId: Int64?
-    var queryConfig: QueryConfig
+    var queryConfig: PostQueryConfig
     
     private let pub = NotificationCenter.default.publisher(for: .updateNewViewedPostData)
     private let viewedPub = NotificationCenter.default.publisher(for: .updateAllPostViewedStatus)

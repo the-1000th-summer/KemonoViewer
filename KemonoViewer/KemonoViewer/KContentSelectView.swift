@@ -12,7 +12,7 @@ enum PostTab: String, CaseIterable {
     case imageTab = "square.grid.2x2"
 }
 
-struct QueryConfig: Equatable {
+struct PostQueryConfig: Equatable {
     enum SortKey: String, CaseIterable {
         case date = "post_date"
         case postTitle = "name"
@@ -28,6 +28,10 @@ struct QueryConfig: Equatable {
     var onlyShowNotViewedPost: Bool = false
 }
 
+struct ArtistQueryConfig: Equatable {
+    var onlyShowNotFullyViewedArtist: Bool = false
+}
+
 struct KContentSelectView: View {
     @State private var artistsData = [Artist_show]()
 //    @State private var artistSelectedData: Artist_show?
@@ -39,7 +43,8 @@ struct KContentSelectView: View {
     @State private var selectedTab: PostTab = .listTab
     @State private var selectedArtistTab: PostTab = .listTab
     
-    @State private var queryConfig = QueryConfig()
+    @State private var artistQueryConfig = ArtistQueryConfig()
+    @State private var postQueryConfig = PostQueryConfig()
     
     @State private var isProcessing = false
     @State private var readingProgress: Double = 0.0
@@ -75,11 +80,15 @@ struct KContentSelectView: View {
             }
             HSplitView {
                 VStack {
-                    PostTabView(selectedTab: $selectedArtistTab)
+                    HStack {
+                        PostTabView(selectedTab: $selectedArtistTab)
+                        ArtistQueryView(queryConfig: $artistQueryConfig)
+                    }
+                    
                     if isLoadingArtists {
                         VStack {
                             Spacer()
-                            ProgressView()
+                            LoadingDataView()
                             Spacer()
                         }
                         .frame(maxWidth: .infinity)
@@ -97,7 +106,7 @@ struct KContentSelectView: View {
                 .onAppear {
                     isLoadingArtists = true
                     Task {
-                        artistsData = await DataReader.readArtistData() ?? []
+                        artistsData = await DataReader.readArtistData(queryConfig: artistQueryConfig) ?? []
                         isLoadingArtists = false
                     }
                 }
@@ -105,7 +114,7 @@ struct KContentSelectView: View {
                     HStack {
                         PostTabView(selectedTab: $selectedTab)
                         Divider()
-                        PostQueryView(queryConfig: $queryConfig)
+                        PostQueryView(queryConfig: $postQueryConfig)
                     }
                     .padding([.leading, .trailing])
                     
@@ -113,7 +122,7 @@ struct KContentSelectView: View {
                         if isLoadingPosts {
                             VStack {
                                 Spacer()
-                                ProgressView()
+                                LoadingDataView()
                                 Spacer()
                             }
                             .frame(maxWidth: .infinity)
@@ -123,7 +132,7 @@ struct KContentSelectView: View {
                                     postsData: $postsData,
                                     artistSelectedData: (artistSelectedIndex != nil) ? artistsData[artistSelectedIndex!] : nil,
                                     postSelectedIndex: $postSelectedIndex,
-                                    queryConfig: queryConfig
+                                    queryConfig: postQueryConfig
                                 )
                                 .frame(minWidth: 200, maxWidth: .infinity)
                             } else {
@@ -131,7 +140,7 @@ struct KContentSelectView: View {
                                     postsData: $postsData,
                                     postSelectedIndex: $postSelectedIndex,
                                     artistSelectedId: (artistSelectedIndex != nil) ? artistsData[artistSelectedIndex!].id : nil,
-                                    queryConfig: queryConfig
+                                    queryConfig: postQueryConfig
                                 )
                                 //  .frame(idealWidth: 100)
                             }
@@ -157,15 +166,24 @@ struct KContentSelectView: View {
                     await refreshPostsData()
                     isLoadingPosts = false
                 }
-                
                 postSelectedIndex = nil
             }
-            .onChange(of: queryConfig) {
+//            .onChange(of: postSelectedIndex) { oldVal, newVal in
+//                
+//            }
+            .onChange(of: postQueryConfig) {
                 Task {
                     await refreshPostsData()
                     isLoadingPosts = false
                 }
                 postSelectedIndex = nil
+            }
+            .onChange(of: artistQueryConfig) {
+                isLoadingArtists = true
+                Task {
+                    artistsData = await DataReader.readArtistData(queryConfig: artistQueryConfig) ?? []
+                    isLoadingArtists = false
+                }
             }
         }
         .sheet(isPresented: $isProcessing) {
@@ -179,7 +197,7 @@ struct KContentSelectView: View {
     
     private func refreshPostsData() async {
         if let artistSelectedIndex {
-            postsData = DataReader.readPostData(artistId: artistsData[artistSelectedIndex].id, queryConfig: queryConfig) ?? []
+            postsData = DataReader.readPostData(artistId: artistsData[artistSelectedIndex].id, queryConfig: postQueryConfig) ?? []
         } else {
             postsData = []
         }
@@ -187,18 +205,28 @@ struct KContentSelectView: View {
     
 }
 
+struct ArtistQueryView: View {
+    @Binding var queryConfig: ArtistQueryConfig
+    
+    var body: some View {
+        Toggle(isOn: $queryConfig.onlyShowNotFullyViewedArtist) {
+            Text("Only show artists have unread post")
+        }
+    }
+}
+
 struct PostQueryView: View {
-    @Binding var queryConfig: QueryConfig
+    @Binding var queryConfig: PostQueryConfig
     
     var body: some View {
         HStack {
             Picker("Sort by", selection: $queryConfig.sortKey) {
-                ForEach(QueryConfig.SortKey.allCases, id: \.self) { sortKey in
+                ForEach(PostQueryConfig.SortKey.allCases, id: \.self) { sortKey in
                     Text(sortKey.rawValue)
                 }
             }
             Picker("Order", selection: $queryConfig.sortOrder) {
-                ForEach(QueryConfig.SortOrder.allCases, id: \.self) { sortOrder in
+                ForEach(PostQueryConfig.SortOrder.allCases, id: \.self) { sortOrder in
                     Image(systemName: sortOrder.rawValue)
                 }
             }
@@ -207,7 +235,6 @@ struct PostQueryView: View {
                 Text("Only show unread post")
             }
         }
-        
     }
 }
 

@@ -13,65 +13,76 @@ struct PostImageView: View {
     @State private var gridColumns = Array(repeating: GridItem(.flexible()), count: initialColumns)
     @State private var imagesName = [String]()
     @State private var postDirPath: String? = nil
+    @State private var isLoadingData: Bool = false
     
     @Binding var postsData: [Post_show]
     let artistName: String
     
     var postSelectedIndex: Int?
     
-    var body: some View {
-        ScrollView {
-            if let postDirPath {
-                if imagesName.isEmpty {
-                    Text("No attachments in this post.")
-                } else {
-                    LazyVGrid(columns: gridColumns) {
-                        ForEach(imagesName.indices, id: \.self) { imageIndex in
-                            GeometryReader { geo in
-                                Button(action: {
-                                    let fsWindowData = ImagePointerData(
-                                        artistName: artistName,
-                                        postsFolderName: postsData.map { $0.folderName },
-                                        postsId: postsData.map { $0.id },
-                                        currentPostImagesName: imagesName,
-                                        currentPostIndex: postSelectedIndex!,
-                                        currentImageIndex: imageIndex
-                                    )
-                                    openWindow(id: "fsViewer", value: fsWindowData)
-                                }) {
-                                    PostImageGridItemView(
-                                        size: geo.size.width,
-                                        imageURL: URL(filePath: postDirPath).appendingPathComponent(imagesName[imageIndex]),
-                                    )
-                                    .contentShape(Rectangle())
+    @ViewBuilder
+    private func mainPostImageView() -> some View {
+        if isLoadingData {
+            LoadingDataView()
+        } else {
+            ScrollView {
+                if let postDirPath {
+                    if imagesName.isEmpty {
+                        Text("No attachments in this post.")
+                    } else {
+                        LazyVGrid(columns: gridColumns) {
+                            ForEach(imagesName.indices, id: \.self) { imageIndex in
+                                GeometryReader { geo in
+                                    Button(action: {
+                                        let fsWindowData = ImagePointerData(
+                                            artistName: artistName,
+                                            postsFolderName: postsData.map { $0.folderName },
+                                            postsId: postsData.map { $0.id },
+                                            currentPostImagesName: imagesName,
+                                            currentPostIndex: postSelectedIndex!,
+                                            currentImageIndex: imageIndex
+                                        )
+                                        openWindow(id: "fsViewer", value: fsWindowData)
+                                    }) {
+                                        PostImageGridItemView(
+                                            size: geo.size.width,
+                                            imageURL: URL(filePath: postDirPath).appendingPathComponent(imagesName[imageIndex]),
+                                        )
+                                        .contentShape(Rectangle())
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
                                 }
-                                .buttonStyle(PlainButtonStyle())
+                                .cornerRadius(8.0)
+                                .aspectRatio(1, contentMode: .fit)
                             }
-                            .cornerRadius(8.0)
-                            .aspectRatio(1, contentMode: .fit)
                         }
                     }
+                } else {
+                    HStack {
+                        Spacer()
+                        Text("Select post to show image.")
+                        Spacer()
+                    }
                 }
-            } else {
-                HStack {
-                    Spacer()
-                    Text("Select post to show image.")
-                    Spacer()
-                }
-                
             }
         }
+    }
+    var body: some View {
+        mainPostImageView()
         .onChange(of: postSelectedIndex) {
             if let postSelectedIndex {
-                let imageData = DataReader.readImageData(postId: postsData[postSelectedIndex].id)
-                imagesName = imageData.0 ?? []
-                postDirPath = imageData.1
+                isLoadingData = true
+                Task {
+                    let imageData = await DataReader.readImageData(postId: postsData[postSelectedIndex].id)
+                    imagesName = imageData.0 ?? []
+                    postDirPath = imageData.1
+                    isLoadingData = false
+                }
             } else {
                 imagesName = []
                 postDirPath = nil
             }
         }
-        
     }
 }
 
