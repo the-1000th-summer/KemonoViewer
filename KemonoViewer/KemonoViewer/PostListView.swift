@@ -11,7 +11,6 @@ struct PostListView: View {
     @Binding var postsData: [Post_show]
     
     @Binding var postSelectedIndex: Int?
-    var artistSelectedId: Int64?
     var queryConfig: PostQueryConfig
     let tagNotViewAction: (Int, Bool) -> Void
     
@@ -32,18 +31,8 @@ struct PostListView: View {
         }
     }
     
-    private func refreshPostsData() {
-        if let artistSelectedId {
-            postsData = DataReader.readPostData(artistId: artistSelectedId, queryConfig: queryConfig) ?? []
-        } else {
-            postsData.removeAll()
-        }
-    }
-    
-    
-    
 }
 
 //#Preview {
-//    PostListView(postSelectedId: .constant(0), artistSelectedId: 0)
+//    PostListView(postSelectedId: .constant(0))
 //}

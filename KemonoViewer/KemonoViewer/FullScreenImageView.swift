@@ -102,6 +102,8 @@ struct FullScreenImageView: View {
     
     @State private var transform = Transform()
     @State private var isHoveringPathView = false
+    @State private var isHoveringPreviousButton = false
+    @State private var isHoveringNextButton = false
     @State private var fileNotFoundPresented = false
     
     @StateObject private var imagePointer = ImagePointer()
@@ -214,21 +216,45 @@ struct FullScreenImageView: View {
                         showPreviousImage()
                         slideManager.restart()
                     }) {
-                        Image(systemName: "chevron.left")
-                            .font(.largeTitle)
+                        VStack {
+                            Spacer()
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 50))
+                            Spacer()
+                        }
+                        .padding(20)
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(PlainButtonStyle())
                     .keyboardShortcut("[", modifiers: .command)
+                    .opacity(isHoveringPreviousButton ? 1 : 0)
+                    .onHover { hovering in
+                        isHoveringPreviousButton = hovering
+                    }
+                    .animation(.easeInOut, value: isHoveringPreviousButton)
+                    
                     Spacer()
+                    
                     Button(action: {
                         showNextImage()
                         slideManager.restart()
                     }) {
-                        Image(systemName: "chevron.right")
-                            .font(.largeTitle)
+                        VStack {
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 50))
+                            Spacer()
+                        }
+                        .padding(20)
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(PlainButtonStyle())
                     .keyboardShortcut("]", modifiers: .command)
+                    .opacity(isHoveringNextButton ? 1 : 0)
+                    .onHover { hovering in
+                        isHoveringNextButton = hovering
+                    }
+                    .animation(.easeInOut, value: isHoveringNextButton)
                 }
                 Spacer()
             }
@@ -305,10 +331,10 @@ struct FullScreenImageView: View {
 
 #Preview {
     FullScreenImageView(imagePointerData: ImagePointerData(
-        artistName: "5924557",
-        postsFolderName: ["[2019-06-10]初月くぱぁ"],
-        postsId: [6],
-        currentPostImagesName: ["1.jpe"],
+        artistName: "Belko",
+        postsFolderName: ["[fanbox][2019-10-25]2019.10.25 オリジナル系原寸PNG+ラフ"],
+        postsId: [2],
+        currentPostImagesName: ["1.png"],
         currentPostIndex: 0,
         currentImageIndex: 0)
     )

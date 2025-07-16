@@ -143,7 +143,6 @@ struct KContentSelectView: View {
                                 PostListView(
                                     postsData: $postsData,
                                     postSelectedIndex: $postSelectedIndex,
-                                    artistSelectedId: (artistSelectedIndex != nil) ? artistsData[artistSelectedIndex!].id : nil,
                                     queryConfig: postQueryConfig,
                                     tagNotViewAction: { postIndex, viewed in
                                         newViewedStatusPost(postIndex: postIndex, viewed: viewed)

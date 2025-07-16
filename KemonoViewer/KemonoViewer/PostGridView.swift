@@ -71,14 +71,6 @@ struct PostGridView: View {
         }
     }
     
-    private func refreshPostsData() {
-        if let artistSelectedData {
-            postsData = DataReader.readPostData(artistId: artistSelectedData.id, queryConfig: queryConfig) ?? []
-        } else {
-            postsData.removeAll()
-        }
-    }
-    
     private func getPostCoverURL(postIndex: Int, artistName: String) -> URL {
         return URL(filePath: "/Volumes/ACG/kemono")
             .appendingPathComponent(artistName)
