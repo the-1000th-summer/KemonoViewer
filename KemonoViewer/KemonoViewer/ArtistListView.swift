@@ -9,12 +9,13 @@ import SwiftUI
 
 struct Artist_show: Hashable {
     let name: String
+    let service: String
+    let kemonoId: String
     let id: Int64
 }
 
 struct ArtistListView: View {
-    @State private var artistsData = [Artist_show]()
-//    @State private var artist
+    @Binding var artistsData: [Artist_show]
     @Binding var artistSelectedData: Artist_show?
     
     var body: some View {
@@ -37,9 +38,6 @@ struct ArtistListView: View {
                     }
                 }
         }
-        .onAppear {
-            artistsData = DataReader.readArtistData() ?? []
-        }
         .navigationTitle("Oceans")
         
     }
@@ -49,6 +47,3 @@ struct ArtistListView: View {
     }
 }
 
-#Preview {
-    ArtistListView(artistSelectedData: .constant(Artist_show(name: "5924557", id: 1)))
-}

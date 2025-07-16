@@ -47,6 +47,7 @@ struct PostGridView: View {
                                     imageURL: getPostCoverURL(postIndex: postIndex, artistName: artistSelectedData.name),
                                     isSelected: postSelectedIndex == postIndex
                                 )
+                                .contentShape(Rectangle())
                                 .preference(key: SizePreferenceKey.self, value: geo.size)
                                 .contextMenu {
                                     Button("标记为未读") {

@@ -43,6 +43,7 @@ struct PostImageView: View {
                                         size: geo.size.width,
                                         imageURL: URL(filePath: postDirPath).appendingPathComponent(imagesName[imageIndex]),
                                     )
+                                    .contentShape(Rectangle())
                                 }
                                 .buttonStyle(PlainButtonStyle())
                             }

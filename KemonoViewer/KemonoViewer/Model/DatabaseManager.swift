@@ -13,6 +13,7 @@ import SwiftyJSON
 struct Artist {
     static let artistTable = Table("artist")
     static let e_artistId = Expression<Int64>("id")
+    static let e_kemonoArtistId = Expression<String>("kemono_artist_id")
     static let e_artistName = Expression<String>("name")
     static let e_service = Expression<String>("service")
 }
@@ -76,6 +77,7 @@ final class DatabaseManager {
         do {
             try db.run(Artist.artistTable.create { t in
                 t.column(Artist.e_artistId, primaryKey: true)
+                t.column(Artist.e_kemonoArtistId)
                 t.column(Artist.e_artistName)
                 t.column(Artist.e_service)
             })
@@ -411,9 +413,11 @@ final class DataReader {
         var artistsData = [Artist_show]()
         
         do {
-            for row in try db.prepare(Artist.artistTable.select(Artist.e_artistName, Artist.e_artistId)) {
+            for row in try db.prepare(Artist.artistTable.select(Artist.e_artistName, Artist.e_service, Artist.e_kemonoArtistId, Artist.e_artistId)) {
                 artistsData.append(Artist_show(
                     name: row[Artist.e_artistName],
+                    service: row[Artist.e_service],
+                    kemonoId: row[Artist.e_kemonoArtistId],
                     id: row[Artist.e_artistId]
                 ))
             }

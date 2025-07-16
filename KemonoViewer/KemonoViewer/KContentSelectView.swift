@@ -29,11 +29,13 @@ struct QueryConfig: Equatable {
 }
 
 struct KContentSelectView: View {
+    @State private var artistsData = [Artist_show]()
     @State private var artistSelectedData: Artist_show?
     @State private var postSelectedIndex: Int?
     @State private var postsData = [Post_show]()
     
     @State private var selectedTab: PostTab = .listTab
+    @State private var selectedArtistTab: PostTab = .listTab
     
 //    @State private var onlyShowNotViewedPost = false
     @State private var queryConfig = QueryConfig()
@@ -67,8 +69,20 @@ struct KContentSelectView: View {
                 Spacer()
             }
             HSplitView {
-                ArtistListView(artistSelectedData: $artistSelectedData)
-                    .frame(minWidth: 150)
+                VStack {
+                    PostTabView(selectedTab: $selectedArtistTab)
+                    if selectedArtistTab == .listTab {
+                        ArtistListView(artistsData: $artistsData, artistSelectedData: $artistSelectedData)
+                            .frame(minWidth: 150)
+                    } else {
+                        ArtistRichListView(artistsData: $artistsData, artistSelectedData: $artistSelectedData)
+                            .frame(minWidth: 200, maxWidth: 480)
+                    }
+                    
+                }
+                .onAppear {
+                    artistsData = DataReader.readArtistData() ?? []
+                }
                 VStack {
                     HStack {
                         PostTabView(selectedTab: $selectedTab)
