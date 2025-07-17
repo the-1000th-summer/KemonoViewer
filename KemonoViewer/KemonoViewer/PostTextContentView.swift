@@ -83,6 +83,7 @@ struct PostTextContentView: View {
                 }
             } else {
                 Text("Comment load failed.")
+                    .padding(.horizontal)
             }
         }
     }

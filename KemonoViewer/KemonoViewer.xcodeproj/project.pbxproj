@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		7928378E2E28BFD90093E179 /* PostCommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7928378D2E28BFD90093E179 /* PostCommentView.swift */; };
+		792837922E2923D40093E179 /* CustomPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 792837912E2923D40093E179 /* CustomPlayerView.swift */; };
 		793F7AA22E2534AD00B74A77 /* RenamerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793F7AA12E2534AD00B74A77 /* RenamerView.swift */; };
 		7948904C2E27254900AA96A1 /* ArtistGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7948904B2E27254900AA96A1 /* ArtistGridItemView.swift */; };
 		7948904E2E279C4100AA96A1 /* LoadingDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7948904D2E279C4100AA96A1 /* LoadingDataView.swift */; };
@@ -56,6 +57,7 @@
 
 /* Begin PBXFileReference section */
 		7928378D2E28BFD90093E179 /* PostCommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCommentView.swift; sourceTree = "<group>"; };
+		792837912E2923D40093E179 /* CustomPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPlayerView.swift; sourceTree = "<group>"; };
 		793F7AA12E2534AD00B74A77 /* RenamerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenamerView.swift; sourceTree = "<group>"; };
 		7948904B2E27254900AA96A1 /* ArtistGridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistGridItemView.swift; sourceTree = "<group>"; };
 		7948904D2E279C4100AA96A1 /* LoadingDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingDataView.swift; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 				797E4A142E11649200C3A3A7 /* PostGridItemView.swift */,
 				797E4A122E11634700C3A3A7 /* PostImageView.swift */,
 				79A627B22E1567D9001F0212 /* PostImageGridItemView.swift */,
+				792837912E2923D40093E179 /* CustomPlayerView.swift */,
 				797E4A162E118DF700C3A3A7 /* FullScreenImageView.swift */,
 				7948904F2E27F10D00AA96A1 /* PostTextContentView.swift */,
 				7928378D2E28BFD90093E179 /* PostCommentView.swift */,
@@ -360,6 +363,7 @@
 				7986A10D2E105E1C0008D9EE /* KemonoViewerApp.swift in Sources */,
 				7928378E2E28BFD90093E179 /* PostCommentView.swift in Sources */,
 				7986A1362E105EE40008D9EE /* KContentSelectView.swift in Sources */,
+				792837922E2923D40093E179 /* CustomPlayerView.swift in Sources */,
 				797E4A152E11649200C3A3A7 /* PostGridItemView.swift in Sources */,
 				79CB7BD72E124A9300FA7B77 /* Util.swift in Sources */,
 				793F7AA22E2534AD00B74A77 /* RenamerView.swift in Sources */,

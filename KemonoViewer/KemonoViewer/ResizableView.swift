@@ -44,8 +44,9 @@ struct ResizableView: ViewModifier {
     
     @ObservedObject var messageManager: StatusMessageManager
     @State private var scaleEventMonitor: Any?
-//    @State private var dragEventMonitor: Any?
+    @State private var dragEventMonitor: Any?
     
+    @Binding var insideView: Bool
     
     var dragGesture: some Gesture {
         DragGesture()
@@ -73,26 +74,33 @@ struct ResizableView: ViewModifier {
         content
             .scaleEffect(CGFloat(transform.scaleInPercent) / 100)
             .offset(transform.offset)
-            .gesture(dragGesture)
+//            .gesture(dragGesture)
 //            .gesture(scaleGesture)
+//            .onHover(perform: { hovering in
+//                insideCircle = hovering
+//            })
             .onAppear {
                 
                 transform = Transform()
                 scaleEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { event in
-                    if event.scrollingDeltaY > 0 && transform.scaleInPercent < 500 {
-                        transform.scaleInPercent += 10
-                        messageManager.show(message: "\(transform.scaleInPercent)%")
-                    } else if event.scrollingDeltaY < 0 && transform.scaleInPercent > 10 {
-                        transform.scaleInPercent -= 10
-                        messageManager.show(message: "\(transform.scaleInPercent)%")
+                    if insideView {
+                        if event.scrollingDeltaY > 0 && transform.scaleInPercent < 500 {
+                            transform.scaleInPercent += 10
+                            messageManager.show(message: "\(transform.scaleInPercent)%")
+                        } else if event.scrollingDeltaY < 0 && transform.scaleInPercent > 10 {
+                            transform.scaleInPercent -= 10
+                            messageManager.show(message: "\(transform.scaleInPercent)%")
+                        }
                     }
                     return event
                 }
                 
-//                dragEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .leftMouseDragged) { event in
-//                    transform.offset = transform.offset + CGSize(width: event.deltaX, height: event.deltaY)
-//                    return event
-//                }
+                dragEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .leftMouseDragged) { event in
+                    if insideView {
+                        transform.offset = transform.offset + CGSize(width: event.deltaX, height: event.deltaY)
+                    }
+                    return event
+                }
             }
             .onDisappear {
                 if let scaleEventMonitor {
@@ -106,10 +114,11 @@ struct ResizableView: ViewModifier {
 }
 
 extension View {
-    func resizableView(transform: Binding<Transform>, messageManager: StatusMessageManager) -> some View {
+    func resizableView(insideView: Binding<Bool>, transform: Binding<Transform>, messageManager: StatusMessageManager) -> some View {
         return modifier(ResizableView(
             transform: transform,
-            messageManager: messageManager
+            messageManager: messageManager,
+            insideView: insideView
         ))
     }
 }
@@ -120,7 +129,7 @@ struct ResizableView_Previews: PreviewProvider {
         var body: some View {
             RoundedRectangle(cornerRadius: 30.0)
                 .foregroundColor(Color.blue)
-                .resizableView(transform: $transform, messageManager: StatusMessageManager())
+                .resizableView(insideView: .constant(false), transform: $transform, messageManager: StatusMessageManager())
         }
     }
     static var previews: some View {

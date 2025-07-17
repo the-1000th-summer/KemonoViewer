@@ -11,85 +11,32 @@ import Kingfisher
 import UniformTypeIdentifiers
 import Combine
 
-class CustomAVPlayerView: AVPlayerView {
-    private var scrollMonitor: Any?
-    
-    // 仅拦截滚轮导致的进度条移动
-    override func viewDidMoveToWindow() {
-        super.viewDidMoveToWindow()
-        guard scrollMonitor == nil, window != nil else { return }
-        
-        // 注册本地监视器，拦截所有滚轮事件
-        scrollMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] evt in
-            guard let self = self, let win = self.window else {
-                return evt
-            }
-            
-            // 把事件坐标转换到当前 view
-            let locationInWindow = evt.locationInWindow
-            let pointInView = self.convert(locationInWindow, from: nil)
-            
-            // 如果滚轮事件落在视频视图区域内，就吞掉（返回 nil）
-            if self.bounds.contains(pointInView) {
-                return nil
-            }
-            // 否则照常处理
-            return evt
-        }
-    }
-}
-
-// 2. 包装为 SwiftUI 视图
-struct CustomVideoPlayer: NSViewRepresentable {
-    let player: AVPlayer
-    
-    func makeNSView(context: Context) -> CustomAVPlayerView {
-        let view = CustomAVPlayerView()
-        view.player = player
-//        view.controlsStyle = .floating
-        return view
-    }
-    
-    func updateNSView(_ nsView: CustomAVPlayerView, context: Context) {
-        nsView.player = player
-    }
-}
-
-
-struct CustomPlayerView: View {
-    var url: URL
-    @ObservedObject var slideShowManager: SlideShowManager
-    @ObservedObject var playerManager: VideoPlayerManager
-    
-    let postPlayAction: (() -> Void)
+struct ShowSidebarButtonView: View {
+    @Binding var showSidebar: Bool
+    @State private var isHoveringSidebarButton = false
     
     var body: some View {
-        ZStack {
-            VStack {
-                if let avPlayer = playerManager.avPlayer {
-                    CustomVideoPlayer(player: avPlayer)
-                        .onAppear {
-                            slideShowManager.setMovieCompleted(completed: false)
-                            playerManager.setupPlaybackObserver()
-                            playerManager.play()
-                        }
-                        .onDisappear {
-                            playerManager.pause()
-                        }
-                        .onChange(of: url) {
-                            
-                            playerManager.loadFromUrl(url: url, timeInterval: slideShowManager.currentInterval, postPlayAction: self.postPlayAction)
-                            slideShowManager.setMovieCompleted(completed: false)
-                            playerManager.setupPlaybackObserver()
-                            playerManager.play()
-                        }
-                }
-            }.onAppear {
-                slideShowManager.pauseForMovie()
-                playerManager.loadFromUrl(url: url, timeInterval: slideShowManager.currentInterval, postPlayAction: self.postPlayAction)
+        Button(action: {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                showSidebar.toggle()
             }
-            
+        }) {
+            Image(systemName: "sidebar.squares.right")
+                .foregroundStyle(showSidebar ? .blue : .primary)
+                .font(.system(size: 25))
+                .background(
+                    Circle()
+                        .fill(Color.black.opacity(0.4))
+                        .frame(width: 50, height: 50)
+                )
         }
+        .buttonStyle(PlainButtonStyle())
+        .opacity(isHoveringSidebarButton ? 1 : 0)
+        .onHover { hovering in
+            isHoveringSidebarButton = hovering
+        }
+        .padding(20)
+        .animation(.easeInOut, value: isHoveringSidebarButton)
     }
 }
 
@@ -105,7 +52,6 @@ struct FullScreenImageView: View {
     @State private var isHoveringPathView = false
     @State private var isHoveringPreviousButton = false
     @State private var isHoveringNextButton = false
-    @State private var isHoveringSidebarButton = false
     
     @State private var fileNotFoundPresented = false
     
@@ -113,6 +59,11 @@ struct FullScreenImageView: View {
     
     @StateObject private var imagePointer = ImagePointer()
     @StateObject private var messageManager = StatusMessageManager()
+    
+    @State var insideCircle: Bool = false
+    @State private var zoom: CGFloat = 1
+    
+    @State private var insideView: Bool = false
     
     @ViewBuilder
     private func mediaView(for mediaURL: URL) -> some View {
@@ -124,7 +75,7 @@ struct FullScreenImageView: View {
                 .configure { view in
                     view.imageScaling = .scaleProportionallyUpOrDown
                 }
-                .resizableView(transform: $transform, messageManager: messageManager)
+                .resizableView(insideView: $insideView, transform: $transform, messageManager: messageManager)
                 .scaledToFit()
             } else {
                 AsyncImage(url: mediaURL) { phase in
@@ -132,7 +83,7 @@ struct FullScreenImageView: View {
                         image
                             .resizable()
                             .scaledToFit()
-                            .resizableView(transform: $transform, messageManager: messageManager)
+                            .resizableView(insideView: $insideView, transform: $transform, messageManager: messageManager)
                             .onChange(of: mediaURL) {
                                 withAnimation(.easeIn(duration: 0.2)) {
                                     transform = Transform()
@@ -154,7 +105,7 @@ struct FullScreenImageView: View {
                 slideManager.setMovieCompleted(completed: true)
                 slideManager.restart()
             }
-            .resizableView(transform: $transform, messageManager: messageManager)
+            .resizableView(insideView: $insideView, transform: $transform, messageManager: messageManager)
         } else {
             VStack {
                 Image("custom.document.fill.badge.questionmark")
@@ -171,6 +122,23 @@ struct FullScreenImageView: View {
                         .padding()
                 }
             }
+        }
+    }
+    
+    @ViewBuilder
+    private func messageView() -> some View {
+        if messageManager.isVisible {
+            Text(messageManager.message)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.black.opacity(0.7))
+                )
+                .foregroundColor(.white)
+                .zIndex(1)   // 确保在顶层，保证在text消失时不会突然被图片覆盖
+                .padding(.top, 100)
+                .padding(.trailing, 100)
         }
     }
     
@@ -202,20 +170,8 @@ struct FullScreenImageView: View {
                         }
                     }
                     
-                    if messageManager.isVisible {
-                        Text(messageManager.message)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.black.opacity(0.7))
-                            )
-                            .foregroundColor(.white)
-        //                    .transition(.opacity.combined(with: .move(edge: .bottom)))
-                            .zIndex(1)   // 确保在顶层，保证在text消失时不会突然被图片覆盖
-                            .padding(.top, 100)
-                            .padding(.trailing, 100)
-                    }
+                    messageView()
+                    
                     VStack {
                         Spacer()
                         HStack {
@@ -223,14 +179,11 @@ struct FullScreenImageView: View {
                                 showPreviousImage()
                                 slideManager.restart()
                             }) {
-                                VStack {
-                                    Spacer()
-                                    Image(systemName: "chevron.left")
-                                        .font(.system(size: 50))
-                                    Spacer()
-                                }
-                                .padding(20)
-                                .contentShape(Rectangle())
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 50))
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 200)
+                                    .contentShape(Rectangle())
                             }
                             .buttonStyle(PlainButtonStyle())
                             .keyboardShortcut("[", modifiers: .command)
@@ -246,14 +199,11 @@ struct FullScreenImageView: View {
                                 showNextImage()
                                 slideManager.restart()
                             }) {
-                                VStack {
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .font(.system(size: 50))
-                                    Spacer()
-                                }
-                                .padding(20)
-                                .contentShape(Rectangle())
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 50))
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 200)
+                                    .contentShape(Rectangle())
                             }
                             .buttonStyle(PlainButtonStyle())
                             .keyboardShortcut("]", modifiers: .command)
@@ -265,27 +215,10 @@ struct FullScreenImageView: View {
                         }
                         Spacer()
                     }
-                    Button(action: {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            showSidebar.toggle()
-                        }
-                    }) {
-                        Image(systemName: "sidebar.squares.right")
-                            .foregroundStyle(showSidebar ? .blue : .primary)
-                            .font(.system(size: 25))
-                            .background(
-                                Circle()
-                                    .fill(Color.black.opacity(0.4))
-                                    .frame(width: 50, height: 50)
-                            )
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .opacity(isHoveringPreviousButton ? 1 : 0)
-                    .onHover { hovering in
-                        isHoveringPreviousButton = hovering
-                    }
-                    .padding(20)
-                    .animation(.easeInOut, value: isHoveringPreviousButton)
+                    ShowSidebarButtonView(showSidebar: $showSidebar)
+                }
+                .onHover { hovering in
+                    insideView = hovering
                 }
                 .background {
                     Color.black
@@ -294,10 +227,6 @@ struct FullScreenImageView: View {
                     Divider()
                     PostTextContentView(imagePointer: imagePointer)
                         .frame(width: 500)
-//                        .overlay(
-//                            RoundedRectangle(cornerRadius: 10)
-//                                .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 3)
-//                        )
                         .transition(.move(edge: .trailing))
                         .zIndex(1)
                 }
