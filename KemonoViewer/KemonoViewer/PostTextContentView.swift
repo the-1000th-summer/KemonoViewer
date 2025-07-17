@@ -18,6 +18,40 @@ struct PostTextContentView: View {
     @State private var contentStrLoading = false
     @State private var isLoadingComments = false
     
+    @ViewBuilder
+    private func headerView() -> some View {
+        if contentStrLoading {
+            HStack{
+                Spacer()
+                ProgressView()
+                Spacer()
+            }
+        } else {
+            VStack(alignment: .leading) {
+                HStack {
+                    KFImage(URL(string: "https://img.kemono.su/icons/\(imagePointer.getArtistService())/\(imagePointer.getArtistKemonoId())"))
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+                    
+                    Text(imagePointer.getArtistName())
+                        .font(.system(size: 15))
+                        .fontWeight(.bold)
+                }
+                .padding(.horizontal)
+                
+                contentView()
+                    .padding(.horizontal)
+                Text(imagePointer.getCurrentPostDatetime())
+                    .font(.system(size: 13))
+                    .foregroundStyle(.gray)
+                    .padding(.horizontal)
+                    .padding(.top, 1)
+            }
+            .padding(.vertical)
+        }
+    }
     
     @ViewBuilder
     private func contentView() -> some View {
@@ -32,7 +66,11 @@ struct PostTextContentView: View {
     @ViewBuilder
     private func commentView() -> some View {
         if isLoadingComments {
-            ProgressView()
+            HStack{
+                Spacer()
+                ProgressView()
+                Spacer()
+            }
         } else {
             if let comments {
                 if comments.isEmpty {
@@ -52,60 +90,40 @@ struct PostTextContentView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
-                Spacer()
-                if contentStrLoading {
-                    ProgressView()
-                } else {
-                    VStack(alignment: .leading) {
-                        HStack {
-                            KFImage(URL(string: "https://img.kemono.su/icons/\(imagePointer.getArtistService())/\(imagePointer.getArtistKemonoId())"))
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 40, height: 40)
-                                .clipShape(Circle())
-                                
-                            Text(imagePointer.getArtistName())
-                                .font(.system(size: 15))
-                                .fontWeight(.bold)
-                        }
-                        .padding(.horizontal)
-                        
-                        contentView()
-                            .padding(.horizontal)
-                        Text(imagePointer.getCurrentPostDatetime())
-                            .font(.system(size: 13))
-                            .foregroundStyle(.gray)
-                            .padding(.horizontal)
-                            .padding(.top, 1)
-                    }
-                    .padding(.vertical)
-                    
-                    commentView()
-                }
-                Spacer()
+                headerView()
+                commentView()
             }
             .onAppear {
-                contentStrLoading = true
-                isLoadingComments = true
+                loadAllData()
+            }
+            .onChange(of: imagePointer.currentPostDirURL) {
+                loadAllData()
+            }
+        }
+    }
+    
+    private func loadAllData() {
+        contentStrLoading = true
+        isLoadingComments = true
 
-                Task.detached {
-                    let loadedData = await loadContent()
-                    let loadedComments = await loadComments()
-                    
-                    await MainActor.run {
-                        comments = loadedComments
-                        isLoadingComments = false
-                        contentStr = loadedData
-                        contentStrLoading = false
-                    }
-                }
+        Task.detached {
+            let loadedData = await loadContent()
+            await MainActor.run {
+                contentStr = loadedData
+                contentStrLoading = false
             }
         }
         
+        Task.detached {
+            let loadedComments = await loadComments()
+            await MainActor.run {
+                comments = loadedComments
+                isLoadingComments = false
+            }
+        }
     }
     
     private func loadContent() async -> String {
-//        Thread.sleep(forTimeInterval: 2)   // for debug
         guard let contentTxtFilePath = imagePointer.currentPostDirURL?.appendingPathComponent("content.txt") else { return "" }
         do {
             let originalStr = try String(contentsOf: contentTxtFilePath, encoding: .utf8)
@@ -117,7 +135,6 @@ struct PostTextContentView: View {
     }
     
     private func loadComments() async -> [KemonoComment]? {
-        Thread.sleep(forTimeInterval: 2)
         guard let kemonoPostId = imagePointer.getCurrentPostKemonoId() else { return nil }
         guard let apiUrl = URL(string: "https://kemono.su/api/v1/\(imagePointer.getArtistService())/user/\(imagePointer.getArtistKemonoId())/post/\(kemonoPostId)/comments") else { return nil }
         do {
