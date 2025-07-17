@@ -15,28 +15,28 @@ class CustomAVPlayerView: AVPlayerView {
     private var scrollMonitor: Any?
     
     // 仅拦截滚轮导致的进度条移动
-//    override func viewDidMoveToWindow() {
-//        super.viewDidMoveToWindow()
-//        guard scrollMonitor == nil, window != nil else { return }
-//        
-//        // 注册本地监视器，拦截所有滚轮事件
-//        scrollMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] evt in
-//            guard let self = self, let win = self.window else {
-//                return evt
-//            }
-//            
-//            // 把事件坐标转换到当前 view
-//            let locationInWindow = evt.locationInWindow
-//            let pointInView = self.convert(locationInWindow, from: nil)
-//            
-//            // 如果滚轮事件落在视频视图区域内，就吞掉（返回 nil）
-//            if self.bounds.contains(pointInView) {
-//                return nil
-//            }
-//            // 否则照常处理
-//            return evt
-//        }
-//    }
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        guard scrollMonitor == nil, window != nil else { return }
+        
+        // 注册本地监视器，拦截所有滚轮事件
+        scrollMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] evt in
+            guard let self = self, let win = self.window else {
+                return evt
+            }
+            
+            // 把事件坐标转换到当前 view
+            let locationInWindow = evt.locationInWindow
+            let pointInView = self.convert(locationInWindow, from: nil)
+            
+            // 如果滚轮事件落在视频视图区域内，就吞掉（返回 nil）
+            if self.bounds.contains(pointInView) {
+                return nil
+            }
+            // 否则照常处理
+            return evt
+        }
+    }
 }
 
 // 2. 包装为 SwiftUI 视图
@@ -101,10 +101,15 @@ struct FullScreenImageView: View {
     @StateObject private var playerManager = VideoPlayerManager()
     
     @State private var transform = Transform()
+    
     @State private var isHoveringPathView = false
     @State private var isHoveringPreviousButton = false
     @State private var isHoveringNextButton = false
+    @State private var isHoveringSidebarButton = false
+    
     @State private var fileNotFoundPresented = false
+    
+    @State private var showSidebar = false
     
     @StateObject private var imagePointer = ImagePointer()
     @StateObject private var messageManager = StatusMessageManager()
@@ -170,93 +175,132 @@ struct FullScreenImageView: View {
     }
     
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            VStack {
-                if let currentURL = imagePointer.currentImageURL {
-                    mediaView(for: currentURL)
-                } else {
-                    Text("No attachments.")
-                }
-            }
-            .contextMenu {
-                ContextMenuView(manager: slideManager, playerManager: playerManager) {
-                    if slideManager.getMovieCompleted() {
-                        showNextImage()
+        ZStack {
+            HStack(spacing: .zero) {   // zero spacing for divider
+                ZStack(alignment: .topTrailing) {
+                    HSplitView {
+                        if let currentURL = imagePointer.currentImageURL {
+                            mediaView(for: currentURL)
+                        } else {
+                            Text("No attachments.")
+                        }
+                    }
+                    .contextMenu {
+                        ContextMenuView(manager: slideManager, playerManager: playerManager) {
+                            if slideManager.getMovieCompleted() {
+                                showNextImage()
+                            }
+                            
+                        }
+                    }
+                    // 保证视图扩展到窗口边缘，Text view在正常位置
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .onAppear {
+                        imagePointer.loadData(imagePointerData: imagePointerData)
+                        if let window = NSApplication.shared.keyWindow {
+                            window.toggleFullScreen(nil)
+                        }
                     }
                     
-                }
-            }
-            // 保证视图扩展到窗口边缘，Text view在正常位置
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onAppear {
-                imagePointer.loadData(imagePointerData: imagePointerData)
-                if let window = NSApplication.shared.keyWindow {
-                    window.toggleFullScreen(nil)
-                }
-            }
-            
-            if messageManager.isVisible {
-                Text(messageManager.message)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.black.opacity(0.7))
-                    )
-                    .foregroundColor(.white)
-//                    .transition(.opacity.combined(with: .move(edge: .bottom)))
-                    .zIndex(1)   // 确保在顶层，保证在text消失时不会突然被图片覆盖
-                    .padding(.top, 100)
-                    .padding(.trailing, 100)
-            }
-            VStack {
-                Spacer()
-                HStack {
-                    Button(action: {
-                        showPreviousImage()
-                        slideManager.restart()
-                    }) {
-                        VStack {
+                    if messageManager.isVisible {
+                        Text(messageManager.message)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color.black.opacity(0.7))
+                            )
+                            .foregroundColor(.white)
+        //                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            .zIndex(1)   // 确保在顶层，保证在text消失时不会突然被图片覆盖
+                            .padding(.top, 100)
+                            .padding(.trailing, 100)
+                    }
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Button(action: {
+                                showPreviousImage()
+                                slideManager.restart()
+                            }) {
+                                VStack {
+                                    Spacer()
+                                    Image(systemName: "chevron.left")
+                                        .font(.system(size: 50))
+                                    Spacer()
+                                }
+                                .padding(20)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                            .keyboardShortcut("[", modifiers: .command)
+                            .opacity(isHoveringPreviousButton ? 1 : 0)
+                            .onHover { hovering in
+                                isHoveringPreviousButton = hovering
+                            }
+                            .animation(.easeInOut, value: isHoveringPreviousButton)
+                            
                             Spacer()
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 50))
-                            Spacer()
+                            
+                            Button(action: {
+                                showNextImage()
+                                slideManager.restart()
+                            }) {
+                                VStack {
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 50))
+                                    Spacer()
+                                }
+                                .padding(20)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                            .keyboardShortcut("]", modifiers: .command)
+                            .opacity(isHoveringNextButton ? 1 : 0)
+                            .onHover { hovering in
+                                isHoveringNextButton = hovering
+                            }
+                            .animation(.easeInOut, value: isHoveringNextButton)
                         }
-                        .padding(20)
-                        .contentShape(Rectangle())
+                        Spacer()
+                    }
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showSidebar.toggle()
+                        }
+                    }) {
+                        Image(systemName: "sidebar.squares.right")
+                            .foregroundStyle(showSidebar ? .blue : .primary)
+                            .font(.system(size: 25))
+                            .background(
+                                Circle()
+                                    .fill(Color.black.opacity(0.4))
+                                    .frame(width: 50, height: 50)
+                            )
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .keyboardShortcut("[", modifiers: .command)
                     .opacity(isHoveringPreviousButton ? 1 : 0)
                     .onHover { hovering in
                         isHoveringPreviousButton = hovering
                     }
+                    .padding(20)
                     .animation(.easeInOut, value: isHoveringPreviousButton)
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        showNextImage()
-                        slideManager.restart()
-                    }) {
-                        VStack {
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 50))
-                            Spacer()
-                        }
-                        .padding(20)
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .keyboardShortcut("]", modifiers: .command)
-                    .opacity(isHoveringNextButton ? 1 : 0)
-                    .onHover { hovering in
-                        isHoveringNextButton = hovering
-                    }
-                    .animation(.easeInOut, value: isHoveringNextButton)
                 }
-                Spacer()
+                .background {
+                    Color.black
+                }
+                if showSidebar {
+                    Divider()
+                    PostTextContentView(imagePointer: imagePointer)
+                        .frame(width: 500)
+//                        .overlay(
+//                            RoundedRectangle(cornerRadius: 10)
+//                                .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 3)
+//                        )
+                        .transition(.move(edge: .trailing))
+                        .zIndex(1)
+                }
             }
             
             VStack {
@@ -289,8 +333,6 @@ struct FullScreenImageView: View {
     
     private func showNextImage() {
         let dirURLChanged = imagePointer.nextImage()
-        
-
         if dirURLChanged, let currentPostDirURL = imagePointer.currentPostDirURL {
             messageManager.show(
                 message: "下一个文件夹：\n" + currentPostDirURL.path(percentEncoded: false)
@@ -332,6 +374,8 @@ struct FullScreenImageView: View {
 #Preview {
     FullScreenImageView(imagePointerData: ImagePointerData(
         artistName: "Belko",
+        artistService: "fanbox",
+        artistKemonoId: "39123643",
         postsFolderName: ["[fanbox][2019-10-25]2019.10.25 オリジナル系原寸PNG+ラフ"],
         postsId: [2],
         currentPostImagesName: ["1.png"],

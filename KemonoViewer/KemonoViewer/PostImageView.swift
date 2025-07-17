@@ -16,7 +16,7 @@ struct PostImageView: View {
     @State private var isLoadingData: Bool = false
     
     @Binding var postsData: [Post_show]
-    let artistName: String
+    let artistData: Artist_show
     
     var postSelectedIndex: Int?
     
@@ -35,7 +35,9 @@ struct PostImageView: View {
                                 GeometryReader { geo in
                                     Button(action: {
                                         let fsWindowData = ImagePointerData(
-                                            artistName: artistName,
+                                            artistName: artistData.name,
+                                            artistService: artistData.service,
+                                            artistKemonoId: artistData.kemonoId,
                                             postsFolderName: postsData.map { $0.folderName },
                                             postsId: postsData.map { $0.id },
                                             currentPostImagesName: imagesName,

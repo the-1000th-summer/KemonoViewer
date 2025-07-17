@@ -76,6 +76,7 @@ struct ResizableView: ViewModifier {
             .gesture(dragGesture)
 //            .gesture(scaleGesture)
             .onAppear {
+                
                 transform = Transform()
                 scaleEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { event in
                     if event.scrollingDeltaY > 0 && transform.scaleInPercent < 500 {

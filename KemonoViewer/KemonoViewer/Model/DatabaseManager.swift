@@ -21,6 +21,7 @@ struct Artist {
 struct KemonoPost {
     static let postTable = Table("kemonoPost")
     static let e_postId = Expression<Int64>("id")
+    static let e_kemonoPostId = Expression<String>("kemono_post_id")
     static let e_artistIdRef = Expression<Int64>("artist_id")
     static let e_postName = Expression<String>("name")
     static let e_postDate = Expression<Date>("post_date")
@@ -539,6 +540,8 @@ final class DataReader {
 struct ImagePointerData: Hashable, Codable {
     var id = UUID()
     let artistName: String
+    let artistService: String
+    let artistKemonoId: String
     let postsFolderName: [String]
     let postsId: [Int64]
     let currentPostImagesName: [String]
@@ -549,6 +552,8 @@ struct ImagePointerData: Hashable, Codable {
 final class ImagePointer: ObservableObject {
 //    static let shared = ImagePointer()
     private var artistName = ""
+    private var artistService = ""
+    private var artistKemonoId = ""
     private var postsFolderName = [String]()
     private var postsId = [Int64]()
     private var currentPostImagesName = [String]()
@@ -561,6 +566,13 @@ final class ImagePointer: ObservableObject {
     @Published var currentPostDirURL: URL?
     
     private let inputFolderPath = "/Volumes/ACG/kemono"
+    
+    private static let postDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+        formatter.timeZone = TimeZone(abbreviation: "UTC")
+        return formatter
+    }()
     
 //    init(artistName: String, postsFolderName: [String], postsId: [Int64], currentPostImagesName: [String], currentPostIndex: Int, currentImageIndex: Int) {
 //        self.artistName = artistName
@@ -575,6 +587,8 @@ final class ImagePointer: ObservableObject {
     func loadData(imagePointerData: ImagePointerData) {
         print("loadData")
         self.artistName = imagePointerData.artistName
+        self.artistService = imagePointerData.artistService
+        self.artistKemonoId = imagePointerData.artistKemonoId
         self.postsFolderName = imagePointerData.postsFolderName
         self.postsId = imagePointerData.postsId
         self.currentPostImagesName = imagePointerData.currentPostImagesName
@@ -593,6 +607,45 @@ final class ImagePointer: ObservableObject {
     
     func isLastPost() -> Bool {
         return currentPostIndex == postsFolderName.count - 1 && (currentImageIndex == -2 || currentImageIndex == currentPostImagesName.count - 1)
+    }
+    
+    func getArtistName() -> String {
+        return artistName
+    }
+    func getArtistService() -> String {
+        return artistService
+    }
+    func getArtistKemonoId() -> String {
+        return artistKemonoId
+    }
+    func getCurrentPostKemonoId() -> String? {
+        guard let db = DatabaseManager.shared.getConnection() else {
+            print("数据库初始化失败")
+            return nil
+        }
+        do {
+            let query = KemonoPost.postTable.select(KemonoPost.e_kemonoPostId).filter(KemonoPost.e_postId == postsId[currentPostIndex])
+            guard let queryResult = try db.pluck(query) else { return nil }
+            return queryResult[KemonoPost.e_kemonoPostId]
+        } catch {
+            print(error.localizedDescription)
+        }
+        return nil
+    }
+    func getCurrentPostDatetime() -> String {
+        guard let db = DatabaseManager.shared.getConnection() else {
+            print("数据库初始化失败")
+            return "Unknown datetime"
+        }
+        do {
+            let query = KemonoPost.postTable.select(KemonoPost.e_postDate).filter(KemonoPost.e_postId == postsId[currentPostIndex])
+            guard let queryResult = try db.pluck(query) else { return "Unknown datetime" }
+            let postDatetimeObj = queryResult[KemonoPost.e_postDate]
+            return ImagePointer.postDateFormatter.string(from: postDatetimeObj)
+        } catch {
+            print(error.localizedDescription)
+        }
+        return "Unknown datetime"
     }
     
     private func getCurrentPostDirURL() -> URL? {

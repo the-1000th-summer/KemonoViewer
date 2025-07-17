@@ -154,7 +154,7 @@ struct KContentSelectView: View {
                         
                         PostImageView(
                             postsData: $postsData,
-                            artistName: (artistSelectedIndex != nil) ? artistsData[artistSelectedIndex!].name : "(No artist name)",
+                            artistData: (artistSelectedIndex != nil) ? artistsData[artistSelectedIndex!] : Artist_show(name: "", service: "", kemonoId: "", hasNotViewed: false, id: 0),
                             postSelectedIndex: postSelectedIndex
                         )
                         .frame(maxWidth: .infinity)
