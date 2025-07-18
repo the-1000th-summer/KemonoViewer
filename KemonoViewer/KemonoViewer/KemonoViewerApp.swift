@@ -16,6 +16,9 @@ struct KemonoViewerApp: App {
         Window("my kemono window", id: "viewer") {
             KContentSelectView()
         }
+        Window("my twitter window", id: "twitterViewer") {
+            TwitterContentView()
+        }
         Window("my kemono renamer", id: "renamer") {
             RenamerView()
         }

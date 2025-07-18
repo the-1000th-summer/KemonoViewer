@@ -36,6 +36,7 @@
 		79CB7BD72E124A9300FA7B77 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CB7BD62E124A9300FA7B77 /* Util.swift */; };
 		79DE3AAB2E268D670018412B /* ArtistRichListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DE3AAA2E268D670018412B /* ArtistRichListView.swift */; };
 		79E04C852E167470002932DF /* ResizableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E04C842E167470002932DF /* ResizableView.swift */; };
+		79F502272E2A1DA6005C682D /* TwitterContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F502262E2A1DA6005C682D /* TwitterContentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +87,7 @@
 		79CB7BD62E124A9300FA7B77 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		79DE3AAA2E268D670018412B /* ArtistRichListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistRichListView.swift; sourceTree = "<group>"; };
 		79E04C842E167470002932DF /* ResizableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizableView.swift; sourceTree = "<group>"; };
+		79F502262E2A1DA6005C682D /* TwitterContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -160,6 +162,7 @@
 		7986A10B2E105E1C0008D9EE /* KemonoViewer */ = {
 			isa = PBXGroup;
 			children = (
+				79F502232E2A1D7C005C682D /* Twitter */,
 				793F7A9E2E25346600B74A77 /* Renamer */,
 				79B3E8A72E10EED400567F1D /* Model */,
 				7986A1072E105E1C0008D9EE /* Assets.xcassets */,
@@ -197,6 +200,14 @@
 				79CB7BD62E124A9300FA7B77 /* Util.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		79F502232E2A1D7C005C682D /* Twitter */ = {
+			isa = PBXGroup;
+			children = (
+				79F502262E2A1DA6005C682D /* TwitterContentView.swift */,
+			);
+			path = Twitter;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -373,6 +384,7 @@
 				7959EE362E11104600ACF809 /* ArtistListView.swift in Sources */,
 				7950F0BE2E20A68B00B57A95 /* ContextMenuView.swift in Sources */,
 				79A627B32E1567D9001F0212 /* PostImageGridItemView.swift in Sources */,
+				79F502272E2A1DA6005C682D /* TwitterContentView.swift in Sources */,
 				79E04C852E167470002932DF /* ResizableView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

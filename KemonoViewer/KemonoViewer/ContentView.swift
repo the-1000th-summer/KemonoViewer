@@ -113,6 +113,9 @@ struct ContentView: View {
             Button("Kemono content") {
                 openWindow(id: "viewer")
             }
+            Button("Twitter content") {
+                openWindow(id: "twitterViewer")
+            }
             Button("Kemono Renamer") {
                 openWindow(id: "renamer")
             }

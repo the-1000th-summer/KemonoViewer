@@ -8,7 +8,7 @@ import os
 from Util import Util
 from filePathConfig import Config
 
-db = SqliteDatabase(Config.DB_PATH, pragmas={'foreign_keys': 1})
+db = SqliteDatabase(Config.KEMONO_DB_PATH, pragmas={'foreign_keys': 1})
 
 # 单例装饰器
 def singleton(cls):
@@ -26,20 +26,20 @@ class BaseModel(Model):
         database = db
 
 
-class Artist(BaseModel):
+class KemonoArtist(BaseModel):
     id = AutoField(column_name='id')  # 自动递增主键
     kemono_artist_id = TextField(column_name='kemono_artist_id')
     name = TextField(column_name='name')
     service = TextField(column_name='service')
 
     class Meta:
-        table_name = 'artist'
+        table_name = 'kemonoArtist'
 
 
 class KemonoPost(BaseModel):
     id = AutoField(column_name='id')
     kemono_post_id = TextField(column_name='kemono_post_id')
-    artist = ForeignKeyField(Artist, column_name='artist_id', backref='posts', on_delete='CASCADE')
+    artist = ForeignKeyField(KemonoArtist, column_name='artist_id', backref='posts', on_delete='CASCADE')
     name = TextField(column_name='name')
     post_date = TextField(column_name='post_date')
     cover_img_file_name = TextField(column_name='cover_name')
@@ -62,23 +62,24 @@ class KemonoImage(BaseModel):
 @singleton  # 应用单例装饰器
 class DatabaseManager:
     def __init__(self):
-        db_exists = os.path.exists(Config.DB_PATH)
+        # connect to the database
+        # if the database does not exist, it will be created
+        db.connect()
+        self.create_tables_if_not_exist()
 
-        try:
-            db.connect()
-            # 如果数据库不存在，创建所有表
-            if not db_exists:
-                self.create_tables()
-        except Exception as e:
-            print(f"数据库连接失败: {e}")
+    def checkIfTablesExist(self):
+        with db:
+            artistExists = KemonoArtist.table_exists()
+            postExists = KemonoPost.table_exists()
+            imageExists = KemonoImage.table_exists()
+            assert artistExists == postExists and artistExists == imageExists
+            return artistExists
 
-    def create_tables(self):
-        try:
-            with db:
-                db.create_tables([Artist, KemonoPost, KemonoImage])
+    def create_tables_if_not_exist(self):
+        with db:
+            if not self.checkIfTablesExist():
+                db.create_tables([KemonoArtist, KemonoPost, KemonoImage])
                 print("所有表创建成功")
-        except Exception as e:
-            print(f"创建表失败: {e}")
 
     def parseDate(self, date_str):
         # 原始格式示例: "2023-10-05T14:48:00.000Z"
@@ -126,9 +127,9 @@ class DatabaseManager:
                 continue
             artistKemonoId = self.getArtistKemonoId(refPostJsonFilePath)
 
-            artists_SQLObj = Artist.select(Artist).where(
-                (Artist.kemono_artist_id == artistKemonoId) &
-                (Artist.service == postService)
+            artists_SQLObj = KemonoArtist.select(KemonoArtist).where(
+                (KemonoArtist.kemono_artist_id == artistKemonoId) &
+                (KemonoArtist.service == postService)
             )
 
             if artists_SQLObj:
@@ -200,7 +201,7 @@ class DatabaseManager:
             # print(f"成功处理帖子: {postDirPath})")
 
     def writeArtistDataToDatabase(self, artistKemonoId: str, artistName: str, postService: str):
-        return Artist.create(
+        return KemonoArtist.create(
             kemono_artist_id=artistKemonoId,
             name=artistName,
             service=postService
