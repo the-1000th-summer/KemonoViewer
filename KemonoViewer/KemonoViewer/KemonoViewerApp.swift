@@ -19,6 +19,9 @@ struct KemonoViewerApp: App {
         Window("my twitter window", id: "twitterViewer") {
             TwitterContentView()
         }
+        Window("my pixiv window", id: "pixivViewer") {
+            PixivContentView()
+        }
         Window("my kemono renamer", id: "renamer") {
             RenamerView()
         }

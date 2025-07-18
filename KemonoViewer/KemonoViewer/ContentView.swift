@@ -116,6 +116,9 @@ struct ContentView: View {
             Button("Twitter content") {
                 openWindow(id: "twitterViewer")
             }
+            Button("Pixiv content") {
+                openWindow(id: "pixivViewer")
+            }
             Button("Kemono Renamer") {
                 openWindow(id: "renamer")
             }

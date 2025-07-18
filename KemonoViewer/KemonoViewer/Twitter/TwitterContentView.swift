@@ -7,10 +7,70 @@
 
 import SwiftUI
 
+
+
 struct TwitterContentView: View {
+    
+    @State private var artistsData = [TwitterArtist_show]()
+    @State private var artistSelectedIndex: Int?
+    
+    @State private var selectedPostTab: PostTab = .listTab
+    @State private var selectedArtistTab: PostTab = .listTab
+    @State private var artistQueryConfig = ArtistQueryConfig()
+    
+    @State private var isLoadingArtists = false
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        HSplitView {
+            VStack {
+                HStack {
+                    PostTabView(selectedTab: $selectedArtistTab)
+                    ArtistQueryView(queryConfig: $artistQueryConfig)
+                }
+                
+                if isLoadingArtists {
+                    VStack {
+                        Spacer()
+                        LoadingDataView()
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity)
+                } else {
+                    if selectedArtistTab == .listTab {
+                        TwitterArtistListView(artistsData: $artistsData, artistSelectedIndex: $artistSelectedIndex)
+                            .frame(minWidth: 150)
+                    } else {
+                        Text("Not Implemented.")
+                    }
+                }
+            }
+            .onAppear {
+                isLoadingArtists = true
+                Task {
+                    artistsData = await TwitterDataReader.readArtistData(queryConfig: artistQueryConfig) ?? []
+                    isLoadingArtists = false
+                }
+            }
+            VStack {
+                HStack {
+                    PostTabView(selectedTab: $selectedPostTab)
+                    Divider()
+//                    PostQueryView(queryConfig: $postQueryConfig)
+                }
+                .padding([.leading, .trailing])
+                
+                TweetImageView(
+                    artistsData: $artistsData,
+                    artistSelectedIndex: artistSelectedIndex
+                )
+                .frame(maxWidth: .infinity)
+                .layoutPriority(1)
+            }
+            .layoutPriority(1)
+        }
     }
+    
+
 }
 
 #Preview {

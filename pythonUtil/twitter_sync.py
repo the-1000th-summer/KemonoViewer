@@ -37,13 +37,14 @@ class TwitterPost(BaseModel):
     content = TextField(column_name='content')
     tweet_date = TextField(column_name='tweet_date')
     tweet_url = TextField(column_name='tweet_url')
-    filename = TextField(column_name='filename')
+    filename = TextField(column_name='name')
     favorite_count = IntegerField(column_name='favorite_count')
     retweet_count = IntegerField(column_name='retweet_count')
     reply_count = IntegerField(column_name='reply_count')
+    viewed = BooleanField(column_name='viewed', default=False)
 
     class Meta:
-        table_name = 'twitterPost'
+        table_name = 'twitterImage'
 
 @singleton
 class TwitterSyncer:
