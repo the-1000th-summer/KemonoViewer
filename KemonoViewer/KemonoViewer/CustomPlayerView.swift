@@ -28,6 +28,7 @@ class CustomAVPlayerView: AVPlayerView {
             
             // 如果滚轮事件落在视频视图区域内，就吞掉（返回 nil）
             if self.bounds.contains(pointInView) {
+                print("nnnnil")
                 return nil
             }
             // 否则照常处理

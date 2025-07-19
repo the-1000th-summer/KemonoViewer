@@ -130,29 +130,19 @@ struct MessageView: View {
     }
 }
 
-struct FullScreenImageView: View {
+struct MediaView: View {
     
-    let imagePointerData: ImagePointerData
-    
-    @StateObject private var slideManager = SlideShowManager()
-    @StateObject private var playerManager = VideoPlayerManager()
-    
+    let mediaURL: URL
     @State private var transform = Transform()
-    
     @State private var fileNotFoundPresented = false
     
-    @State private var showSidebar = false
+    @Binding var insideView: Bool
     
-    @StateObject private var imagePointer = ImagePointer()
-    @StateObject private var messageManager = StatusMessageManager()
+    @ObservedObject var messageManager: StatusMessageManager
+    @ObservedObject var slideManager: SlideShowManager
+    @ObservedObject var playerManager: VideoPlayerManager
     
-    @State var insideCircle: Bool = false
-    @State private var zoom: CGFloat = 1
-    
-    @State private var insideView: Bool = false
-    
-    @ViewBuilder
-    private func mediaView(for mediaURL: URL) -> some View {
+    var body: some View {
         if (UTType(filenameExtension: mediaURL.pathExtension)?.conforms(to: .image) ?? false) {
             if (UTType(filenameExtension: mediaURL.pathExtension)?.conforms(to: .gif) ?? false) {
                 KFAnimatedImage(source:
@@ -210,6 +200,21 @@ struct FullScreenImageView: View {
             }
         }
     }
+}
+
+struct FullScreenImageView: View {
+    
+    let imagePointerData: ImagePointerData
+    
+    @StateObject private var imagePointer = ImagePointer()
+    
+    @StateObject private var slideManager = SlideShowManager()
+    @StateObject private var playerManager = VideoPlayerManager()
+    @StateObject private var messageManager = StatusMessageManager()
+    
+    @State private var showSidebar = false
+    
+    @State private var insideView: Bool = false
     
     @ViewBuilder
     private func changeImageButtonView() -> some View {
@@ -237,7 +242,13 @@ struct FullScreenImageView: View {
                 ZStack(alignment: .topTrailing) {
                     HSplitView {
                         if let currentURL = imagePointer.currentImageURL {
-                            mediaView(for: currentURL)
+                            MediaView(
+                                mediaURL: currentURL,
+                                insideView: $insideView,
+                                messageManager: messageManager,
+                                slideManager: slideManager,
+                                playerManager: playerManager
+                            )
                         } else {
                             Text("No attachments.")
                         }

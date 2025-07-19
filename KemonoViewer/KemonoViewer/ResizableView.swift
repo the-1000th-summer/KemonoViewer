@@ -82,8 +82,11 @@ struct ResizableView: ViewModifier {
             .onAppear {
                 
                 transform = Transform()
+//                print("add scale event")
                 scaleEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { event in
+                    print("scale event")
                     if insideView {
+//                        print("inside, scroll")
                         if event.scrollingDeltaY > 0 && transform.scaleInPercent < 500 {
                             transform.scaleInPercent += 10
                             messageManager.show(message: "\(transform.scaleInPercent)%")
@@ -105,10 +108,12 @@ struct ResizableView: ViewModifier {
             .onDisappear {
                 if let scaleEventMonitor {
                     NSEvent.removeMonitor(scaleEventMonitor)
-//                    NSEvent.removeMonitor(dragEventMonitor)
+                }
+                if let dragEventMonitor {
+                    NSEvent.removeMonitor(dragEventMonitor)
                 }
                 scaleEventMonitor = nil
-//                dragEventMonitor = nil
+                dragEventMonitor = nil
             }
     }
 }
