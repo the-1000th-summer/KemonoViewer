@@ -13,7 +13,6 @@ import Combine
 
 struct ShowSidebarButtonView: View {
     @Binding var showSidebar: Bool
-    @State private var isHoveringSidebarButton = false
     
     var body: some View {
         Button(action: {
@@ -31,12 +30,103 @@ struct ShowSidebarButtonView: View {
                 )
         }
         .buttonStyle(PlainButtonStyle())
-        .opacity(isHoveringSidebarButton ? 1 : 0)
-        .onHover { hovering in
-            isHoveringSidebarButton = hovering
-        }
         .padding(20)
-        .animation(.easeInOut, value: isHoveringSidebarButton)
+        .hoverVisible()
+    }
+}
+
+struct HoverOpacityModifier: ViewModifier {
+    @State private var isHovering = false
+    
+    func body(content: Content) -> some View {
+        content
+            .opacity(isHovering ? 1 : 0)
+            .onHover { hovering in
+                withAnimation(.easeInOut) {
+                    isHovering = hovering
+                }
+            }
+    }
+}
+
+// 扩展 View 提供便捷调用方式
+extension View {
+    func hoverVisible() -> some View {
+        modifier(HoverOpacityModifier())
+    }
+}
+
+
+struct PreviousButtonView: View {
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "chevron.left")
+                .font(.system(size: 50))
+                .padding(.horizontal, 20)
+                .padding(.vertical, 200)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(PlainButtonStyle())
+        .keyboardShortcut("[", modifiers: .command)
+        .hoverVisible()
+    }
+}
+
+struct NextButtonView: View {
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "chevron.right")
+                .font(.system(size: 50))
+                .padding(.horizontal, 20)
+                .padding(.vertical, 200)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(PlainButtonStyle())
+        .keyboardShortcut("]", modifiers: .command)
+        .hoverVisible()
+    }
+}
+
+struct ImagePathShowView: View {
+    @ObservedObject var imagePointer: ImagePointer
+    var body: some View {
+        VStack {
+            Spacer()
+            Text(
+                "\(imagePointer.currentPostDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")"
+            )
+            
+            .padding(5)
+            .frame(maxWidth: .infinity)
+            .background(
+                Rectangle()
+                    .fill(Color.black.opacity(0.7))
+            )
+            .hoverVisible()
+        }
+    }
+}
+
+struct MessageView: View {
+    @ObservedObject var messageManager: StatusMessageManager
+    var body: some View {
+        if messageManager.isVisible {
+            Text(messageManager.message)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.black.opacity(0.7))
+                )
+                .foregroundColor(.white)
+                .zIndex(1)   // 确保在顶层，保证在text消失时不会突然被图片覆盖
+                .padding(.top, 100)
+                .padding(.trailing, 100)
+        }
     }
 }
 
@@ -48,10 +138,6 @@ struct FullScreenImageView: View {
     @StateObject private var playerManager = VideoPlayerManager()
     
     @State private var transform = Transform()
-    
-    @State private var isHoveringPathView = false
-    @State private var isHoveringPreviousButton = false
-    @State private var isHoveringNextButton = false
     
     @State private var fileNotFoundPresented = false
     
@@ -126,19 +212,22 @@ struct FullScreenImageView: View {
     }
     
     @ViewBuilder
-    private func messageView() -> some View {
-        if messageManager.isVisible {
-            Text(messageManager.message)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.black.opacity(0.7))
-                )
-                .foregroundColor(.white)
-                .zIndex(1)   // 确保在顶层，保证在text消失时不会突然被图片覆盖
-                .padding(.top, 100)
-                .padding(.trailing, 100)
+    private func changeImageButtonView() -> some View {
+        VStack {
+            Spacer()
+            HStack {
+                PreviousButtonView {
+                    showPreviousImage()
+                    slideManager.restart()
+                }
+                Spacer()
+                NextButtonView {
+                    showNextImage()
+                    slideManager.restart()
+                }
+                
+            }
+            Spacer()
         }
     }
     
@@ -158,7 +247,6 @@ struct FullScreenImageView: View {
                             if slideManager.getMovieCompleted() {
                                 showNextImage()
                             }
-                            
                         }
                     }
                     // 保证视图扩展到窗口边缘，Text view在正常位置
@@ -169,52 +257,8 @@ struct FullScreenImageView: View {
                             window.toggleFullScreen(nil)
                         }
                     }
-                    
-                    messageView()
-                    
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Button(action: {
-                                showPreviousImage()
-                                slideManager.restart()
-                            }) {
-                                Image(systemName: "chevron.left")
-                                    .font(.system(size: 50))
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, 200)
-                                    .contentShape(Rectangle())
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                            .keyboardShortcut("[", modifiers: .command)
-                            .opacity(isHoveringPreviousButton ? 1 : 0)
-                            .onHover { hovering in
-                                isHoveringPreviousButton = hovering
-                            }
-                            .animation(.easeInOut, value: isHoveringPreviousButton)
-                            
-                            Spacer()
-                            
-                            Button(action: {
-                                showNextImage()
-                                slideManager.restart()
-                            }) {
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 50))
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, 200)
-                                    .contentShape(Rectangle())
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                            .keyboardShortcut("]", modifiers: .command)
-                            .opacity(isHoveringNextButton ? 1 : 0)
-                            .onHover { hovering in
-                                isHoveringNextButton = hovering
-                            }
-                            .animation(.easeInOut, value: isHoveringNextButton)
-                        }
-                        Spacer()
-                    }
+                    MessageView(messageManager: messageManager)
+                    changeImageButtonView()
                     ShowSidebarButtonView(showSidebar: $showSidebar)
                 }
                 .onHover { hovering in
@@ -231,34 +275,9 @@ struct FullScreenImageView: View {
                         .zIndex(1)
                 }
             }
-            
-            VStack {
-                Spacer()
-                Text(
-                    "\(imagePointer.currentPostDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")"
-                )
-                .opacity(isHoveringPathView ? 1 : 0)
-                .padding(5)
-                .frame(maxWidth: .infinity)
-                .background(
-                    Rectangle()
-                        .fill(Color.black.opacity(isHoveringPathView ? 0.7 : 0))
-                )
-                .onHover { hovering in
-                    isHoveringPathView = hovering
-                }
-                .animation(.easeInOut, value: isHoveringPathView)
-            }
+            ImagePathShowView(imagePointer: imagePointer)
         }
     }
-    
-    private func localFileExists(at url: URL) -> Bool {
-        guard url.isFileURL else { return false }
-        
-        let fileManager = FileManager.default
-        return fileManager.fileExists(atPath: url.path)
-    }
-
     
     private func showNextImage() {
         let dirURLChanged = imagePointer.nextImage()

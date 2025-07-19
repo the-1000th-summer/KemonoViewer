@@ -38,7 +38,7 @@ struct TweetImageView: View {
                                 GeometryReader { geo in
                                     Button(action: {
                                         
-                                        openWindow(id: "fsViewer", value: fsWindowData)
+//                                        openWindow(id: "fsViewer", value: fsWindowData)
                                     }) {
                                         PostImageGridItemView(
                                             size: geo.size.width,

@@ -32,7 +32,9 @@ struct KemonoViewerApp: App {
             } else {
                 Text("lack of image pointer data")
             }
-            
+        }
+        WindowGroup("my twitter fullScreen window", id: "twitterFsViewer") {
+            TwitterFullScreenImageView()
         }
     }
 }

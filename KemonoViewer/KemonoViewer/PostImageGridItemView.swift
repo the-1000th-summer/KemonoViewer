@@ -83,7 +83,7 @@ struct PostImageGridItemView: View {
                 .frame(width: size, height: size)
             } else if ((UTType(filenameExtension: imageURL.pathExtension)?.conforms(to: .image)) ?? false) {
                 KFImage(imageURL)
-//                    .placeholder { ProgressView() }
+                    .placeholder { ProgressView() }
                     .onFailureView {
                         VStack {
                             Image(systemName: "exclamationmark.triangle")

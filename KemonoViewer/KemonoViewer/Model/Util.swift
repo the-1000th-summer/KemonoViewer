@@ -76,3 +76,10 @@ func getSubdirectoryNames(atPath path: String) -> [String]? {
     let directoryURL = URL(filePath: path)
     return getSubdirectoryNames(atURL: directoryURL)
 }
+
+func localFileExists(at url: URL) -> Bool {
+    guard url.isFileURL else { return false }
+    
+    let fileManager = FileManager.default
+    return fileManager.fileExists(atPath: url.path)
+}
