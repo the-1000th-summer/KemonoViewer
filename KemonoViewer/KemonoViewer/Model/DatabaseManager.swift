@@ -41,8 +41,15 @@ struct KemonoImage {
 struct TwitterImage {
     static let imageTable = Table("twitterImage")
     static let e_imageId = Expression<Int64>("id")
+    static let e_tweetId = Expression<String>("tweet_id")
     static let e_artistIdRef = Expression<Int64>("artist_id")
+    static let e_content = Expression<String>("content")
+    static let e_tweetDate = Expression<String>("tweet_date")
     static let e_imageName = Expression<String>("name")
+    static let e_favoriteCount = Expression<Int64>("favorite_count")
+    static let e_retweetCount = Expression<Int64>("retweet_count")
+    static let e_replyCount = Expression<Int64>("reply_count")
+    static let e_viewed = Expression<Bool>("viewed")
 }
 
 final class TwitterDatabaseManager {
@@ -80,6 +87,24 @@ final class TwitterDatabaseManager {
     }
     
     func createTable(db: Connection) {
+    }
+    
+    func tagArtist(artistId: Int64, viewed: Bool) {
+        do {
+            try db?.run(TwitterImage.imageTable.filter(TwitterImage.e_artistIdRef == artistId).update(TwitterImage.e_viewed <- viewed))
+        } catch {
+            print(error.localizedDescription)
+            return
+        }
+    }
+    
+    func tagImage(imageId: Int64, viewed: Bool) async {
+        do {
+            try db?.run(TwitterImage.imageTable.filter(TwitterImage.e_imageId == imageId).update(TwitterImage.e_viewed <- viewed))
+        } catch {
+            print(error.localizedDescription)
+            return
+        }
     }
 }
 
@@ -627,19 +652,18 @@ final class TwitterDataReader {
         return nil
     }
     
-    static func readImageData(artistId: Int64) async -> [String]? {
-        var imagesName = [String]()
+    static func readImageData(artistId: Int64) async -> [TwitterImage_show]? {
         
         guard let db = TwitterDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return nil
         }
         do {
-            let imageNameQuery = TwitterImage.imageTable.select(TwitterImage.e_imageName).filter(TwitterImage.e_artistIdRef == artistId)
-            for row in try db.prepare(imageNameQuery) {
-                imagesName.append(row[TwitterImage.e_imageName])
+            let query = TwitterImage.imageTable.select(TwitterImage.e_imageId, TwitterImage.e_imageName, TwitterImage.e_viewed).filter(TwitterImage.e_artistIdRef == artistId)
+            
+            return try db.prepare(query).map {
+                return TwitterImage_show(id: $0[TwitterImage.e_imageId], name: $0[TwitterImage.e_imageName], viewed: $0[TwitterImage.e_viewed])
             }
-            return imagesName
         } catch {
             print(error.localizedDescription)
             return nil
@@ -650,5 +674,8 @@ final class TwitterDataReader {
 extension Notification.Name {
     static let updateNewViewedPostData = Notification.Name("UpdateNewViewedPostDataNotification")
     static let updateAllPostViewedStatus = Notification.Name("updateAllPostViewedStatusNotification")
+    
+    static let updateNewViewedTwitterImageData = Notification.Name("updateNewViewedTwitterImageDataNotification")
+    static let updateAllTwitterImageViewedStatus = Notification.Name("updateAllTwitterImageViewedStatusNotification")
 }
 

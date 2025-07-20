@@ -33,8 +33,13 @@ struct KemonoViewerApp: App {
                 Text("lack of image pointer data")
             }
         }
-        WindowGroup("my twitter fullScreen window", id: "twitterFsViewer") {
-            TwitterFullScreenImageView()
+        WindowGroup("my twitter fullScreen window", id: "twitterFsViewer", for: TwitterImagePointerData.self) { $imagePointerData in
+            if let imagePointerData {
+                TwitterFullScreenImageView(imagePointerData: imagePointerData)
+            } else {
+                Text("lack of image pointer data")
+            }
+            
         }
     }
 }

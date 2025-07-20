@@ -20,7 +20,7 @@ struct ImagePointerData: Hashable, Codable {
     let currentImageIndex: Int
 }
 
-final class ImagePointer: ObservableObject {
+final class KemonoImagePointer: ObservableObject {
 //    static let shared = ImagePointer()
     private var artistName = ""
     private var artistService = ""
@@ -35,8 +35,6 @@ final class ImagePointer: ObservableObject {
 
     @Published var currentImageURL: URL?
     @Published var currentPostDirURL: URL?
-    
-    private let inputFolderPath = "/Volumes/ACG/kemono"
     
     private static let postDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -112,7 +110,7 @@ final class ImagePointer: ObservableObject {
             let query = KemonoPost.postTable.select(KemonoPost.e_postDate).filter(KemonoPost.e_postId == postsId[currentPostIndex])
             guard let queryResult = try db.pluck(query) else { return "Unknown datetime" }
             let postDatetimeObj = queryResult[KemonoPost.e_postDate]
-            return ImagePointer.postDateFormatter.string(from: postDatetimeObj)
+            return KemonoImagePointer.postDateFormatter.string(from: postDatetimeObj)
         } catch {
             print(error.localizedDescription)
         }
@@ -121,7 +119,7 @@ final class ImagePointer: ObservableObject {
     
     private func getCurrentPostDirURL() -> URL? {
         if postsFolderName.isEmpty { return nil }
-        return URL(filePath: inputFolderPath)
+        return URL(filePath: Constants.kemonoBaseDir)
             .appendingPathComponent(artistName)
             .appendingPathComponent(postsFolderName[currentPostIndex])
     }

@@ -13,7 +13,7 @@ struct PostTextContentView: View {
     
     @State private var contentStr = ""
     @State private var comments: [KemonoComment]?
-    @ObservedObject var imagePointer: ImagePointer
+    @ObservedObject var imagePointer: KemonoImagePointer
     
     @State private var contentStrLoading = false
     @State private var isLoadingComments = false

@@ -92,13 +92,12 @@ struct NextButtonView: View {
 }
 
 struct ImagePathShowView: View {
-    @ObservedObject var imagePointer: ImagePointer
+    let pathText: String
+    
     var body: some View {
         VStack {
             Spacer()
-            Text(
-                "\(imagePointer.currentPostDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")"
-            )
+            Text(pathText)
             
             .padding(5)
             .frame(maxWidth: .infinity)
@@ -206,15 +205,14 @@ struct FullScreenImageView: View {
     
     let imagePointerData: ImagePointerData
     
-    @StateObject private var imagePointer = ImagePointer()
+    @StateObject private var imagePointer = KemonoImagePointer()
     
     @StateObject private var slideManager = SlideShowManager()
     @StateObject private var playerManager = VideoPlayerManager()
     @StateObject private var messageManager = StatusMessageManager()
     
     @State private var showSidebar = false
-    
-    @State private var insideView: Bool = false
+    @State private var insideView = false
     
     @ViewBuilder
     private func changeImageButtonView() -> some View {
@@ -286,7 +284,7 @@ struct FullScreenImageView: View {
                         .zIndex(1)
                 }
             }
-            ImagePathShowView(imagePointer: imagePointer)
+            ImagePathShowView(pathText: "\(imagePointer.currentPostDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")")
         }
     }
     

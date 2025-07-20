@@ -27,7 +27,39 @@ struct TwitterArtistListView: View {
                     .opacity(artistsData[artistIndex].hasNotViewed ? 1 : 0)
                 Text(artistsData[artistIndex].name)
             }
+            .contextMenu {
+                Button("标记为全部已读") {
+                    tagArtistAllImages(artistData: artistsData[artistIndex], viewed: true)
+                    NotificationCenter.default.post(
+                        name: .updateAllTwitterImageViewedStatus,
+                        object: nil
+                    )
+                    refreshArtistData(artistIndex: artistIndex, hasNotViewed: false)
+                }
+                Button("标记为全部未读") {
+                    tagArtistAllImages(artistData: artistsData[artistIndex], viewed: false)
+                    NotificationCenter.default.post(
+                        name: .updateAllTwitterImageViewedStatus,
+                        object: nil
+                    )
+                    refreshArtistData(artistIndex: artistIndex, hasNotViewed: true)
+                }
+            }
         }
+    }
+    
+    private func refreshArtistData(artistIndex: Int, hasNotViewed: Bool) {
+        let artistData = artistsData[artistIndex]
+        artistsData[artistIndex] = TwitterArtist_show(
+            name: artistData.name,
+            twitterId: artistData.twitterId,
+            hasNotViewed: hasNotViewed,
+            id: artistData.id
+        )
+    }
+    
+    private func tagArtistAllImages(artistData: TwitterArtist_show, viewed: Bool) {
+        TwitterDatabaseManager.shared.tagArtist(artistId: artistData.id, viewed: viewed)
     }
 }
 
