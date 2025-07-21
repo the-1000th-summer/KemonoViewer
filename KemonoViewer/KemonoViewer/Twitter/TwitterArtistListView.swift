@@ -32,7 +32,8 @@ struct TwitterArtistListView: View {
                     tagArtistAllImages(artistData: artistsData[artistIndex], viewed: true)
                     NotificationCenter.default.post(
                         name: .updateAllTwitterImageViewedStatus,
-                        object: nil
+                        object: nil,
+                        userInfo: ["artistIndex": artistIndex]
                     )
                     refreshArtistData(artistIndex: artistIndex, hasNotViewed: false)
                 }
@@ -40,7 +41,8 @@ struct TwitterArtistListView: View {
                     tagArtistAllImages(artistData: artistsData[artistIndex], viewed: false)
                     NotificationCenter.default.post(
                         name: .updateAllTwitterImageViewedStatus,
-                        object: nil
+                        object: nil,
+                        userInfo: ["artistIndex": artistIndex]
                     )
                     refreshArtistData(artistIndex: artistIndex, hasNotViewed: true)
                 }

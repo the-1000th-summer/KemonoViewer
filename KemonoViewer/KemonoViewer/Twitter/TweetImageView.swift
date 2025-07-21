@@ -22,12 +22,14 @@ struct TweetImageView: View {
     @State private var imagesData = [TwitterImage_show]()
     
     @Binding var artistsData: [TwitterArtist_show]
+    @Binding var autoScrollToFirstNotViewedImage: Bool
     var artistSelectedIndex: Int?
     
     var queryConfig: PostQueryConfig
     
     private let oneImageViewedPub = NotificationCenter.default.publisher(for: .updateNewViewedTwitterImageUI)
     private let allViewedPub = NotificationCenter.default.publisher(for: .updateAllTwitterImageViewedStatus)
+    private let fullScrViewClosedPub = NotificationCenter.default.publisher(for: .tweetFullScreenViewClosed)
     
     @ViewBuilder
     private func mainTweetImageView() -> some View {
@@ -39,59 +41,68 @@ struct TweetImageView: View {
             }
             
         } else {
-            ScrollView {
-                if let artistSelectedIndex {
-                    if imagesData.isEmpty {
-                        Text("No attachments in this post.")
-                    } else {
-                        LazyVGrid(columns: gridColumns) {
-                            ForEach(imagesData.indices, id: \.self) { imageIndex in
-                                GeometryReader { geo in
-                                    Button(action: {
-                                        updateDB_newViewedStatusImage(imageIndex: imageIndex, viewed: true)
-                                        updateUI_newViewedStatusImage(imageIndex: imageIndex, viewed: true)
-                                        let fsWindowData = TwitterImagePointerData(
-                                            artistsName: artistsData.map { $0.name },
-                                            artistsTwitterId: artistsData.map { $0.twitterId },
-                                            artistsId: artistsData.map { $0.id },
-                                            currentArtistImagesData: imagesData,
-                                            currentArtistIndex: artistSelectedIndex,
-                                            currentImageIndex: imageIndex,
-                                            imageQueryConfig: queryConfig
-                                        )
-                                        openWindow(id: "twitterFsViewer", value: fsWindowData)
-                                    }) {
-                                        ZStack(alignment: .topTrailing) {
-                                            PostImageGridItemView(
-                                                size: geo.size.width,
-                                                imageURL: getImageURL(artistId: artistsData[artistSelectedIndex].twitterId, imageName: imagesData[imageIndex].name),
+            ScrollViewReader { proxy in
+                ScrollView {
+                    if let artistSelectedIndex {
+                        if imagesData.isEmpty {
+                            Text("No attachments in this post.")
+                        } else {
+                            LazyVGrid(columns: gridColumns) {
+                                ForEach(imagesData.indices, id: \.self) { imageIndex in
+                                    GeometryReader { geo in
+                                        Button(action: {
+                                            updateDB_newViewedStatusImage(imageIndex: imageIndex, viewed: true)
+                                            updateUI_newViewedStatusImage(imageIndex: imageIndex, viewed: true)
+                                            let fsWindowData = TwitterImagePointerData(
+                                                artistsName: artistsData.map { $0.name },
+                                                artistsTwitterId: artistsData.map { $0.twitterId },
+                                                artistsId: artistsData.map { $0.id },
+                                                currentArtistImagesData: imagesData,
+                                                currentArtistIndex: artistSelectedIndex,
+                                                currentImageIndex: imageIndex,
+                                                imageQueryConfig: queryConfig
                                             )
-                                            Image(systemName: "circlebadge.fill")
-                                                .padding(.top, 2)
-                                                .padding(.trailing, 2)
-                                                .foregroundStyle(.blue)
-                                                .opacity(imagesData[imageIndex].viewed ? 0 : 1)
-                                        }
-                                        .contentShape(Rectangle())
-                                        .contextMenu {
-                                            Button("标记为未读") {
-                                                updateUI_newViewedStatusImage(imageIndex: imageIndex, viewed: false)
-                                                updateDB_newViewedStatusImage(imageIndex: imageIndex, viewed: false)
+                                            openWindow(id: "twitterFsViewer", value: fsWindowData)
+                                        }) {
+                                            ZStack(alignment: .topTrailing) {
+                                                PostImageGridItemView(
+                                                    size: geo.size.width,
+                                                    imageURL: getImageURL(artistId: artistsData[artistSelectedIndex].twitterId, imageName: imagesData[imageIndex].name),
+                                                )
+                                                Image(systemName: "circlebadge.fill")
+                                                    .padding(.top, 2)
+                                                    .padding(.trailing, 2)
+                                                    .foregroundStyle(.blue)
+                                                    .opacity(imagesData[imageIndex].viewed ? 0 : 1)
+                                            }
+                                            .contentShape(Rectangle())
+                                            .contextMenu {
+                                                Button("标记为未读") {
+                                                    updateUI_newViewedStatusImage(imageIndex: imageIndex, viewed: false)
+                                                    updateDB_newViewedStatusImage(imageIndex: imageIndex, viewed: false)
+                                                }
                                             }
                                         }
+                                        .buttonStyle(PlainButtonStyle())
                                     }
-                                    .buttonStyle(PlainButtonStyle())
+                                    .cornerRadius(8.0)
+                                    .aspectRatio(1, contentMode: .fit)
+                                    .id(Int(imageIndex))
                                 }
-                                .cornerRadius(8.0)
-                                .aspectRatio(1, contentMode: .fit)
+                            }
+                            .onAppear {
+                                if autoScrollToFirstNotViewedImage {
+                                    guard let firstNotViewedIndex: Int = imagesData.firstIndex(where: { !$0.viewed }) else { return }
+                                    proxy.scrollTo(firstNotViewedIndex, anchor: .top)
+                                }
                             }
                         }
-                    }
-                } else {
-                    HStack {
-                        Spacer()
-                        Text("Select artist to show image.")
-                        Spacer()
+                    } else {
+                        HStack {
+                            Spacer()
+                            Text("Select artist to show image.")
+                            Spacer()
+                        }
                     }
                 }
             }
@@ -101,26 +112,10 @@ struct TweetImageView: View {
     var body: some View {
         mainTweetImageView()
             .onChange(of: artistSelectedIndex) {
-                if let artistSelectedIndex {
-                    isLoadingData = true
-                    Task {
-                        imagesData = await TwitterDataReader.readImageData_async(artistId: artistsData[artistSelectedIndex].id, queryConfig: queryConfig) ?? []
-                        isLoadingData = false
-                    }
-                } else {
-                    imagesData = []
-                }
+                reloadImagesData()
             }
             .onChange(of: queryConfig) {
-                if let artistSelectedIndex {
-                    isLoadingData = true
-                    Task {
-                        imagesData = await TwitterDataReader.readImageData_async(artistId: artistsData[artistSelectedIndex].id, queryConfig: queryConfig) ?? []
-                        isLoadingData = false
-                    }
-                } else {
-                    imagesData = []
-                }
+                reloadImagesData()
             }
             .onReceive(oneImageViewedPub) { notification in
                 guard let currentArtistIndexFromPointer = notification.userInfo?["currentArtistIndex"] as? Int, let viewedImageIndex = notification.userInfo?["viewedImageIndex"] as? Int else { return }
@@ -130,8 +125,14 @@ struct TweetImageView: View {
                 }
             }
             .onReceive(allViewedPub) { notification in
-                Task {
-                    await refreshImagesData()
+                guard let doActionArtistIndex = notification.userInfo?["artistIndex"] as? Int else { return }
+                if doActionArtistIndex == artistSelectedIndex {
+                    reloadImagesData()
+                }
+            }
+            .onReceive(fullScrViewClosedPub) { _ in
+                if queryConfig.onlyShowNotViewedPost {
+                    reloadImagesData()
                 }
             }
     }
@@ -176,9 +177,13 @@ struct TweetImageView: View {
         )
     }
     
-    private func refreshImagesData() async {
+    private func reloadImagesData() {
         if let artistSelectedIndex {
-            imagesData = await TwitterDataReader.readImageData_async(artistId: artistsData[artistSelectedIndex].id, queryConfig: queryConfig) ?? []
+            isLoadingData = true
+            Task {
+                imagesData = await TwitterDataReader.readImageData_async(artistId: artistsData[artistSelectedIndex].id, queryConfig: queryConfig) ?? []
+                isLoadingData = false
+            }
         } else {
             imagesData = []
         }

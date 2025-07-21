@@ -86,6 +86,12 @@ struct TwitterFullScreenImageView: View {
             }
             ImagePathShowView(pathText: "\(imagePointer.currentArtistDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")")
         }
+        .onDisappear {
+            NotificationCenter.default.post(
+                name: .tweetFullScreenViewClosed,
+                object: nil
+            )
+        }
     }
     
     private func showNextImage() {

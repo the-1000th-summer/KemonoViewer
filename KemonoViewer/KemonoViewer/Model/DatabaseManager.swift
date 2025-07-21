@@ -559,5 +559,7 @@ extension Notification.Name {
     
     static let updateNewViewedTwitterImageUI = Notification.Name("updateNewViewedTwitterImageUINotification")
     static let updateAllTwitterImageViewedStatus = Notification.Name("updateAllTwitterImageViewedStatusNotification")
+    
+    static let tweetFullScreenViewClosed = Notification.Name("tweetFullScreenViewClosedNotification")
 }
 

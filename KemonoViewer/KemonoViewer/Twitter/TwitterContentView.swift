@@ -19,6 +19,7 @@ struct TwitterContentView: View {
     @State private var artistQueryConfig = ArtistQueryConfig()
     
     @State private var isLoadingArtists = false
+    @State private var autoScrollToFirstNotViewedImage = true
     
     @State private var postQueryConfig = PostQueryConfig()
     
@@ -56,11 +57,15 @@ struct TwitterContentView: View {
             VStack {
                 HStack {
                     PostQueryView(queryConfig: $postQueryConfig)
+                    Toggle(isOn: $autoScrollToFirstNotViewedImage) {
+                        Text("Scroll to first not viewed image")
+                    }
                 }
                 .padding([.leading, .trailing])
                 
                 TweetImageView(
                     artistsData: $artistsData,
+                    autoScrollToFirstNotViewedImage: $autoScrollToFirstNotViewedImage,
                     artistSelectedIndex: artistSelectedIndex, queryConfig: postQueryConfig
                 )
                 .frame(maxWidth: .infinity)
