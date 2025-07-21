@@ -8,7 +8,6 @@
 import SwiftUI
 
 
-
 struct TwitterContentView: View {
     
     @State private var artistsData = [TwitterArtist_show]()
@@ -21,7 +20,7 @@ struct TwitterContentView: View {
     @State private var isLoadingArtists = false
     @State private var autoScrollToFirstNotViewedImage = true
     
-    @State private var postQueryConfig = PostQueryConfig()
+    @State private var imageQueryConfig = TwitterImageQueryConfig()
     
     var body: some View {
         HSplitView {
@@ -56,7 +55,7 @@ struct TwitterContentView: View {
             }
             VStack {
                 HStack {
-                    PostQueryView(queryConfig: $postQueryConfig)
+                    PostQueryView(queryConfig: $imageQueryConfig)
                     Toggle(isOn: $autoScrollToFirstNotViewedImage) {
                         Text("Scroll to first not viewed image")
                     }
@@ -66,7 +65,7 @@ struct TwitterContentView: View {
                 TweetImageView(
                     artistsData: $artistsData,
                     autoScrollToFirstNotViewedImage: $autoScrollToFirstNotViewedImage,
-                    artistSelectedIndex: artistSelectedIndex, queryConfig: postQueryConfig
+                    artistSelectedIndex: artistSelectedIndex, queryConfig: imageQueryConfig
                 )
                 .frame(maxWidth: .infinity)
                 .layoutPriority(1)

@@ -109,61 +109,84 @@ final class TwitterDataReader {
         return nil
     }
     
-    static func readImageData(imagesId: [Int64], queryConfig: PostQueryConfig) -> [TwitterImage_show]? {
+    private static func getSortItemExpression(sortKey: TwitterImageQueryConfig.SortKey) -> any ExpressionType {
+        switch sortKey {
+        case .date:
+            return TwitterImage.e_tweetDate
+        case .tweetContent:
+            return TwitterImage.e_content
+        case .favoriteCount:
+            return TwitterImage.e_favoriteCount
+        case .retweetCount:
+            return TwitterImage.e_retweetCount
+        case .replyCount:
+            return TwitterImage.e_replyCount
+        }
+    }
+    
+    private static func returnData(query: Table, sortItemExpression: any ExpressionType) -> [TwitterImage_show]? {
         guard let db = TwitterDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return nil
         }
         do {
-            var query = TwitterImage.imageTable.select(TwitterImage.e_imageId, TwitterImage.e_imageName, TwitterImage.e_viewed).filter(imagesId.contains(TwitterImage.e_imageId))
-            
-            switch queryConfig.sortKey {
-            case .date:
-                query = query.order(queryConfig.sortOrder == .ascending ? TwitterImage.e_tweetDate.asc : TwitterImage.e_tweetDate.desc)
-            case .postTitle:
-                query = query.order(queryConfig.sortOrder == .ascending ? TwitterImage.e_content.asc : TwitterImage.e_content.desc)
+            if let sortItemExp_String = sortItemExpression as? SQLite.Expression<String> {
+                return try db.prepare(query).map {
+                    TwitterImage_show(
+                        id: $0[TwitterImage.e_imageId],
+                        name: $0[TwitterImage.e_imageName],
+                        viewed: $0[TwitterImage.e_viewed],
+                        sortItem: $0[sortItemExp_String]
+                    )
+                }
             }
-            
-            return try db.prepare(query).map {
-                return TwitterImage_show(id: $0[TwitterImage.e_imageId], name: $0[TwitterImage.e_imageName], viewed: $0[TwitterImage.e_viewed])
+            if let sortItemExp_Int64 = sortItemExpression as? SQLite.Expression<Int64> {
+                return try db.prepare(query).map {
+                    TwitterImage_show(
+                        id: $0[TwitterImage.e_imageId],
+                        name: $0[TwitterImage.e_imageName],
+                        viewed: $0[TwitterImage.e_viewed],
+                        sortItem: String($0[sortItemExp_Int64])
+                    )
+                }
             }
         } catch {
             print(error.localizedDescription)
-            return nil
         }
+        return nil
     }
     
-    static func readImageData_async(artistId: Int64, queryConfig: PostQueryConfig) async -> [TwitterImage_show]? {
+    static func readImageData(imagesId: [Int64], queryConfig: TwitterImageQueryConfig) -> [TwitterImage_show]? {
+        
+        var query = TwitterImage.imageTable.filter(imagesId.contains(TwitterImage.e_imageId))
+        
+        let sortItemExpression = getSortItemExpression(sortKey: queryConfig.sortKey)
+        
+        query = query.order(queryConfig.sortOrder == .ascending ? sortItemExpression.expression.asc : sortItemExpression.expression.desc)
+        query = query.select(TwitterImage.e_imageId, TwitterImage.e_imageName, TwitterImage.e_viewed, sortItemExpression)
+
+        return returnData(query: query, sortItemExpression: sortItemExpression)
+
+    }
+
+    static func readImageData(artistId: Int64, queryConfig: TwitterImageQueryConfig) -> [TwitterImage_show]? {
+        
+        var query = TwitterImage.imageTable.filter(TwitterImage.e_artistIdRef == artistId)
+        
+        let sortItemExpression = getSortItemExpression(sortKey: queryConfig.sortKey)
+        
+        if queryConfig.onlyShowNotViewedPost {
+            query = query.filter(TwitterImage.e_viewed == false)
+        }
+        
+        query = query.order(queryConfig.sortOrder == .ascending ? sortItemExpression.expression.asc : sortItemExpression.expression.desc)
+        query = query.select(TwitterImage.e_imageId, TwitterImage.e_imageName, TwitterImage.e_viewed, sortItemExpression)
+        
+        return returnData(query: query, sortItemExpression: sortItemExpression)
+    }
+    
+    static func readImageData_async(artistId: Int64, queryConfig: TwitterImageQueryConfig) async -> [TwitterImage_show]? {
         return readImageData(artistId: artistId, queryConfig: queryConfig)
     }
-    
-    static func readImageData(artistId: Int64, queryConfig: PostQueryConfig) -> [TwitterImage_show]? {
-        
-        guard let db = TwitterDatabaseManager.shared.getConnection() else {
-            print("数据库初始化失败")
-            return nil
-        }
-        do {
-            var query = TwitterImage.imageTable.select(TwitterImage.e_imageId, TwitterImage.e_imageName, TwitterImage.e_viewed).filter(TwitterImage.e_artistIdRef == artistId)
-            
-            switch queryConfig.sortKey {
-            case .date:
-                query = query.order(queryConfig.sortOrder == .ascending ? TwitterImage.e_tweetDate.asc : TwitterImage.e_tweetDate.desc)
-            case .postTitle:
-                query = query.order(queryConfig.sortOrder == .ascending ? TwitterImage.e_content.asc : TwitterImage.e_content.desc)
-            }
-            if queryConfig.onlyShowNotViewedPost {
-                query = query.filter(TwitterImage.e_viewed == false)
-            }
-            
-            return try db.prepare(query).map {
-                return TwitterImage_show(id: $0[TwitterImage.e_imageId], name: $0[TwitterImage.e_imageName], viewed: $0[TwitterImage.e_viewed])
-            }
-        } catch {
-            print(error.localizedDescription)
-            return nil
-        }
-    }
-    
-    
+
 }

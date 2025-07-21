@@ -17,7 +17,7 @@ struct TwitterImagePointerData: Hashable, Codable {
     let currentArtistIndex: Int
     let currentImageIndex: Int
     
-    let imageQueryConfig: PostQueryConfig
+    let imageQueryConfig: TwitterImageQueryConfig
 }
 
 final class TwitterImagePointer: ObservableObject {
@@ -27,7 +27,7 @@ final class TwitterImagePointer: ObservableObject {
     private var currentArtistImagesData = [TwitterImage_show]()
     private var currentArtistIndex = 0
     private var currentImageIndex = 0
-    private var imageQueryConfig = PostQueryConfig()
+    private var imageQueryConfig = TwitterImageQueryConfig()
     
     // 存储点击进入全屏时未浏览的image的信息
     private var notViewedImage_firstLoad: [Int: [Int64]] = [:]

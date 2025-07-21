@@ -11,6 +11,7 @@ struct TwitterImage_show: Hashable, Codable {
     let id: Int64
     let name: String
     let viewed: Bool
+    let sortItem: String
 }
 
 struct TweetImageView: View {
@@ -25,7 +26,7 @@ struct TweetImageView: View {
     @Binding var autoScrollToFirstNotViewedImage: Bool
     var artistSelectedIndex: Int?
     
-    var queryConfig: PostQueryConfig
+    var queryConfig: TwitterImageQueryConfig
     
     private let oneImageViewedPub = NotificationCenter.default.publisher(for: .updateNewViewedTwitterImageUI)
     private let allViewedPub = NotificationCenter.default.publisher(for: .updateAllTwitterImageViewedStatus)
@@ -74,6 +75,16 @@ struct TweetImageView: View {
                                                     .padding(.trailing, 2)
                                                     .foregroundStyle(.blue)
                                                     .opacity(imagesData[imageIndex].viewed ? 0 : 1)
+                                                VStack {
+                                                    Spacer()
+                                                    Text(imagesData[imageIndex].sortItem)
+                                                        .padding(5)
+                                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                                        .background(
+                                                            Rectangle()
+                                                                .fill(Color.black.opacity(0.7))
+                                                        )
+                                                }
                                             }
                                             .contentShape(Rectangle())
                                             .contextMenu {
@@ -145,7 +156,8 @@ struct TweetImageView: View {
         imagesData[imageIndex] = TwitterImage_show(
             id: originalImageData.id,
             name: originalImageData.name,
-            viewed: viewed
+            viewed: viewed,
+            sortItem: originalImageData.sortItem
         )
         
         Task {

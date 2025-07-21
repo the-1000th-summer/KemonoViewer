@@ -12,22 +12,6 @@ enum PostTab: String, CaseIterable {
     case imageTab = "square.grid.2x2"
 }
 
-struct PostQueryConfig: Equatable, Codable, Hashable {
-    enum SortKey: String, CaseIterable, Codable {
-        case date = "post_date"
-        case postTitle = "name"
-    }
-    
-    enum SortOrder: String, CaseIterable, Codable {
-        case ascending = "arrowtriangle.up.fill"
-        case descending = "arrowtriangle.down.fill"
-    }
-    
-    var sortKey: SortKey = .date
-    var sortOrder: SortOrder = .ascending
-    var onlyShowNotViewedPost: Bool = false
-}
-
 struct ArtistQueryConfig: Equatable {
     var onlyShowNotFullyViewedArtist: Bool = false
 }
@@ -271,18 +255,18 @@ struct ArtistQueryView: View {
     }
 }
 
-struct PostQueryView: View {
-    @Binding var queryConfig: PostQueryConfig
+struct PostQueryView<CertainQueryConfig: QueryConfig>: View {
+    @Binding var queryConfig: CertainQueryConfig
     
     var body: some View {
         HStack {
             Picker("Sort by", selection: $queryConfig.sortKey) {
-                ForEach(PostQueryConfig.SortKey.allCases, id: \.self) { sortKey in
+                ForEach(CertainQueryConfig.SortKey.allCases, id: \.self) { sortKey in
                     Text(sortKey.rawValue)
                 }
             }
             Picker("Order", selection: $queryConfig.sortOrder) {
-                ForEach(PostQueryConfig.SortOrder.allCases, id: \.self) { sortOrder in
+                ForEach(SortOrder.allCases, id: \.self) { sortOrder in
                     Image(systemName: sortOrder.rawValue)
                 }
             }
