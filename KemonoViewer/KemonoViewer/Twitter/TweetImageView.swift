@@ -24,7 +24,9 @@ struct TweetImageView: View {
     @Binding var artistsData: [TwitterArtist_show]
     var artistSelectedIndex: Int?
     
-    private let oneImageViewedPub = NotificationCenter.default.publisher(for: .updateNewViewedTwitterImageData)
+    var queryConfig: PostQueryConfig
+    
+    private let oneImageViewedPub = NotificationCenter.default.publisher(for: .updateNewViewedTwitterImageUI)
     private let allViewedPub = NotificationCenter.default.publisher(for: .updateAllTwitterImageViewedStatus)
     
     @ViewBuilder
@@ -46,14 +48,16 @@ struct TweetImageView: View {
                             ForEach(imagesData.indices, id: \.self) { imageIndex in
                                 GeometryReader { geo in
                                     Button(action: {
-                                        newViewedStatusImage(imageIndex: imageIndex, viewed: true)
+                                        updateDB_newViewedStatusImage(imageIndex: imageIndex, viewed: true)
+                                        updateUI_newViewedStatusImage(imageIndex: imageIndex, viewed: true)
                                         let fsWindowData = TwitterImagePointerData(
                                             artistsName: artistsData.map { $0.name },
                                             artistsTwitterId: artistsData.map { $0.twitterId },
                                             artistsId: artistsData.map { $0.id },
                                             currentArtistImagesData: imagesData,
                                             currentArtistIndex: artistSelectedIndex,
-                                            currentImageIndex: imageIndex
+                                            currentImageIndex: imageIndex,
+                                            imageQueryConfig: queryConfig
                                         )
                                         openWindow(id: "twitterFsViewer", value: fsWindowData)
                                     }) {
@@ -71,7 +75,8 @@ struct TweetImageView: View {
                                         .contentShape(Rectangle())
                                         .contextMenu {
                                             Button("标记为未读") {
-                                                newViewedStatusImage(imageIndex: imageIndex, viewed: false)
+                                                updateUI_newViewedStatusImage(imageIndex: imageIndex, viewed: false)
+                                                updateDB_newViewedStatusImage(imageIndex: imageIndex, viewed: false)
                                             }
                                         }
                                     }
@@ -99,7 +104,18 @@ struct TweetImageView: View {
                 if let artistSelectedIndex {
                     isLoadingData = true
                     Task {
-                        imagesData = await TwitterDataReader.readImageData(artistId: artistsData[artistSelectedIndex].id) ?? []
+                        imagesData = await TwitterDataReader.readImageData_async(artistId: artistsData[artistSelectedIndex].id, queryConfig: queryConfig) ?? []
+                        isLoadingData = false
+                    }
+                } else {
+                    imagesData = []
+                }
+            }
+            .onChange(of: queryConfig) {
+                if let artistSelectedIndex {
+                    isLoadingData = true
+                    Task {
+                        imagesData = await TwitterDataReader.readImageData_async(artistId: artistsData[artistSelectedIndex].id, queryConfig: queryConfig) ?? []
                         isLoadingData = false
                     }
                 } else {
@@ -107,8 +123,11 @@ struct TweetImageView: View {
                 }
             }
             .onReceive(oneImageViewedPub) { notification in
-                guard let viewedImageIndex = notification.userInfo?["viewedImageIndex"] as? Int else { return }
-                newViewedStatusImage(imageIndex: viewedImageIndex, viewed: true)
+                guard let currentArtistIndexFromPointer = notification.userInfo?["currentArtistIndex"] as? Int, let viewedImageIndex = notification.userInfo?["viewedImageIndex"] as? Int else { return }
+                // TweetImageView中选中的artist与全屏中浏览的artist可能不同
+                if artistSelectedIndex == currentArtistIndexFromPointer {
+                    updateUI_newViewedStatusImage(imageIndex: viewedImageIndex, viewed: true)
+                }
             }
             .onReceive(allViewedPub) { notification in
                 Task {
@@ -117,7 +136,7 @@ struct TweetImageView: View {
             }
     }
     
-    private func newViewedStatusImage(imageIndex: Int, viewed: Bool) {
+    private func updateUI_newViewedStatusImage(imageIndex: Int, viewed: Bool) {
         let originalImageData = imagesData[imageIndex]
         // prevent unnecessary view refreshing and database reading
         guard originalImageData.viewed != viewed else { return }
@@ -130,6 +149,11 @@ struct TweetImageView: View {
         
         Task {
             await checkForArtistNotViewed()
+        }
+    }
+    
+    private func updateDB_newViewedStatusImage(imageIndex: Int, viewed: Bool) {
+        Task {
             await TwitterDatabaseManager.shared.tagImage(imageId: imagesData[imageIndex].id, viewed: viewed)
         }
     }
@@ -154,7 +178,7 @@ struct TweetImageView: View {
     
     private func refreshImagesData() async {
         if let artistSelectedIndex {
-            imagesData = await TwitterDataReader.readImageData(artistId: artistsData[artistSelectedIndex].id) ?? []
+            imagesData = await TwitterDataReader.readImageData_async(artistId: artistsData[artistSelectedIndex].id, queryConfig: queryConfig) ?? []
         } else {
             imagesData = []
         }

@@ -12,13 +12,13 @@ enum PostTab: String, CaseIterable {
     case imageTab = "square.grid.2x2"
 }
 
-struct PostQueryConfig: Equatable {
-    enum SortKey: String, CaseIterable {
+struct PostQueryConfig: Equatable, Codable, Hashable {
+    enum SortKey: String, CaseIterable, Codable {
         case date = "post_date"
         case postTitle = "name"
     }
     
-    enum SortOrder: String, CaseIterable {
+    enum SortOrder: String, CaseIterable, Codable {
         case ascending = "arrowtriangle.up.fill"
         case descending = "arrowtriangle.down.fill"
     }

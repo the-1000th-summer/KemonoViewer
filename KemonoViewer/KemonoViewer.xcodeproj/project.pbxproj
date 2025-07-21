@@ -34,6 +34,7 @@
 		79A627B12E15130B001F0212 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 79A627B02E15130B001F0212 /* Kingfisher */; };
 		79A627B32E1567D9001F0212 /* PostImageGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A627B22E1567D9001F0212 /* PostImageGridItemView.swift */; };
 		79A811A02E2CD8020002D8C9 /* TweetTextContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A8119F2E2CD8020002D8C9 /* TweetTextContentView.swift */; };
+		79A811AA2E2D30790002D8C9 /* TwitterDatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A811A92E2D30790002D8C9 /* TwitterDatabaseManager.swift */; };
 		79AB58222E1FFD990038384E /* VideoPlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79AB58212E1FFD990038384E /* VideoPlayerManager.swift */; };
 		79B3E8A92E10EEE600567F1D /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79B3E8A82E10EEE600567F1D /* DatabaseManager.swift */; };
 		79B3E8B52E10F1F800567F1D /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 79B3E8B42E10F1F800567F1D /* SQLite */; };
@@ -94,6 +95,7 @@
 		7986A1352E105EE40008D9EE /* KContentSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KContentSelectView.swift; sourceTree = "<group>"; };
 		79A627B22E1567D9001F0212 /* PostImageGridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostImageGridItemView.swift; sourceTree = "<group>"; };
 		79A8119F2E2CD8020002D8C9 /* TweetTextContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetTextContentView.swift; sourceTree = "<group>"; };
+		79A811A92E2D30790002D8C9 /* TwitterDatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterDatabaseManager.swift; sourceTree = "<group>"; };
 		79AB58212E1FFD990038384E /* VideoPlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerManager.swift; sourceTree = "<group>"; };
 		79B3E8A82E10EEE600567F1D /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		79CB7BD62E124A9300FA7B77 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 			children = (
 				79B3E8A82E10EEE600567F1D /* DatabaseManager.swift */,
 				792D1F902E2B4B4300E763E8 /* KemonoImagePointer.swift */,
+				79A811A92E2D30790002D8C9 /* TwitterDatabaseManager.swift */,
 				792D1F942E2B6B3500E763E8 /* TwitterImagePointer.swift */,
 				7974C51D2E1829B700F8E9DC /* DatabaseManagerExt.swift */,
 				79CB7BD62E124A9300FA7B77 /* Util.swift */,
@@ -398,6 +401,7 @@
 				797E4A172E118DF700C3A3A7 /* FullScreenImageView.swift in Sources */,
 				79AB58222E1FFD990038384E /* VideoPlayerManager.swift in Sources */,
 				79F502302E2A9F38005C682D /* TwitterFullScreenImageView.swift in Sources */,
+				79A811AA2E2D30790002D8C9 /* TwitterDatabaseManager.swift in Sources */,
 				79B3E8A92E10EEE600567F1D /* DatabaseManager.swift in Sources */,
 				794890502E27F10D00AA96A1 /* PostTextContentView.swift in Sources */,
 				7973DC192E14451200ECD58D /* PostGridView.swift in Sources */,

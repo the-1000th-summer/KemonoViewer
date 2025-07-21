@@ -20,6 +20,8 @@ struct TwitterContentView: View {
     
     @State private var isLoadingArtists = false
     
+    @State private var postQueryConfig = PostQueryConfig()
+    
     var body: some View {
         HSplitView {
             VStack {
@@ -53,15 +55,13 @@ struct TwitterContentView: View {
             }
             VStack {
                 HStack {
-                    PostTabView(selectedTab: $selectedPostTab)
-                    Divider()
-//                    PostQueryView(queryConfig: $postQueryConfig)
+                    PostQueryView(queryConfig: $postQueryConfig)
                 }
                 .padding([.leading, .trailing])
                 
                 TweetImageView(
                     artistsData: $artistsData,
-                    artistSelectedIndex: artistSelectedIndex
+                    artistSelectedIndex: artistSelectedIndex, queryConfig: postQueryConfig
                 )
                 .frame(maxWidth: .infinity)
                 .layoutPriority(1)

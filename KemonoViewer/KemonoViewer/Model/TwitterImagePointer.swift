@@ -16,6 +16,8 @@ struct TwitterImagePointerData: Hashable, Codable {
     let currentArtistImagesData: [TwitterImage_show]
     let currentArtistIndex: Int
     let currentImageIndex: Int
+    
+    let imageQueryConfig: PostQueryConfig
 }
 
 final class TwitterImagePointer: ObservableObject {
@@ -25,6 +27,10 @@ final class TwitterImagePointer: ObservableObject {
     private var currentArtistImagesData = [TwitterImage_show]()
     private var currentArtistIndex = 0
     private var currentImageIndex = 0
+    private var imageQueryConfig = PostQueryConfig()
+    
+    // 存储点击进入全屏时未浏览的image的信息
+    private var notViewedImage_firstLoad: [Int: [Int64]] = [:]
     
     @Published var currentImageURL: URL?
     @Published var currentArtistDirURL: URL?
@@ -36,9 +42,12 @@ final class TwitterImagePointer: ObservableObject {
         self.currentArtistImagesData = imagePointerData.currentArtistImagesData
         self.currentArtistIndex = imagePointerData.currentArtistIndex
         self.currentImageIndex = imagePointerData.currentImageIndex
+        self.imageQueryConfig = imagePointerData.imageQueryConfig
         
         currentArtistDirURL = getCurrentArtistDirURL()
         currentImageURL = getCurrentImageURL()
+        
+        notViewedImage_firstLoad[self.currentArtistIndex] = self.currentArtistImagesData.map { $0.id }
     }
     
     func getArtistName() -> String {
@@ -68,10 +77,13 @@ final class TwitterImagePointer: ObservableObject {
             }
             
             currentArtistIndex += 1
-            Task {
-                currentArtistImagesData = await TwitterDataReader.readImageData(artistId: artistsId[currentArtistIndex]) ?? []
-            }
             
+            if notViewedImage_firstLoad[currentArtistIndex] != nil {
+                currentArtistImagesData = TwitterDataReader.readImageData(imagesId: notViewedImage_firstLoad[currentArtistIndex]!, queryConfig: imageQueryConfig) ?? []
+            } else {
+                currentArtistImagesData = TwitterDataReader.readImageData(artistId: artistsId[currentArtistIndex], queryConfig: imageQueryConfig) ?? []
+                notViewedImage_firstLoad[currentArtistIndex] = currentArtistImagesData.map { $0.id }
+            }
             
             // no attachments in current artist
             if currentArtistImagesData.isEmpty {
@@ -86,7 +98,6 @@ final class TwitterImagePointer: ObservableObject {
             currentImageIndex = 0
             currentArtistDirURL = getCurrentArtistDirURL()
             currentImageURL = getCurrentImageURL()
-            
             notiPost_newViewedImage()
             return true
         }
@@ -96,10 +107,14 @@ final class TwitterImagePointer: ObservableObject {
     }
     
     private func notiPost_newViewedImage() {
+        Task {
+            await TwitterDatabaseManager.shared.tagImage(imageId: currentArtistImagesData[currentImageIndex].id, viewed: true)
+        }
+        
         NotificationCenter.default.post(
-            name: .updateNewViewedTwitterImageData,
+            name: .updateNewViewedTwitterImageUI,
             object: nil,
-            userInfo: ["viewedImageIndex": currentImageIndex]
+            userInfo: ["currentArtistIndex": currentArtistIndex, "viewedImageIndex": currentImageIndex]
         )
     }
     
@@ -117,14 +132,16 @@ final class TwitterImagePointer: ObservableObject {
                 return false
             }
             currentArtistIndex -= 1
-            Task {
-                currentArtistImagesData = await TwitterDataReader.readImageData(artistId: artistsId[currentArtistIndex]) ?? []
+            if notViewedImage_firstLoad[currentArtistIndex] != nil {
+                currentArtistImagesData = TwitterDataReader.readImageData(imagesId: notViewedImage_firstLoad[currentArtistIndex]!, queryConfig: imageQueryConfig) ?? []
+            } else {
+                currentArtistImagesData = TwitterDataReader.readImageData(artistId: artistsId[currentArtistIndex], queryConfig: imageQueryConfig) ?? []
+                notViewedImage_firstLoad[currentArtistIndex] = currentArtistImagesData.map { $0.id }
             }
             
             // no attachments in current post
             if currentArtistImagesData.isEmpty {
                 currentImageIndex = -2
-
                 currentArtistDirURL = getCurrentArtistDirURL()
                 currentImageURL = nil
                 return true
@@ -132,11 +149,13 @@ final class TwitterImagePointer: ObservableObject {
             
             // has attachment(s) in current post
             currentImageIndex = currentArtistImagesData.count - 1
+            
             currentArtistDirURL = getCurrentArtistDirURL()
             currentImageURL = getCurrentImageURL()
-            
             notiPost_newViewedImage()
+            
             return true
+            
         }
         currentArtistDirURL = nil
         currentImageURL = nil
