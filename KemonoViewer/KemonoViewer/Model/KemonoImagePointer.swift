@@ -67,7 +67,6 @@ final class KemonoImagePointer: ObservableObject {
         
         currentPostDirURL = getCurrentPostDirURL()
         currentImageURL = getCurrentImageURL()
-//        return nil
     }
     
     func isFirstPost() -> Bool {

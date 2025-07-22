@@ -184,6 +184,7 @@
 		7986A10B2E105E1C0008D9EE /* KemonoViewer */ = {
 			isa = PBXGroup;
 			children = (
+				798F07E82E2F700E008434CB /* Kemono */,
 				79F5022C2E2A917A005C682D /* Pixiv */,
 				79F502232E2A1D7C005C682D /* Twitter */,
 				793F7A9E2E25346600B74A77 /* Renamer */,
@@ -194,6 +195,17 @@
 				798F07E62E2F3CEB008434CB /* ScrollToTopBottomButton.swift */,
 				798575682E1EA0D2009B0CDA /* GifImageView.swift */,
 				79E04C842E167470002932DF /* ResizableView.swift */,
+				792837912E2923D40093E179 /* CustomPlayerView.swift */,
+				7950F0BD2E20A68B00B57A95 /* ContextMenuView.swift */,
+				7948904D2E279C4100AA96A1 /* LoadingDataView.swift */,
+				7986A10A2E105E1C0008D9EE /* KemonoViewerApp.swift */,
+			);
+			path = KemonoViewer;
+			sourceTree = "<group>";
+		};
+		798F07E82E2F700E008434CB /* Kemono */ = {
+			isa = PBXGroup;
+			children = (
 				7986A1352E105EE40008D9EE /* KContentSelectView.swift */,
 				7959EE352E11104600ACF809 /* ArtistListView.swift */,
 				79DE3AAA2E268D670018412B /* ArtistRichListView.swift */,
@@ -203,15 +215,11 @@
 				797E4A142E11649200C3A3A7 /* PostGridItemView.swift */,
 				797E4A122E11634700C3A3A7 /* PostImageView.swift */,
 				79A627B22E1567D9001F0212 /* PostImageGridItemView.swift */,
-				792837912E2923D40093E179 /* CustomPlayerView.swift */,
 				797E4A162E118DF700C3A3A7 /* FullScreenImageView.swift */,
-				7948904F2E27F10D00AA96A1 /* PostTextContentView.swift */,
 				7928378D2E28BFD90093E179 /* PostCommentView.swift */,
-				7950F0BD2E20A68B00B57A95 /* ContextMenuView.swift */,
-				7948904D2E279C4100AA96A1 /* LoadingDataView.swift */,
-				7986A10A2E105E1C0008D9EE /* KemonoViewerApp.swift */,
+				7948904F2E27F10D00AA96A1 /* PostTextContentView.swift */,
 			);
-			path = KemonoViewer;
+			path = Kemono;
 			sourceTree = "<group>";
 		};
 		79B3E8A72E10EED400567F1D /* Model */ = {
