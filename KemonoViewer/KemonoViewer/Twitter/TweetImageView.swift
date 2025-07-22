@@ -22,6 +22,9 @@ struct TweetImageView: View {
     @State private var isLoadingData: Bool = false
     @State private var imagesData = [TwitterImage_show]()
     
+    @State private var scrollToTop = false
+    @State private var scrollToBottom = false
+    
     @Binding var artistsData: [TwitterArtist_show]
     @Binding var autoScrollToFirstNotViewedImage: Bool
     var artistSelectedIndex: Int?
@@ -42,79 +45,96 @@ struct TweetImageView: View {
             }
             
         } else {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    if let artistSelectedIndex {
-                        if imagesData.isEmpty {
-                            Text("No attachments in this post.")
-                        } else {
-                            LazyVGrid(columns: gridColumns) {
-                                ForEach(imagesData.indices, id: \.self) { imageIndex in
-                                    GeometryReader { geo in
-                                        Button(action: {
-                                            updateDB_newViewedStatusImage(imageIndex: imageIndex, viewed: true)
-                                            updateUI_newViewedStatusImage(imageIndex: imageIndex, viewed: true)
-                                            let fsWindowData = TwitterImagePointerData(
-                                                artistsName: artistsData.map { $0.name },
-                                                artistsTwitterId: artistsData.map { $0.twitterId },
-                                                artistsId: artistsData.map { $0.id },
-                                                currentArtistImagesData: imagesData,
-                                                currentArtistIndex: artistSelectedIndex,
-                                                currentImageIndex: imageIndex,
-                                                imageQueryConfig: queryConfig
-                                            )
-                                            openWindow(id: "twitterFsViewer", value: fsWindowData)
-                                        }) {
-                                            ZStack(alignment: .topTrailing) {
-                                                PostImageGridItemView(
-                                                    size: geo.size.width,
-                                                    imageURL: getImageURL(artistId: artistsData[artistSelectedIndex].twitterId, imageName: imagesData[imageIndex].name),
+            ZStack(alignment: .bottomTrailing) {
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        if let artistSelectedIndex {
+                            if imagesData.isEmpty {
+                                Text("No attachments in this post.")
+                            } else {
+                                LazyVGrid(columns: gridColumns) {
+                                    Color.clear
+                                        .frame(height: 0)
+                                        .id("topAnchor")
+                                    ForEach(imagesData.indices, id: \.self) { imageIndex in
+                                        GeometryReader { geo in
+                                            Button(action: {
+                                                updateDB_newViewedStatusImage(imageIndex: imageIndex, viewed: true)
+                                                updateUI_newViewedStatusImage(imageIndex: imageIndex, viewed: true)
+                                                let fsWindowData = TwitterImagePointerData(
+                                                    artistsName: artistsData.map { $0.name },
+                                                    artistsTwitterId: artistsData.map { $0.twitterId },
+                                                    artistsId: artistsData.map { $0.id },
+                                                    currentArtistImagesData: imagesData,
+                                                    currentArtistIndex: artistSelectedIndex,
+                                                    currentImageIndex: imageIndex,
+                                                    imageQueryConfig: queryConfig
                                                 )
-                                                Image(systemName: "circlebadge.fill")
-                                                    .padding(.top, 2)
-                                                    .padding(.trailing, 2)
-                                                    .foregroundStyle(.blue)
-                                                    .opacity(imagesData[imageIndex].viewed ? 0 : 1)
-                                                VStack {
-                                                    Spacer()
-                                                    Text(imagesData[imageIndex].sortItem)
-                                                        .padding(5)
-                                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                                        .background(
-                                                            Rectangle()
-                                                                .fill(Color.black.opacity(0.7))
-                                                        )
+                                                openWindow(id: "twitterFsViewer", value: fsWindowData)
+                                            }) {
+                                                ZStack(alignment: .topTrailing) {
+                                                    PostImageGridItemView(
+                                                        size: geo.size.width,
+                                                        imageURL: getImageURL(artistId: artistsData[artistSelectedIndex].twitterId, imageName: imagesData[imageIndex].name),
+                                                    )
+                                                    Image(systemName: "circlebadge.fill")
+                                                        .padding(.top, 2)
+                                                        .padding(.trailing, 2)
+                                                        .foregroundStyle(.blue)
+                                                        .opacity(imagesData[imageIndex].viewed ? 0 : 1)
+                                                    VStack {
+                                                        Spacer()
+                                                        Text(imagesData[imageIndex].sortItem)
+                                                            .padding(5)
+                                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                                            .background(
+                                                                Rectangle()
+                                                                    .fill(Color.black.opacity(0.7))
+                                                            )
+                                                    }
+                                                }
+                                                .contentShape(Rectangle())
+                                                .contextMenu {
+                                                    Button("标记为未读") {
+                                                        updateUI_newViewedStatusImage(imageIndex: imageIndex, viewed: false)
+                                                        updateDB_newViewedStatusImage(imageIndex: imageIndex, viewed: false)
+                                                    }
                                                 }
                                             }
-                                            .contentShape(Rectangle())
-                                            .contextMenu {
-                                                Button("标记为未读") {
-                                                    updateUI_newViewedStatusImage(imageIndex: imageIndex, viewed: false)
-                                                    updateDB_newViewedStatusImage(imageIndex: imageIndex, viewed: false)
-                                                }
-                                            }
+                                            .buttonStyle(PlainButtonStyle())
                                         }
-                                        .buttonStyle(PlainButtonStyle())
+                                        .cornerRadius(8.0)
+                                        .aspectRatio(1, contentMode: .fit)
+                                        .id(Int(imageIndex))
                                     }
-                                    .cornerRadius(8.0)
-                                    .aspectRatio(1, contentMode: .fit)
-                                    .id(Int(imageIndex))
+                                    Color.clear
+                                        .frame(height: 0)
+                                        .id("bottomAnchor")
+                                }
+                                .onAppear {
+                                    if autoScrollToFirstNotViewedImage {
+                                        guard let firstNotViewedIndex: Int = imagesData.firstIndex(where: { !$0.viewed }) else { return }
+                                        proxy.scrollTo(firstNotViewedIndex, anchor: .top)
+                                    }
+                                }
+                                .onChange(of: scrollToTop) {
+                                    proxy.scrollTo("topAnchor", anchor: .top)
+                                }
+                                .onChange(of: scrollToBottom) {
+                                    proxy.scrollTo("bottomAnchor", anchor: .bottom)
                                 }
                             }
-                            .onAppear {
-                                if autoScrollToFirstNotViewedImage {
-                                    guard let firstNotViewedIndex: Int = imagesData.firstIndex(where: { !$0.viewed }) else { return }
-                                    proxy.scrollTo(firstNotViewedIndex, anchor: .top)
-                                }
+                        } else {
+                            HStack {
+                                Spacer()
+                                Text("Select artist to show image.")
+                                Spacer()
                             }
-                        }
-                    } else {
-                        HStack {
-                            Spacer()
-                            Text("Select artist to show image.")
-                            Spacer()
                         }
                     }
+                }
+                if artistSelectedIndex != nil {
+                    ScrollToTopBottomButton(scrollToTop: $scrollToTop, scrollToBottom: $scrollToBottom)
                 }
             }
         }
@@ -146,6 +166,9 @@ struct TweetImageView: View {
                     reloadImagesData()
                 }
             }
+            
+        
+        
     }
     
     private func updateUI_newViewedStatusImage(imageIndex: Int, viewed: Bool) {

@@ -31,6 +31,7 @@
 		7986A10D2E105E1C0008D9EE /* KemonoViewerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7986A10A2E105E1C0008D9EE /* KemonoViewerApp.swift */; };
 		7986A10E2E105E1C0008D9EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7986A1072E105E1C0008D9EE /* Assets.xcassets */; };
 		7986A1362E105EE40008D9EE /* KContentSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7986A1352E105EE40008D9EE /* KContentSelectView.swift */; };
+		798F07E72E2F3CEB008434CB /* ScrollToTopBottomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 798F07E62E2F3CEB008434CB /* ScrollToTopBottomButton.swift */; };
 		79A627B12E15130B001F0212 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 79A627B02E15130B001F0212 /* Kingfisher */; };
 		79A627B32E1567D9001F0212 /* PostImageGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A627B22E1567D9001F0212 /* PostImageGridItemView.swift */; };
 		79A811A02E2CD8020002D8C9 /* TweetTextContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A8119F2E2CD8020002D8C9 /* TweetTextContentView.swift */; };
@@ -94,6 +95,7 @@
 		7986A1092E105E1C0008D9EE /* KemonoViewer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KemonoViewer.entitlements; sourceTree = "<group>"; };
 		7986A10A2E105E1C0008D9EE /* KemonoViewerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KemonoViewerApp.swift; sourceTree = "<group>"; };
 		7986A1352E105EE40008D9EE /* KContentSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KContentSelectView.swift; sourceTree = "<group>"; };
+		798F07E62E2F3CEB008434CB /* ScrollToTopBottomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollToTopBottomButton.swift; sourceTree = "<group>"; };
 		79A627B22E1567D9001F0212 /* PostImageGridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostImageGridItemView.swift; sourceTree = "<group>"; };
 		79A8119F2E2CD8020002D8C9 /* TweetTextContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetTextContentView.swift; sourceTree = "<group>"; };
 		79A811A92E2D30790002D8C9 /* TwitterDatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterDatabaseManager.swift; sourceTree = "<group>"; };
@@ -189,6 +191,7 @@
 				7986A1072E105E1C0008D9EE /* Assets.xcassets */,
 				7986A1092E105E1C0008D9EE /* KemonoViewer.entitlements */,
 				7986A1082E105E1C0008D9EE /* ContentView.swift */,
+				798F07E62E2F3CEB008434CB /* ScrollToTopBottomButton.swift */,
 				798575682E1EA0D2009B0CDA /* GifImageView.swift */,
 				79E04C842E167470002932DF /* ResizableView.swift */,
 				7986A1352E105EE40008D9EE /* KContentSelectView.swift */,
@@ -432,6 +435,7 @@
 				7959EE362E11104600ACF809 /* ArtistListView.swift in Sources */,
 				7950F0BE2E20A68B00B57A95 /* ContextMenuView.swift in Sources */,
 				79A627B32E1567D9001F0212 /* PostImageGridItemView.swift in Sources */,
+				798F07E72E2F3CEB008434CB /* ScrollToTopBottomButton.swift in Sources */,
 				79F502272E2A1DA6005C682D /* TwitterContentView.swift in Sources */,
 				79E04C852E167470002932DF /* ResizableView.swift in Sources */,
 			);
