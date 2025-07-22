@@ -37,6 +37,8 @@ struct KContentSelectView: View {
     @State private var isLoadingArtists = false
     @State private var isLoadingPosts = false
     
+    @State private var autoScrollToFirstNotViewedImage = true
+    
     private let pub = NotificationCenter.default.publisher(for: .updateNewViewedPostData)
     private let viewedPub = NotificationCenter.default.publisher(for: .updateAllPostViewedStatus)
     
@@ -100,6 +102,9 @@ struct KContentSelectView: View {
                         PostTabView(selectedTab: $selectedTab)
                         Divider()
                         PostQueryView(queryConfig: $postQueryConfig)
+                        Toggle(isOn: $autoScrollToFirstNotViewedImage) {
+                            Text("Scroll to first not viewed image")
+                        }
                     }
                     .padding([.leading, .trailing])
                     
@@ -117,10 +122,12 @@ struct KContentSelectView: View {
                                     postsData: $postsData,
                                     artistSelectedData: (artistSelectedIndex != nil) ? artistsData[artistSelectedIndex!] : nil,
                                     postSelectedIndex: $postSelectedIndex,
+                                    autoScrollToFirstNotViewedImage: $autoScrollToFirstNotViewedImage,
                                     queryConfig: postQueryConfig,
                                     tagNotViewAction: { postIndex, viewed in
                                         newViewedStatusPost(postIndex: postIndex, viewed: viewed)
                                     }
+                                    
                                 )
                                 .frame(minWidth: 200, maxWidth: .infinity)
                             } else {

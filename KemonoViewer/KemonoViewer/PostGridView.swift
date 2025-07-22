@@ -26,47 +26,77 @@ struct PostGridView: View {
     @State private var capturedSize: CGSize = .zero
     @State private var hasCapturedInitialSize = false
     
+    @State private var scrollToTop = false
+    @State private var scrollToBottom = false
+    
+    @Binding var autoScrollToFirstNotViewedImage: Bool
+    
     var queryConfig: PostQueryConfig
     let tagNotViewAction: (Int, Bool) -> Void
 
     
-    
     var body: some View {
-        ScrollView {
-            if let artistSelectedData {
-                LazyVGrid(columns: gridColumns) {
-                    ForEach(postsData.indices, id: \.self) { postIndex in
-                        GeometryReader { geo in
-                            Button(action: {
-                                postSelectedIndex = postIndex
-                            }) {
-                                PostGridItemView(
-                                    postData: postsData[postIndex],
-                                    size: geo.size.width,
-                                    initialSize: capturedSize.width,
-                                    imageURL: getPostCoverURL(postIndex: postIndex, artistName: artistSelectedData.name),
-                                    isSelected: postSelectedIndex == postIndex
-                                )
-                                .contentShape(Rectangle())
-                                .preference(key: SizePreferenceKey.self, value: geo.size)
-                                .contextMenu {
-                                    Button("标记为未读") {
-                                        tagNotViewAction(postIndex, false)
+        ZStack(alignment: .bottomTrailing) {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    if let artistSelectedData {
+                        LazyVGrid(columns: gridColumns) {
+                            Color.clear
+                                .frame(height: 0)
+                                .id("topAnchor")
+                            ForEach(postsData.indices, id: \.self) { postIndex in
+                                GeometryReader { geo in
+                                    Button(action: {
+                                        postSelectedIndex = postIndex
+                                    }) {
+                                        PostGridItemView(
+                                            postData: postsData[postIndex],
+                                            size: geo.size.width,
+                                            initialSize: capturedSize.width,
+                                            imageURL: getPostCoverURL(postIndex: postIndex, artistName: artistSelectedData.name),
+                                            isSelected: postSelectedIndex == postIndex
+                                        )
+                                        .contentShape(Rectangle())
+                                        .preference(key: SizePreferenceKey.self, value: geo.size)
+                                        .contextMenu {
+                                            Button("标记为未读") {
+                                                tagNotViewAction(postIndex, false)
+                                            }
+                                        }
                                     }
+                                    .buttonStyle(PlainButtonStyle())
                                 }
+                                .cornerRadius(8.0)
+                                .aspectRatio(1, contentMode: .fit)
+                                .id(Int(postIndex))
                             }
-                            .buttonStyle(PlainButtonStyle())
+                            Color.clear
+                                .frame(height: 0)
+                                .id("bottomAnchor")
                         }
-                        .cornerRadius(8.0)
-                        .aspectRatio(1, contentMode: .fit)
+                        .onAppear {
+                            if autoScrollToFirstNotViewedImage {
+                                guard let firstNotViewedIndex: Int = postsData.firstIndex(where: { !$0.viewed }) else { return }
+                                proxy.scrollTo(firstNotViewedIndex, anchor: .top)
+                            }
+                        }
+                        .onChange(of: scrollToTop) {
+                            proxy.scrollTo("topAnchor", anchor: .top)
+                        }
+                        .onChange(of: scrollToBottom) {
+                            proxy.scrollTo("bottomAnchor", anchor: .bottom)
+                        }
+                        .onPreferenceChange(SizePreferenceKey.self) { size in
+                            if !hasCapturedInitialSize && size != .zero {
+                                capturedSize = size
+                                hasCapturedInitialSize = true
+                            }
+                        }
                     }
                 }
-                .onPreferenceChange(SizePreferenceKey.self) { size in
-                    if !hasCapturedInitialSize && size != .zero {
-                        capturedSize = size
-                        hasCapturedInitialSize = true
-                    }
-                }
+            }
+            if artistSelectedData != nil {
+                ScrollToTopBottomButton(scrollToTop: $scrollToTop, scrollToBottom: $scrollToBottom)
             }
         }
     }
