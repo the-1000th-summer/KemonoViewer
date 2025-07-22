@@ -88,7 +88,7 @@ final class TwitterDataReader {
                 
                 WHERE EXISTS (
                   SELECT 1
-                  FROM "kemonoPost"
+                  FROM "twitterImage"
                   WHERE "artist_id" = a."id" AND "viewed" = 0
                 )
                 """

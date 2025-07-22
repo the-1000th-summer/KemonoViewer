@@ -55,7 +55,7 @@ struct TwitterFullScreenImageView: View {
                                 playerManager: playerManager
                             )
                         } else {
-                            Text("No attachments.")
+                            Text(imagePointerData.imageQueryConfig.onlyShowNotViewedPost ? "No new image in this artist." : "No image in this artist.")
                         }
                     }
                     // 保证视图扩展到窗口边缘，Text view在正常位置

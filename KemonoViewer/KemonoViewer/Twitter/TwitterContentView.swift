@@ -47,11 +47,7 @@ struct TwitterContentView: View {
                 }
             }
             .onAppear {
-                isLoadingArtists = true
-                Task {
-                    artistsData = await TwitterDataReader.readArtistData(queryConfig: artistQueryConfig) ?? []
-                    isLoadingArtists = false
-                }
+                reloadArtistData()
             }
             VStack {
                 HStack {
@@ -72,8 +68,19 @@ struct TwitterContentView: View {
             }
             .layoutPriority(1)
         }
+        .onChange(of: artistQueryConfig) {
+            reloadArtistData()
+        }
     }
     
+    private func reloadArtistData() {
+        artistSelectedIndex = nil
+        isLoadingArtists = true
+        Task {
+            artistsData = await TwitterDataReader.readArtistData(queryConfig: artistQueryConfig) ?? []
+            isLoadingArtists = false
+        }
+    }
 
 }
 

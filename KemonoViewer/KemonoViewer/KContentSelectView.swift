@@ -103,7 +103,7 @@ struct KContentSelectView: View {
                         Divider()
                         PostQueryView(queryConfig: $postQueryConfig)
                         Toggle(isOn: $autoScrollToFirstNotViewedImage) {
-                            Text("Scroll to first not viewed image")
+                            Text("Scroll to first not viewed post")
                         }
                     }
                     .padding([.leading, .trailing])

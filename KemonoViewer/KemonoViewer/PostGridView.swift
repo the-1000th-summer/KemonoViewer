@@ -40,10 +40,10 @@ struct PostGridView: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     if let artistSelectedData {
+                        Color.clear
+                            .frame(height: 0)
+                            .id("topAnchor")
                         LazyVGrid(columns: gridColumns) {
-                            Color.clear
-                                .frame(height: 0)
-                                .id("topAnchor")
                             ForEach(postsData.indices, id: \.self) { postIndex in
                                 GeometryReader { geo in
                                     Button(action: {
@@ -70,9 +70,6 @@ struct PostGridView: View {
                                 .aspectRatio(1, contentMode: .fit)
                                 .id(Int(postIndex))
                             }
-                            Color.clear
-                                .frame(height: 0)
-                                .id("bottomAnchor")
                         }
                         .onAppear {
                             if autoScrollToFirstNotViewedImage {
@@ -92,6 +89,9 @@ struct PostGridView: View {
                                 hasCapturedInitialSize = true
                             }
                         }
+                        Color.clear
+                            .frame(height: 0)
+                            .id("bottomAnchor")
                     }
                 }
             }

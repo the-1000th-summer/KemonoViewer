@@ -52,10 +52,10 @@ struct TweetImageView: View {
                             if imagesData.isEmpty {
                                 Text("No attachments in this post.")
                             } else {
+                                Color.clear
+                                    .frame(height: 0)
+                                    .id("topAnchor")
                                 LazyVGrid(columns: gridColumns) {
-                                    Color.clear
-                                        .frame(height: 0)
-                                        .id("topAnchor")
                                     ForEach(imagesData.indices, id: \.self) { imageIndex in
                                         GeometryReader { geo in
                                             Button(action: {
@@ -107,9 +107,6 @@ struct TweetImageView: View {
                                         .aspectRatio(1, contentMode: .fit)
                                         .id(Int(imageIndex))
                                     }
-                                    Color.clear
-                                        .frame(height: 0)
-                                        .id("bottomAnchor")
                                 }
                                 .onAppear {
                                     if autoScrollToFirstNotViewedImage {
@@ -123,6 +120,9 @@ struct TweetImageView: View {
                                 .onChange(of: scrollToBottom) {
                                     proxy.scrollTo("bottomAnchor", anchor: .bottom)
                                 }
+                                Color.clear
+                                    .frame(height: 0)
+                                    .id("bottomAnchor")
                             }
                         } else {
                             HStack {
