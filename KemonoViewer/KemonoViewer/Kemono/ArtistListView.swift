@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Artist_show: Hashable {
+struct Artist_show: Hashable, Codable {
     let name: String
     let service: String
     let kemonoId: String

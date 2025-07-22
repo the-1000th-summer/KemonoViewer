@@ -10,21 +10,19 @@ import SQLite
 
 struct ImagePointerData: Hashable, Codable {
     var id = UUID()
-    let artistName: String
-    let artistService: String
-    let artistKemonoId: String
+    let artistsData: [Artist_show]
     let postsFolderName: [String]
     let postsId: [Int64]
     let currentPostImagesName: [String]
+    
+    let currentArtistIndex: Int
     let currentPostIndex: Int
     let currentImageIndex: Int
 }
 
 final class KemonoImagePointer: ObservableObject {
 //    static let shared = ImagePointer()
-    private var artistName = ""
-    private var artistService = ""
-    private var artistKemonoId = ""
+    private var artistsData = [Artist_show]()
     private var postsFolderName = [String]()
     private var postsId = [Int64]()
     private var currentPostImagesName = [String]()
@@ -54,13 +52,12 @@ final class KemonoImagePointer: ObservableObject {
 //    }
     
     func loadData(imagePointerData: ImagePointerData) {
-        print("loadData")
-        self.artistName = imagePointerData.artistName
-        self.artistService = imagePointerData.artistService
-        self.artistKemonoId = imagePointerData.artistKemonoId
+        self.artistsData = imagePointerData.artistsData
         self.postsFolderName = imagePointerData.postsFolderName
         self.postsId = imagePointerData.postsId
         self.currentPostImagesName = imagePointerData.currentPostImagesName
+        
+        self.currentArtistIndex = imagePointerData.currentArtistIndex
         self.currentPostIndex = imagePointerData.currentPostIndex
         self.currentImageIndex = imagePointerData.currentImageIndex
         
@@ -78,13 +75,13 @@ final class KemonoImagePointer: ObservableObject {
     }
     
     func getArtistName() -> String {
-        return artistName
+        return artistsData[currentArtistIndex].name
     }
     func getArtistService() -> String {
-        return artistService
+        return artistsData[currentArtistIndex].service
     }
     func getArtistKemonoId() -> String {
-        return artistKemonoId
+        return artistsData[currentArtistIndex].kemonoId
     }
     func getCurrentPostKemonoId() -> String? {
         guard let db = DatabaseManager.shared.getConnection() else {
@@ -119,7 +116,7 @@ final class KemonoImagePointer: ObservableObject {
     private func getCurrentPostDirURL() -> URL? {
         if postsFolderName.isEmpty { return nil }
         return URL(filePath: Constants.kemonoBaseDir)
-            .appendingPathComponent(artistName)
+            .appendingPathComponent(artistsData[currentArtistIndex].name)
             .appendingPathComponent(postsFolderName[currentPostIndex])
     }
     

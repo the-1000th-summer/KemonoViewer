@@ -330,15 +330,20 @@ struct FullScreenImageView: View {
 
 #Preview {
     FullScreenImageView(imagePointerData: ImagePointerData(
-        artistName: "Belko",
-        artistService: "fanbox",
-        artistKemonoId: "39123643",
+        artistsData: [Artist_show(
+            name: "Belko",
+            service: "fanbox",
+            kemonoId: "39123643",
+            hasNotViewed: false,
+            id: 1
+        )],
         postsFolderName: ["[fanbox][2019-10-25]2019.10.25 オリジナル系原寸PNG+ラフ"],
         postsId: [2],
         currentPostImagesName: ["1.png"],
+        currentArtistIndex: 0,
         currentPostIndex: 0,
-        currentImageIndex: 0)
-    )
+        currentImageIndex: 0
+    ))
 }
 
 
