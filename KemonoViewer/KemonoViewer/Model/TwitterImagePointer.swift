@@ -10,9 +10,7 @@ import SQLite
 
 struct TwitterImagePointerData: Hashable, Codable {
     var id = UUID()
-    let artistsName: [String]
-    let artistsTwitterId: [String]
-    let artistsId: [Int64]
+    let artistsData: [TwitterArtist_show]
     let currentArtistImagesData: [TwitterImage_show]
     let currentArtistIndex: Int
     let currentImageIndex: Int
@@ -21,9 +19,7 @@ struct TwitterImagePointerData: Hashable, Codable {
 }
 
 final class TwitterImagePointer: ObservableObject {
-    private var artistsName = [String]()
-    private var artistsTwitterId = [String]()
-    private var artistsId = [Int64]()
+    private var artistsData = [TwitterArtist_show]()
     private var currentArtistImagesData = [TwitterImage_show]()
     private var currentArtistIndex = 0
     private var currentImageIndex = 0
@@ -36,9 +32,7 @@ final class TwitterImagePointer: ObservableObject {
     @Published var currentArtistDirURL: URL?
     
     func loadData(imagePointerData: TwitterImagePointerData) {
-        self.artistsName = imagePointerData.artistsName
-        self.artistsTwitterId = imagePointerData.artistsTwitterId
-        self.artistsId = imagePointerData.artistsId
+        self.artistsData = imagePointerData.artistsData
         self.currentArtistImagesData = imagePointerData.currentArtistImagesData
         self.currentArtistIndex = imagePointerData.currentArtistIndex
         self.currentImageIndex = imagePointerData.currentImageIndex
@@ -51,10 +45,10 @@ final class TwitterImagePointer: ObservableObject {
     }
     
     func getArtistName() -> String {
-        return artistsName[currentArtistIndex]
+        return artistsData[currentArtistIndex].name
     }
     func getArtistTwitterId() -> String {
-        return artistsTwitterId[currentArtistIndex]
+        return artistsData[currentArtistIndex].twitterId
     }
     
     func getCurrentArtistImagesId() -> Int64 {
@@ -72,7 +66,7 @@ final class TwitterImagePointer: ObservableObject {
         // last attachment in all artist OR no attachment in current post
         if currentImageIndex == currentArtistImagesData.count - 1 || currentImageIndex == -2 {
             // last attachment in last post
-            if currentArtistIndex == artistsName.count - 1 {
+            if currentArtistIndex == artistsData.count - 1 {
                 return false
             }
             
@@ -81,7 +75,7 @@ final class TwitterImagePointer: ObservableObject {
             if notViewedImage_firstLoad[currentArtistIndex] != nil {
                 currentArtistImagesData = TwitterDataReader.readImageData(imagesId: notViewedImage_firstLoad[currentArtistIndex]!, queryConfig: imageQueryConfig) ?? []
             } else {
-                currentArtistImagesData = TwitterDataReader.readImageData(artistId: artistsId[currentArtistIndex], queryConfig: imageQueryConfig) ?? []
+                currentArtistImagesData = TwitterDataReader.readImageData(artistId: artistsData[currentArtistIndex].id, queryConfig: imageQueryConfig) ?? []
                 notViewedImage_firstLoad[currentArtistIndex] = currentArtistImagesData.map { $0.id }
             }
             
@@ -107,14 +101,55 @@ final class TwitterImagePointer: ObservableObject {
     }
     
     private func notiPost_newViewedImage() {
+        refreshImageData(imageIndex: currentImageIndex, viewed: true)
+        
         Task {
             await TwitterDatabaseManager.shared.tagImage(imageId: currentArtistImagesData[currentImageIndex].id, viewed: true)
         }
         
-        NotificationCenter.default.post(
-            name: .updateNewViewedTwitterImageUI,
-            object: nil,
-            userInfo: ["currentArtistIndex": currentArtistIndex, "viewedImageIndex": currentImageIndex]
+        Task {
+            let currentArtistShouldUpdateUI = await checkForArtistNotViewed()
+            
+            await MainActor.run {
+                NotificationCenter.default.post(
+                    name: .updateNewViewedTwitterImageUI,
+                    object: nil,
+                    userInfo: [
+                        "currentArtistIndex": currentArtistIndex,
+                        "viewedImageId": currentArtistImagesData[currentImageIndex].id,
+                        "currentArtistShouldUpdateUI": currentArtistShouldUpdateUI
+                    ]
+                )
+            }
+        }
+    }
+    
+    private func refreshImageData(imageIndex: Int, viewed: Bool) {
+        let imageData = currentArtistImagesData[imageIndex]
+        currentArtistImagesData[imageIndex] = TwitterImage_show(
+            id: imageData.id,
+            name: imageData.name,
+            viewed: viewed,
+            sortItem: imageData.sortItem
+        )
+    }
+    
+    private func checkForArtistNotViewed() async -> Bool {
+        let artist_hasNotViewed = artistsData[currentArtistIndex].hasNotViewed
+        let images_hasNotViewed = currentArtistImagesData.contains { !$0.viewed }
+        if artist_hasNotViewed != images_hasNotViewed {
+            refreshArtistData(artistIndex: currentArtistIndex, hasNotViewed: true)
+        }
+        return artist_hasNotViewed != images_hasNotViewed
+    }
+    
+    private func refreshArtistData(artistIndex: Int, hasNotViewed: Bool) {
+        let artistData = artistsData[artistIndex]
+        artistsData[artistIndex] = TwitterArtist_show(
+            name: artistData.name,
+            twitterId: artistData.twitterId,
+            hasNotViewed: hasNotViewed,
+            id: artistData.id,
         )
     }
     
@@ -136,7 +171,7 @@ final class TwitterImagePointer: ObservableObject {
             if notViewedImage_firstLoad[currentArtistIndex] != nil {
                 currentArtistImagesData = TwitterDataReader.readImageData(imagesId: notViewedImage_firstLoad[currentArtistIndex]!, queryConfig: imageQueryConfig) ?? []
             } else {
-                currentArtistImagesData = TwitterDataReader.readImageData(artistId: artistsId[currentArtistIndex], queryConfig: imageQueryConfig) ?? []
+                currentArtistImagesData = TwitterDataReader.readImageData(artistId: artistsData[currentArtistIndex].id, queryConfig: imageQueryConfig) ?? []
                 notViewedImage_firstLoad[currentArtistIndex] = currentArtistImagesData.map { $0.id }
             }
             
@@ -166,8 +201,8 @@ final class TwitterImagePointer: ObservableObject {
     
     
     private func getCurrentArtistDirURL() -> URL? {
-        if artistsName.isEmpty { return nil }
-        return URL(filePath: Constants.twitterBaseDir).appendingPathComponent(artistsTwitterId[currentArtistIndex])
+        if artistsData.isEmpty { return nil }
+        return URL(filePath: Constants.twitterBaseDir).appendingPathComponent(artistsData[currentArtistIndex].twitterId)
     }
     
     private func getCurrentImageURL() -> URL? {
@@ -195,7 +230,7 @@ final class TwitterImagePointer: ObservableObject {
     }
     
     func isLastPost() -> Bool {
-        return currentArtistIndex == artistsName.count - 1 && (currentImageIndex == -2 || currentImageIndex == currentArtistImagesData.count - 1)
+        return currentArtistIndex == artistsData.count - 1 && (currentImageIndex == -2 || currentImageIndex == currentArtistImagesData.count - 1)
     }
     
     func loadContent() async -> TweetContent_show? {

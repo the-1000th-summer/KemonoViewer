@@ -61,10 +61,9 @@ struct TweetImageView: View {
                                             Button(action: {
                                                 updateDB_newViewedStatusImage(imageIndex: imageIndex, viewed: true)
                                                 updateUI_newViewedStatusImage(imageIndex: imageIndex, viewed: true)
+                                                updateUI_newViewedStatusArtist()
                                                 let fsWindowData = TwitterImagePointerData(
-                                                    artistsName: artistsData.map { $0.name },
-                                                    artistsTwitterId: artistsData.map { $0.twitterId },
-                                                    artistsId: artistsData.map { $0.id },
+                                                    artistsData: artistsData,
                                                     currentArtistImagesData: imagesData,
                                                     currentArtistIndex: artistSelectedIndex,
                                                     currentImageIndex: imageIndex,
@@ -96,8 +95,9 @@ struct TweetImageView: View {
                                                 .contentShape(Rectangle())
                                                 .contextMenu {
                                                     Button("标记为未读") {
-                                                        updateUI_newViewedStatusImage(imageIndex: imageIndex, viewed: false)
                                                         updateDB_newViewedStatusImage(imageIndex: imageIndex, viewed: false)
+                                                        updateUI_newViewedStatusImage(imageIndex: imageIndex, viewed: false)
+                                                        updateUI_newViewedStatusArtist()
                                                     }
                                                 }
                                             }
@@ -149,10 +149,13 @@ struct TweetImageView: View {
                 reloadImagesData()
             }
             .onReceive(oneImageViewedPub) { notification in
-                guard let currentArtistIndexFromPointer = notification.userInfo?["currentArtistIndex"] as? Int, let viewedImageIndex = notification.userInfo?["viewedImageIndex"] as? Int else { return }
+                guard let currentArtistIndexFromPointer = notification.userInfo?["currentArtistIndex"] as? Int, let viewedImageId = notification.userInfo?["viewedImageId"] as? Int64, let currentArtistShouldUpdateUI = notification.userInfo?["currentArtistShouldUpdateUI"] as? Bool else { return }
                 // TweetImageView中选中的artist与全屏中浏览的artist可能不同
                 if artistSelectedIndex == currentArtistIndexFromPointer {
-                    updateUI_newViewedStatusImage(imageIndex: viewedImageIndex, viewed: true)
+                    updateUI_newViewedStatusImage(imageId: viewedImageId, viewed: true)
+                }
+                if currentArtistShouldUpdateUI {
+                    refreshArtistData(artistIndex: currentArtistIndexFromPointer, hasNotViewed: false)
                 }
             }
             .onReceive(allViewedPub) { notification in
@@ -167,8 +170,12 @@ struct TweetImageView: View {
                 }
             }
             
-        
-        
+    }
+    
+    private func updateUI_newViewedStatusImage(imageId: Int64, viewed: Bool) {
+        if let imageIndex = imagesData.firstIndex(where: { $0.id == imageId }) {
+            updateUI_newViewedStatusImage(imageIndex: imageIndex, viewed: viewed)
+        }
     }
     
     private func updateUI_newViewedStatusImage(imageIndex: Int, viewed: Bool) {
@@ -182,7 +189,9 @@ struct TweetImageView: View {
             viewed: viewed,
             sortItem: originalImageData.sortItem
         )
-        
+    }
+    
+    private func updateUI_newViewedStatusArtist() {
         Task {
             await checkForArtistNotViewed()
         }
@@ -198,7 +207,9 @@ struct TweetImageView: View {
         let artist_hasNotViewed = artistsData[artistSelectedIndex!].hasNotViewed
         let images_hasNotViewed = imagesData.contains { !$0.viewed }
         if artist_hasNotViewed != images_hasNotViewed {
-            refreshArtistData(artistIndex: artistSelectedIndex!, hasNotViewed: images_hasNotViewed)
+            await MainActor.run {
+                refreshArtistData(artistIndex: artistSelectedIndex!, hasNotViewed: images_hasNotViewed)
+            }
         }
     }
     

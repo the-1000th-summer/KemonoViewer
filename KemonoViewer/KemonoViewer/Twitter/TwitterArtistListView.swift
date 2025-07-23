@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TwitterArtist_show: Hashable {
+struct TwitterArtist_show: Hashable, Codable {
     let name: String
     let twitterId: String
     let hasNotViewed: Bool
