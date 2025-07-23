@@ -41,6 +41,7 @@ struct KContentSelectView: View {
     
     private let pub = NotificationCenter.default.publisher(for: .updateNewViewedPostUI)
     private let viewedPub = NotificationCenter.default.publisher(for: .updateAllPostViewedStatus)
+    private let fullScrViewClosedPub = NotificationCenter.default.publisher(for: .kemonoFullScreenViewClosed)
     
     var body: some View {
         VStack {
@@ -192,18 +193,28 @@ struct KContentSelectView: View {
                 }
             }
             .onReceive(pub) { notification in
-                guard let currentArtistIndexFromPointer = notification.userInfo?["currentArtistIndex"] as? Int, let viewedPostId = notification.userInfo?["viewedPostId"] as? Int64, let currentArtistShouldUpdateUI = notification.userInfo?["currentArtistShouldUpdateUI"] as? Bool else { return }
+                guard let currentArtistIdFromPointer = notification.userInfo?["currentArtistId"] as? Int64, let viewedPostId = notification.userInfo?["viewedPostId"] as? Int64, let currentArtistShouldUpdateUI = notification.userInfo?["currentArtistShouldUpdateUI"] as? Bool else { return }
                 // PostImageView中选中的artist与全屏中浏览的artist可能不同
-                if artistSelectedIndex == currentArtistIndexFromPointer {
-                    updateUI_newViewedStatusPost(postId: viewedPostId, viewed: true)
+                if let artistSelectedIndex {
+                    if artistsData[artistSelectedIndex].id == currentArtistIdFromPointer {
+                        updateUI_newViewedStatusPost(postId: viewedPostId, viewed: true)
+                    }
                 }
                 if currentArtistShouldUpdateUI {
-                    refreshArtistData(artistIndex: currentArtistIndexFromPointer, hasNotViewed: false)
+                    refreshArtistData(artistId: currentArtistIdFromPointer, hasNotViewed: false)
                 }
             }
             .onReceive(viewedPub) { notification in
                 Task {
                     await reloadPostsData()
+                }
+            }
+            .onReceive(fullScrViewClosedPub) { _ in
+                if postQueryConfig.onlyShowNotViewedPost {
+                    postSelectedIndex = nil
+                    Task {
+                        await reloadPostsData()
+                    }
                 }
             }
         }
@@ -265,6 +276,12 @@ struct KContentSelectView: View {
             await MainActor.run {
                 refreshArtistData(artistIndex: artistSelectedIndex!, hasNotViewed: posts_hasNotViewed)
             }
+        }
+    }
+    
+    private func refreshArtistData(artistId: Int64, hasNotViewed: Bool) {
+        if let artistIndex = artistsData.firstIndex(where: { $0.id == artistId }) {
+            refreshArtistData(artistIndex: artistIndex, hasNotViewed: hasNotViewed)
         }
     }
     

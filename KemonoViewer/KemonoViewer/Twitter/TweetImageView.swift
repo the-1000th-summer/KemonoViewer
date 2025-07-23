@@ -149,13 +149,15 @@ struct TweetImageView: View {
                 reloadImagesData()
             }
             .onReceive(oneImageViewedPub) { notification in
-                guard let currentArtistIndexFromPointer = notification.userInfo?["currentArtistIndex"] as? Int, let viewedImageId = notification.userInfo?["viewedImageId"] as? Int64, let currentArtistShouldUpdateUI = notification.userInfo?["currentArtistShouldUpdateUI"] as? Bool else { return }
+                guard let currentArtistIdFromPointer = notification.userInfo?["currentArtistId"] as? Int64, let viewedImageId = notification.userInfo?["viewedImageId"] as? Int64, let currentArtistShouldUpdateUI = notification.userInfo?["currentArtistShouldUpdateUI"] as? Bool else { return }
                 // TweetImageView中选中的artist与全屏中浏览的artist可能不同
-                if artistSelectedIndex == currentArtistIndexFromPointer {
-                    updateUI_newViewedStatusImage(imageId: viewedImageId, viewed: true)
+                if let artistSelectedIndex {
+                    if artistsData[artistSelectedIndex].id == currentArtistIdFromPointer {
+                        updateUI_newViewedStatusImage(imageId: viewedImageId, viewed: true)
+                    }
                 }
                 if currentArtistShouldUpdateUI {
-                    refreshArtistData(artistIndex: currentArtistIndexFromPointer, hasNotViewed: false)
+                    refreshArtistData(artistId: currentArtistIdFromPointer, hasNotViewed: false)
                 }
             }
             .onReceive(allViewedPub) { notification in
@@ -210,6 +212,12 @@ struct TweetImageView: View {
             await MainActor.run {
                 refreshArtistData(artistIndex: artistSelectedIndex!, hasNotViewed: images_hasNotViewed)
             }
+        }
+    }
+    
+    private func refreshArtistData(artistId: Int64, hasNotViewed: Bool) {
+        if let artistIndex = artistsData.firstIndex(where: { $0.id == artistId }) {
+            refreshArtistData(artistIndex: artistIndex, hasNotViewed: hasNotViewed)
         }
     }
     

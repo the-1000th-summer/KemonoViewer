@@ -246,7 +246,7 @@ final class KemonoImagePointer: ObservableObject {
                     name: .updateNewViewedPostUI,
                     object: nil,
                     userInfo: [
-                        "currentArtistIndex": currentArtistIndex,
+                        "currentArtistId": artistsData[currentArtistIndex].id,
                         "viewedPostId": postsId[currentPostIndex],
                         "currentArtistShouldUpdateUI": currentArtistShouldUpdateUI
                     ]

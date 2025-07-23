@@ -115,7 +115,7 @@ final class TwitterImagePointer: ObservableObject {
                     name: .updateNewViewedTwitterImageUI,
                     object: nil,
                     userInfo: [
-                        "currentArtistIndex": currentArtistIndex,
+                        "currentArtistId": artistsData[currentArtistIndex].id,
                         "viewedImageId": currentArtistImagesData[currentImageIndex].id,
                         "currentArtistShouldUpdateUI": currentArtistShouldUpdateUI
                     ]

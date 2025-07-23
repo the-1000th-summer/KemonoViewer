@@ -286,6 +286,12 @@ struct FullScreenImageView: View {
             }
             ImagePathShowView(pathText: "\(imagePointer.currentPostDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")")
         }
+        .onDisappear {
+            NotificationCenter.default.post(
+                name: .kemonoFullScreenViewClosed,
+                object: nil
+            )
+        }
     }
     
     private func showNextImage() {

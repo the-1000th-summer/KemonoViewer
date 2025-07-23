@@ -564,6 +564,8 @@ extension Notification.Name {
     static let updateNewViewedPostUI = Notification.Name("UpdateNewViewedPostUINotification")
     static let updateAllPostViewedStatus = Notification.Name("updateAllPostViewedStatusNotification")
     
+    static let kemonoFullScreenViewClosed = Notification.Name("kemonoFullScreenViewClosedNotification")
+    
     static let updateNewViewedTwitterImageUI = Notification.Name("updateNewViewedTwitterImageUINotification")
     static let updateAllTwitterImageViewedStatus = Notification.Name("updateAllTwitterImageViewedStatusNotification")
     
