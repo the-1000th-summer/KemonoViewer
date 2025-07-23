@@ -21,6 +21,7 @@ struct PostImageView: View {
     @Binding var artistSelectedIndex: Int?
     
     var postSelectedIndex: Int?
+    var postQueryConfig: PostQueryConfig
     
     @ViewBuilder
     private func mainPostImageView() -> some View {
@@ -40,10 +41,12 @@ struct PostImageView: View {
                                             artistsData: artistsData,
                                             postsFolderName: postsData.map { $0.folderName },
                                             postsId: postsData.map { $0.id },
+                                            postsViewed: postsData.map { $0.viewed },
                                             currentPostImagesName: imagesName,
                                             currentArtistIndex: artistSelectedIndex!,
                                             currentPostIndex: postSelectedIndex!,
-                                            currentImageIndex: imageIndex
+                                            currentImageIndex: imageIndex,
+                                            postQueryConfig: postQueryConfig
                                         )
                                         openWindow(id: "fsViewer", value: fsWindowData)
                                     }) {

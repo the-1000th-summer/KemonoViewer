@@ -339,10 +339,12 @@ struct FullScreenImageView: View {
         )],
         postsFolderName: ["[fanbox][2019-10-25]2019.10.25 オリジナル系原寸PNG+ラフ"],
         postsId: [2],
+        postsViewed: [false],
         currentPostImagesName: ["1.png"],
         currentArtistIndex: 0,
         currentPostIndex: 0,
-        currentImageIndex: 0
+        currentImageIndex: 0,
+        postQueryConfig: PostQueryConfig()
     ))
 }
 

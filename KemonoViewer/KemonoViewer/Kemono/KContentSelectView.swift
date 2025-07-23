@@ -39,7 +39,7 @@ struct KContentSelectView: View {
     
     @State private var autoScrollToFirstNotViewedImage = true
     
-    private let pub = NotificationCenter.default.publisher(for: .updateNewViewedPostData)
+    private let pub = NotificationCenter.default.publisher(for: .updateNewViewedPostUI)
     private let viewedPub = NotificationCenter.default.publisher(for: .updateAllPostViewedStatus)
     
     var body: some View {
@@ -125,7 +125,9 @@ struct KContentSelectView: View {
                                     autoScrollToFirstNotViewedImage: $autoScrollToFirstNotViewedImage,
                                     queryConfig: postQueryConfig,
                                     tagNotViewAction: { postIndex, viewed in
-                                        newViewedStatusPost(postIndex: postIndex, viewed: viewed)
+                                        updateDB_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
+                                        updateUI_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
+                                        updateUI_newViewedStatisArtist()
                                     }
                                     
                                 )
@@ -136,7 +138,9 @@ struct KContentSelectView: View {
                                     postSelectedIndex: $postSelectedIndex,
                                     queryConfig: postQueryConfig,
                                     tagNotViewAction: { postIndex, viewed in
-                                        newViewedStatusPost(postIndex: postIndex, viewed: viewed)
+                                        updateDB_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
+                                        updateUI_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
+                                        updateUI_newViewedStatisArtist()
                                     }
                                 )
                                 //  .frame(idealWidth: 100)
@@ -147,7 +151,8 @@ struct KContentSelectView: View {
                             postsData: $postsData,
                             artistsData: $artistsData,
                             artistSelectedIndex: $artistSelectedIndex,
-                            postSelectedIndex: postSelectedIndex
+                            postSelectedIndex: postSelectedIndex,
+                            postQueryConfig: postQueryConfig
                         )
                         .frame(maxWidth: .infinity)
                     }
@@ -159,19 +164,21 @@ struct KContentSelectView: View {
             .onChange(of: artistSelectedIndex) {
                 isLoadingPosts = true
                 Task {
-                    await refreshPostsData()
+                    await reloadPostsData()
                     isLoadingPosts = false
                 }
                 postSelectedIndex = nil
             }
             .onChange(of: postSelectedIndex) {
                 guard let postSelectedIndex else { return }
-                newViewedStatusPost(postIndex: postSelectedIndex, viewed: true)
+                updateDB_newViewedStatusPost(postIndex: postSelectedIndex, viewed: true)
+                updateUI_newViewedStatusPost(postIndex: postSelectedIndex, viewed: true)
+                updateUI_newViewedStatisArtist()
             }
             .onChange(of: postQueryConfig) {
                 isLoadingPosts = true
                 Task {
-                    await refreshPostsData()
+                    await reloadPostsData()
                     isLoadingPosts = false
                 }
                 postSelectedIndex = nil
@@ -185,12 +192,18 @@ struct KContentSelectView: View {
                 }
             }
             .onReceive(pub) { notification in
-                guard let viewedPostIndex = notification.userInfo?["viewedPostIndex"] as? Int else { return }
-                newViewedStatusPost(postIndex: viewedPostIndex, viewed: true)
+                guard let currentArtistIndexFromPointer = notification.userInfo?["currentArtistIndex"] as? Int, let viewedPostId = notification.userInfo?["viewedPostId"] as? Int64, let currentArtistShouldUpdateUI = notification.userInfo?["currentArtistShouldUpdateUI"] as? Bool else { return }
+                // PostImageView中选中的artist与全屏中浏览的artist可能不同
+                if artistSelectedIndex == currentArtistIndexFromPointer {
+                    updateUI_newViewedStatusPost(postId: viewedPostId, viewed: true)
+                }
+                if currentArtistShouldUpdateUI {
+                    refreshArtistData(artistIndex: currentArtistIndexFromPointer, hasNotViewed: false)
+                }
             }
             .onReceive(viewedPub) { notification in
                 Task {
-                    await refreshPostsData()
+                    await reloadPostsData()
                 }
             }
         }
@@ -203,7 +216,7 @@ struct KContentSelectView: View {
         
     }
     
-    private func refreshPostsData() async {
+    private func reloadPostsData() async {
         if let artistSelectedIndex {
             postsData = DataReader.readPostData(artistId: artistsData[artistSelectedIndex].id, queryConfig: postQueryConfig) ?? []
         } else {
@@ -211,7 +224,13 @@ struct KContentSelectView: View {
         }
     }
     
-    private func newViewedStatusPost(postIndex: Int, viewed: Bool) {
+    private func updateUI_newViewedStatusPost(postId: Int64, viewed: Bool) {
+        if let postIndex = postsData.firstIndex(where: { $0.id == postId }) {
+            updateUI_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
+        }
+    }
+    
+    private func updateUI_newViewedStatusPost(postIndex: Int, viewed: Bool) {
         let originalPostData = postsData[postIndex]
         // prevent unnecessary view refreshing and database reading
         guard originalPostData.viewed != viewed else { return }
@@ -225,9 +244,16 @@ struct KContentSelectView: View {
             postDate: originalPostData.postDate,
             viewed: viewed
         )
-        
+    }
+    
+    private func updateUI_newViewedStatisArtist() {
         Task {
             await checkForArtistNotViewed()
+        }
+    }
+    
+    private func updateDB_newViewedStatusPost(postIndex: Int, viewed: Bool) {
+        Task {
             await DatabaseManager.shared.tagPost(postId: postsData[postIndex].id, viewed: viewed)
         }
     }
@@ -236,7 +262,9 @@ struct KContentSelectView: View {
         let artist_hasNotViewed = artistsData[artistSelectedIndex!].hasNotViewed
         let posts_hasNotViewed = postsData.contains { !$0.viewed }
         if artist_hasNotViewed != posts_hasNotViewed {
-            refreshArtistData(artistIndex: artistSelectedIndex!, hasNotViewed: posts_hasNotViewed)
+            await MainActor.run {
+                refreshArtistData(artistIndex: artistSelectedIndex!, hasNotViewed: posts_hasNotViewed)
+            }
         }
     }
     

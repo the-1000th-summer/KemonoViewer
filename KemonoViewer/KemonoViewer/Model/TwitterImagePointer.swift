@@ -132,6 +132,7 @@ final class TwitterImagePointer: ObservableObject {
                 return false
             }
             currentArtistIndex -= 1
+            
             if notViewedImage_firstLoad[currentArtistIndex] != nil {
                 currentArtistImagesData = TwitterDataReader.readImageData(imagesId: notViewedImage_firstLoad[currentArtistIndex]!, queryConfig: imageQueryConfig) ?? []
             } else {

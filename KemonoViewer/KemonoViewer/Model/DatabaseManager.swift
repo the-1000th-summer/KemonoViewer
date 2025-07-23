@@ -466,6 +466,17 @@ final class DataReader {
         return nil
     }
     
+    static func addQueryConfigFilter(query: SQLite.Table, queryConfig: PostQueryConfig) -> SQLite.Table {
+        var outputQuery = query
+        switch queryConfig.sortKey {
+        case .date:
+            outputQuery = outputQuery.order(queryConfig.sortOrder == .ascending ? KemonoPost.e_postDate.asc : KemonoPost.e_postDate.desc)
+        case .postTitle:
+            outputQuery = outputQuery.order(queryConfig.sortOrder == .ascending ? KemonoPost.e_postName.asc : KemonoPost.e_postName.desc)
+        }
+        return outputQuery
+    }
+    
     static func readPostData(artistId: Int64, queryConfig: PostQueryConfig) -> [Post_show]? {
         guard let db = DatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
@@ -483,12 +494,8 @@ final class DataReader {
             KemonoPost.e_postDate,
             KemonoPost.e_viewed
         ).filter(KemonoPost.e_artistIdRef == artistId)
-        switch queryConfig.sortKey {
-        case .date:
-            query = query.order(queryConfig.sortOrder == .ascending ? KemonoPost.e_postDate.asc : KemonoPost.e_postDate.desc)
-        case .postTitle:
-            query = query.order(queryConfig.sortOrder == .ascending ? KemonoPost.e_postName.asc : KemonoPost.e_postName.desc)
-        }
+        query = addQueryConfigFilter(query: query, queryConfig: queryConfig)
+        
         if queryConfig.onlyShowNotViewedPost {
             query = query.filter(KemonoPost.e_viewed == false)
         }
@@ -554,7 +561,7 @@ final class DataReader {
 
 
 extension Notification.Name {
-    static let updateNewViewedPostData = Notification.Name("UpdateNewViewedPostDataNotification")
+    static let updateNewViewedPostUI = Notification.Name("UpdateNewViewedPostUINotification")
     static let updateAllPostViewedStatus = Notification.Name("updateAllPostViewedStatusNotification")
     
     static let updateNewViewedTwitterImageUI = Notification.Name("updateNewViewedTwitterImageUINotification")
