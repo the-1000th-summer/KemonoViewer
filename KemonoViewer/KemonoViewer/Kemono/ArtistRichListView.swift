@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ArtistRichListView: View {
-    @Binding var artistsData: [Artist_show]
+    @Binding var artistsData: [KemonoArtist_show]
 //    @Binding var artistSelectedData: Artist_show?
     @Binding var artistSelectedIndex: Int?
     
@@ -60,7 +60,7 @@ struct ArtistRichListView: View {
     
     private func refreshArtistData(artistIndex: Int, hasNotViewed: Bool) {
         let artistData = artistsData[artistIndex]
-        artistsData[artistIndex] = Artist_show(
+        artistsData[artistIndex] = KemonoArtist_show(
             name: artistData.name,
             service: artistData.service,
             kemonoId: artistData.kemonoId,
@@ -69,8 +69,8 @@ struct ArtistRichListView: View {
         )
     }
     
-    private func tagArtistAllPost(artistData: Artist_show, viewed: Bool) {
-        DatabaseManager.shared.tagArtist(artistId: artistData.id, viewed: viewed)
+    private func tagArtistAllPost(artistData: KemonoArtist_show, viewed: Bool) {
+        KemonoDatabaseManager.shared.tagArtist(artistId: artistData.id, viewed: viewed)
     }
 }
 

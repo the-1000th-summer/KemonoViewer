@@ -10,7 +10,7 @@ import SQLite
 
 struct ImagePointerData: Hashable, Codable {
     var id = UUID()
-    let artistsData: [Artist_show]
+    let artistsData: [KemonoArtist_show]
     
     let postsFolderName: [String]
     let postsId: [Int64]
@@ -27,7 +27,7 @@ struct ImagePointerData: Hashable, Codable {
 
 final class KemonoImagePointer: ObservableObject {
 //    static let shared = ImagePointer()
-    private var artistsData = [Artist_show]()
+    private var artistsData = [KemonoArtist_show]()
     
     private var postsFolderName = [String]()
     private var postsId = [Int64]()
@@ -104,7 +104,7 @@ final class KemonoImagePointer: ObservableObject {
         return artistsData[currentArtistIndex].kemonoId
     }
     func getCurrentPostKemonoId() -> String? {
-        guard let db = DatabaseManager.shared.getConnection() else {
+        guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return nil
         }
@@ -118,7 +118,7 @@ final class KemonoImagePointer: ObservableObject {
         return nil
     }
     func getCurrentPostDatetime() -> String {
-        guard let db = DatabaseManager.shared.getConnection() else {
+        guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return "Unknown datetime"
         }
@@ -222,7 +222,7 @@ final class KemonoImagePointer: ObservableObject {
     
     private func refreshArtistData(artistIndex: Int, hasNotViewed: Bool) {
         let artistData = artistsData[artistIndex]
-        artistsData[artistIndex] = Artist_show(
+        artistsData[artistIndex] = KemonoArtist_show(
             name: artistData.name,
             service: artistData.service,
             kemonoId: artistData.kemonoId,
@@ -235,7 +235,7 @@ final class KemonoImagePointer: ObservableObject {
         postsViewed[currentPostIndex] = true
         
         Task {
-            await DatabaseManager.shared.tagPost(postId: postsId[currentPostIndex], viewed: true)
+            await KemonoDatabaseManager.shared.tagPost(postId: postsId[currentPostIndex], viewed: true)
         }
         
         Task {
@@ -332,7 +332,7 @@ final class KemonoImagePointer: ObservableObject {
     }
     
     private func getPostsData(postsId: [Int64], queryConfig: PostQueryConfig) -> ([String], [Int64], [Bool]) {
-        guard let db = DatabaseManager.shared.getConnection() else {
+        guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return ([], [], [])
         }
@@ -354,7 +354,7 @@ final class KemonoImagePointer: ObservableObject {
     }
     
     private func getPostsData(artistId: Int64) -> ([String], [Int64], [Bool]) {
-        guard let db = DatabaseManager.shared.getConnection() else {
+        guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return ([], [], [])
         }
@@ -380,7 +380,7 @@ final class KemonoImagePointer: ObservableObject {
     }
     
     private func getImagesName(postId: Int64) -> [String] {
-        guard let db = DatabaseManager.shared.getConnection() else {
+        guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return []
         }

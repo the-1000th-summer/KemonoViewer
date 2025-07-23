@@ -17,7 +17,7 @@ struct PostImageView: View {
     
     @Binding var postsData: [Post_show]
 //    let artistData: Artist_show
-    @Binding var artistsData: [Artist_show]
+    @Binding var artistsData: [KemonoArtist_show]
     @Binding var artistSelectedIndex: Int?
     
     var postSelectedIndex: Int?

@@ -10,7 +10,7 @@ import SwiftUI
 import SQLite
 import SwiftyJSON
 
-struct Artist {
+struct KemonoArtist {
     static let artistTable = Table("artist")
     static let e_artistId = Expression<Int64>("id")
     static let e_kemonoArtistId = Expression<String>("kemono_artist_id")
@@ -52,8 +52,8 @@ struct TwitterImage {
     static let e_viewed = Expression<Bool>("viewed")
 }
 
-final class DatabaseManager {
-    static let shared = DatabaseManager()
+final class KemonoDatabaseManager {
+    static let shared = KemonoDatabaseManager()
     private var db: Connection?
     
     private init() {
@@ -65,19 +65,18 @@ final class DatabaseManager {
     }
     
     private func initDatabase() {
-        let dbFilePath = "/Volumes/imagesShown/images.sqlite3"
         let fm = FileManager.default
         
-        if fm.fileExists(atPath: dbFilePath) {
+        if fm.fileExists(atPath: Constants.kemonoDatabaseFilePath) {
             do {
-                db = try Connection(dbFilePath)
+                db = try Connection(Constants.kemonoDatabaseFilePath)
             } catch {
                 db = nil
                 print(error.localizedDescription)
             }
         } else {
             do {
-                db = try Connection(dbFilePath)
+                db = try Connection(Constants.kemonoDatabaseFilePath)
                 createTable(db: db!)
             } catch {
                 db = nil
@@ -88,13 +87,12 @@ final class DatabaseManager {
     
     func createTable(db: Connection) {
         // artist
-        
         do {
-            try db.run(Artist.artistTable.create { t in
-                t.column(Artist.e_artistId, primaryKey: true)
-                t.column(Artist.e_kemonoArtistId)
-                t.column(Artist.e_artistName)
-                t.column(Artist.e_service)
+            try db.run(KemonoArtist.artistTable.create { t in
+                t.column(KemonoArtist.e_artistId, primaryKey: true)
+                t.column(KemonoArtist.e_kemonoArtistId)
+                t.column(KemonoArtist.e_artistName)
+                t.column(KemonoArtist.e_service)
             })
         } catch {
             print(error.localizedDescription)
@@ -113,7 +111,7 @@ final class DatabaseManager {
                 t.column(KemonoPost.e_attachmentNumber)
                 t.column(KemonoPost.e_viewed, defaultValue: false)
                 
-                t.foreignKey(KemonoPost.e_artistIdRef, references: Artist.artistTable, Artist.e_artistId, delete: .cascade)
+                t.foreignKey(KemonoPost.e_artistIdRef, references: KemonoArtist.artistTable, KemonoArtist.e_artistId, delete: .cascade)
             })
             
         } catch {
@@ -201,14 +199,14 @@ final class DataWriter {
     }
     
     static func writeArtistDataToDatabase(artistData: Artist_write) -> Int64? {
-        guard let db = DatabaseManager.shared.getConnection() else {
+        guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return nil
         }
         do {
-            let artistId_upload = try db.run(Artist.artistTable.insert(
-                Artist.e_artistName <- artistData.name,
-                Artist.e_service <- artistData.service
+            let artistId_upload = try db.run(KemonoArtist.artistTable.insert(
+                KemonoArtist.e_artistName <- artistData.name,
+                KemonoArtist.e_service <- artistData.service
             ))
             return artistId_upload
         } catch {
@@ -226,7 +224,7 @@ final class DataWriter {
         
         let inputFolderPath = "/Volumes/ACG/kemono"
         
-        guard let db = DatabaseManager.shared.getConnection() else {
+        guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return
         }
@@ -282,7 +280,7 @@ final class DataWriter {
     
     static func writePostDataToDatabase(artistID: Int64, postData jsonObj: JSON) {
         
-        guard let db = DatabaseManager.shared.getConnection() else {
+        guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return
         }
@@ -322,7 +320,7 @@ final class DataWriter {
         
         print("dfdf")
         
-        guard let db = DatabaseManager.shared.getConnection() else {
+        guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return
         }
@@ -420,8 +418,8 @@ final class DataWriter {
 }
 
 final class DataReader {
-    static func readArtistData(queryConfig: ArtistQueryConfig) async -> [Artist_show]? {
-        guard let db = DatabaseManager.shared.getConnection() else {
+    static func readArtistData(queryConfig: ArtistQueryConfig) async -> [KemonoArtist_show]? {
+        guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return nil
         }
@@ -452,7 +450,7 @@ final class DataReader {
         
         do {
             return try db.prepare(sqlStr).map { row in
-                Artist_show(
+                KemonoArtist_show(
                     name: row[0] as! String,
                     service: row[1] as! String,
                     kemonoId: row[2] as! String,
@@ -478,7 +476,7 @@ final class DataReader {
     }
     
     static func readPostData(artistId: Int64, queryConfig: PostQueryConfig) -> [Post_show]? {
-        guard let db = DatabaseManager.shared.getConnection() else {
+        guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return nil
         }
@@ -523,7 +521,7 @@ final class DataReader {
     static func readImageData(postId: Int64) async -> ([String]?, String?) {
         var imagesName = [String]()
         
-        guard let db = DatabaseManager.shared.getConnection() else {
+        guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return (nil, nil)
         }
@@ -543,9 +541,9 @@ final class DataReader {
             let postFolderName = postFolderQueryResult[KemonoPost.e_postFolderName]
             let artistId = postFolderQueryResult[KemonoPost.e_artistIdRef]
             
-            let artistNameQuery = Artist.artistTable.select(Artist.e_artistName).filter(Artist.e_artistId == artistId)
+            let artistNameQuery = KemonoArtist.artistTable.select(KemonoArtist.e_artistName).filter(KemonoArtist.e_artistId == artistId)
             if let artistQueryResult = try db.pluck(artistNameQuery) {
-                let artistName = artistQueryResult[Artist.e_artistName]
+                let artistName = artistQueryResult[KemonoArtist.e_artistName]
                 let postDirPath = URL(filePath: "/Volumes/ACG/kemono").appendingPathComponent(artistName).appendingPathComponent(postFolderName).path(percentEncoded: false)
                 return (imagesName, postDirPath)
             }

@@ -55,7 +55,7 @@ enum ServiceTitleColor: String {
 }
 
 struct ArtistGridItemView: View {
-    let artistData: Artist_show
+    let artistData: KemonoArtist_show
     let size: CGSize
     let isSelected: Bool
     
@@ -112,7 +112,7 @@ struct ArtistGridItemView: View {
 
 #Preview {
     ArtistGridItemView(
-        artistData: Artist_show(
+        artistData: KemonoArtist_show(
             name: "Belko",
             service: "fanbox",
             kemonoId: "39123643",

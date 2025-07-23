@@ -336,7 +336,7 @@ struct FullScreenImageView: View {
 
 #Preview {
     FullScreenImageView(imagePointerData: ImagePointerData(
-        artistsData: [Artist_show(
+        artistsData: [KemonoArtist_show(
             name: "Belko",
             service: "fanbox",
             kemonoId: "39123643",

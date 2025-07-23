@@ -211,12 +211,7 @@ class DatabaseManager:
         return list(filter(lambda x: x.startswith(f"[{service}]"), postsName))
 
     def findRefPostJsonFilePath(self, artistName: str, service: str, postsName):
-        if not postsName:
-            postsName_hasVal = Util.getSubdirectoryNames(Config.KEMONO_BASEPATH)
-        else:
-            postsName_hasVal = postsName
-
-        for postName in postsName_hasVal:
+        for postName in postsName:
             if postName.startswith(f"[{service}]"):
                 postJsonFilePath = os.path.join(Config.KEMONO_BASEPATH, artistName, postName, "post.json")
                 if os.path.exists(postJsonFilePath) and os.path.isfile(postJsonFilePath):

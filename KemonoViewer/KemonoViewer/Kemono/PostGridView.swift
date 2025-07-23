@@ -18,7 +18,7 @@ struct PostGridView: View {
     
     private static let initialColumns = 3
     @Binding var postsData: [Post_show]
-    let artistSelectedData: Artist_show?
+    let artistSelectedData: KemonoArtist_show?
     @Binding var postSelectedIndex: Int?
     
     @State private var gridColumns = Array(repeating: GridItem(.flexible()), count: initialColumns)

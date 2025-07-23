@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		79003D102E30D29A00BC4BE3 /* PixivArtistListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79003D0F2E30D29A00BC4BE3 /* PixivArtistListView.swift */; };
+		79003D122E30D5B300BC4BE3 /* PixivDatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79003D112E30D5B300BC4BE3 /* PixivDatabaseManager.swift */; };
 		7928378E2E28BFD90093E179 /* PostCommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7928378D2E28BFD90093E179 /* PostCommentView.swift */; };
 		792837922E2923D40093E179 /* CustomPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 792837912E2923D40093E179 /* CustomPlayerView.swift */; };
 		792D1F912E2B4B4300E763E8 /* KemonoImagePointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 792D1F902E2B4B4300E763E8 /* KemonoImagePointer.swift */; };
@@ -37,7 +39,7 @@
 		79A811A02E2CD8020002D8C9 /* TweetTextContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A8119F2E2CD8020002D8C9 /* TweetTextContentView.swift */; };
 		79A811AA2E2D30790002D8C9 /* TwitterDatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A811A92E2D30790002D8C9 /* TwitterDatabaseManager.swift */; };
 		79AB58222E1FFD990038384E /* VideoPlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79AB58212E1FFD990038384E /* VideoPlayerManager.swift */; };
-		79B3E8A92E10EEE600567F1D /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79B3E8A82E10EEE600567F1D /* DatabaseManager.swift */; };
+		79B3E8A92E10EEE600567F1D /* KemonoDatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79B3E8A82E10EEE600567F1D /* KemonoDatabaseManager.swift */; };
 		79B3E8B52E10F1F800567F1D /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 79B3E8B42E10F1F800567F1D /* SQLite */; };
 		79CB7BD72E124A9300FA7B77 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CB7BD62E124A9300FA7B77 /* Util.swift */; };
 		79DE3AAB2E268D670018412B /* ArtistRichListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DE3AAA2E268D670018412B /* ArtistRichListView.swift */; };
@@ -68,6 +70,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		79003D0F2E30D29A00BC4BE3 /* PixivArtistListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixivArtistListView.swift; sourceTree = "<group>"; };
+		79003D112E30D5B300BC4BE3 /* PixivDatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixivDatabaseManager.swift; sourceTree = "<group>"; };
 		7928378D2E28BFD90093E179 /* PostCommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCommentView.swift; sourceTree = "<group>"; };
 		792837912E2923D40093E179 /* CustomPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPlayerView.swift; sourceTree = "<group>"; };
 		792D1F902E2B4B4300E763E8 /* KemonoImagePointer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KemonoImagePointer.swift; sourceTree = "<group>"; };
@@ -100,7 +104,7 @@
 		79A8119F2E2CD8020002D8C9 /* TweetTextContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetTextContentView.swift; sourceTree = "<group>"; };
 		79A811A92E2D30790002D8C9 /* TwitterDatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterDatabaseManager.swift; sourceTree = "<group>"; };
 		79AB58212E1FFD990038384E /* VideoPlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerManager.swift; sourceTree = "<group>"; };
-		79B3E8A82E10EEE600567F1D /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
+		79B3E8A82E10EEE600567F1D /* KemonoDatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KemonoDatabaseManager.swift; sourceTree = "<group>"; };
 		79CB7BD62E124A9300FA7B77 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		79DE3AAA2E268D670018412B /* ArtistRichListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistRichListView.swift; sourceTree = "<group>"; };
 		79E04C842E167470002932DF /* ResizableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizableView.swift; sourceTree = "<group>"; };
@@ -225,10 +229,11 @@
 		79B3E8A72E10EED400567F1D /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				79B3E8A82E10EEE600567F1D /* DatabaseManager.swift */,
+				79B3E8A82E10EEE600567F1D /* KemonoDatabaseManager.swift */,
 				792D1F902E2B4B4300E763E8 /* KemonoImagePointer.swift */,
 				79A811A92E2D30790002D8C9 /* TwitterDatabaseManager.swift */,
 				792D1F942E2B6B3500E763E8 /* TwitterImagePointer.swift */,
+				79003D112E30D5B300BC4BE3 /* PixivDatabaseManager.swift */,
 				7974C51D2E1829B700F8E9DC /* DatabaseManagerExt.swift */,
 				79CB7BD62E124A9300FA7B77 /* Util.swift */,
 				792D1F922E2B509A00E763E8 /* StatusMessageManager.swift */,
@@ -255,6 +260,7 @@
 			isa = PBXGroup;
 			children = (
 				79F5022D2E2A918B005C682D /* PixivContentView.swift */,
+				79003D0F2E30D29A00BC4BE3 /* PixivArtistListView.swift */,
 			);
 			path = Pixiv;
 			sourceTree = "<group>";
@@ -416,7 +422,7 @@
 				79AB58222E1FFD990038384E /* VideoPlayerManager.swift in Sources */,
 				79F502302E2A9F38005C682D /* TwitterFullScreenImageView.swift in Sources */,
 				79A811AA2E2D30790002D8C9 /* TwitterDatabaseManager.swift in Sources */,
-				79B3E8A92E10EEE600567F1D /* DatabaseManager.swift in Sources */,
+				79B3E8A92E10EEE600567F1D /* KemonoDatabaseManager.swift in Sources */,
 				794890502E27F10D00AA96A1 /* PostTextContentView.swift in Sources */,
 				7973DC192E14451200ECD58D /* PostGridView.swift in Sources */,
 				79F502292E2A4E99005C682D /* TwitterArtistListView.swift in Sources */,
@@ -431,11 +437,13 @@
 				792837922E2923D40093E179 /* CustomPlayerView.swift in Sources */,
 				79E513C62E2E8CFB00A550DC /* QueryConfig.swift in Sources */,
 				792D1F912E2B4B4300E763E8 /* KemonoImagePointer.swift in Sources */,
+				79003D102E30D29A00BC4BE3 /* PixivArtistListView.swift in Sources */,
 				797E4A152E11649200C3A3A7 /* PostGridItemView.swift in Sources */,
 				79CB7BD72E124A9300FA7B77 /* Util.swift in Sources */,
 				79F5022B2E2A757F005C682D /* TweetImageView.swift in Sources */,
 				793F7AA22E2534AD00B74A77 /* RenamerView.swift in Sources */,
 				7948904C2E27254900AA96A1 /* ArtistGridItemView.swift in Sources */,
+				79003D122E30D5B300BC4BE3 /* PixivDatabaseManager.swift in Sources */,
 				79A811A02E2CD8020002D8C9 /* TweetTextContentView.swift in Sources */,
 				797E49E22E1125D600C3A3A7 /* PostListView.swift in Sources */,
 				792D1F932E2B509A00E763E8 /* StatusMessageManager.swift in Sources */,

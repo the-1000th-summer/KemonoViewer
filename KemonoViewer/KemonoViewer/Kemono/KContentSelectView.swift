@@ -17,8 +17,7 @@ struct ArtistQueryConfig: Equatable {
 }
 
 struct KContentSelectView: View {
-    @State private var artistsData = [Artist_show]()
-//    @State private var artistSelectedData: Artist_show?
+    @State private var artistsData = [KemonoArtist_show]()
     @State private var artistSelectedIndex: Int?
     
     @State private var postsData = [Post_show]()
@@ -265,7 +264,7 @@ struct KContentSelectView: View {
     
     private func updateDB_newViewedStatusPost(postIndex: Int, viewed: Bool) {
         Task {
-            await DatabaseManager.shared.tagPost(postId: postsData[postIndex].id, viewed: viewed)
+            await KemonoDatabaseManager.shared.tagPost(postId: postsData[postIndex].id, viewed: viewed)
         }
     }
     
@@ -287,7 +286,7 @@ struct KContentSelectView: View {
     
     private func refreshArtistData(artistIndex: Int, hasNotViewed: Bool) {
         let artistData = artistsData[artistIndex]
-        artistsData[artistIndex] = Artist_show(
+        artistsData[artistIndex] = KemonoArtist_show(
             name: artistData.name,
             service: artistData.service,
             kemonoId: artistData.kemonoId,

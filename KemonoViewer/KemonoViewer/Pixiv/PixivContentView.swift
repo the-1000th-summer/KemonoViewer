@@ -9,21 +9,34 @@ import SwiftUI
 import Kingfisher
 
 struct PixivContentView: View {
-    init() {
-        KingfisherManager.shared.cache.clearCache(completion: nil)
-    }
+    @State private var artistsData = [PixivArtist_show]()
+    @State private var artistSelectedIndex: Int?
+    
+    @State private var selectedArtistTab: PostTab = .listTab
+    
+    @State private var isLoadingArtists = false
 
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 100, maximum: 120), spacing: 3)]) {
-                ForEach(1..<352) { index in
+        HSplitView {
+            VStack {
+                HStack {
+                    PostTabView(selectedTab: $selectedArtistTab)
+//                    ArtistQueryView(queryConfig: $artistQueryConfig)
+                }
+                if isLoadingArtists {
                     VStack {
-                        KFImage(URL(string: "https://github.com/tatsuz0u/Imageset/blob/main/JPGs/\(index).jpg?raw=true"))
-                            .placeholder {
-                                Color(.gray)
-                            }
-                            .resizable().scaledToFit()
-                        Text("\(index)").font(.caption).foregroundColor(.secondary)
+                        Spacer()
+                        LoadingDataView()
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity)
+                } else {
+                    if selectedArtistTab == .listTab {
+                        PixivArtistListView(artistsData: $artistsData, artistSelectedIndex: $artistSelectedIndex)
+                            .frame(minWidth: 150)
+                    } else {
+//                        ArtistRichListView(artistsData: $artistsData, artistSelectedIndex: $artistSelectedIndex)
+//                            .frame(minWidth: 200, maxWidth: 480)
                     }
                 }
             }

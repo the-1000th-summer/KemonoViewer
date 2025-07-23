@@ -12,6 +12,10 @@ import SwiftUI
 struct Constants {
     static let kemonoBaseDir = "/Volumes/ACG/kemono"
     static let twitterBaseDir = "/Volumes/ACG/twitter"
+    
+    static let kemonoDatabaseFilePath = "/Volumes/imagesShown/images.sqlite3"
+    
+    static let pixivDatabaseFilePath = "/Volumes/imagesShown/pixiv.sqlite3"
 }
 
 

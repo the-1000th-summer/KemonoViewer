@@ -58,6 +58,13 @@ struct TwitterFullScreenImageView: View {
                             Text(imagePointerData.imageQueryConfig.onlyShowNotViewedPost ? "No new image in this artist." : "No image in this artist.")
                         }
                     }
+                    .contextMenu {
+                        ContextMenuView(manager: slideManager, playerManager: playerManager) {
+                            if slideManager.getMovieCompleted() {
+                                showNextImage()
+                            }
+                        }
+                    }
                     // 保证视图扩展到窗口边缘，Text view在正常位置
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .onAppear {
