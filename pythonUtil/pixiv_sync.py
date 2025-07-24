@@ -135,7 +135,7 @@ class PixivSyncer:
         if artists_SQLObj:
             if len(artists_SQLObj) > 1:
                 raise ValueError('数据库中存在多个相同 twitter_artist_id 的艺术家，请检查数据完整性。')
-            self.handleExistedArtist(artists_SQLObj.first(), artistId)
+            self.handleExistedArtist(artists_SQLObj.first(), artistDirPath)
         else:
             self.handleNewArtist(artistDirPath, refPostJsonFilePath)
 
@@ -161,13 +161,13 @@ class PixivSyncer:
         for postFolderName in postsFolderName:
             postDirPath = os.path.join(artistDirPath, postFolderName)
             jsonFileName = self.getJsonFileName(postDirPath, '.json')
-
             if not jsonFileName:
                 print(f"跳过没有或有多个json文件的帖子: {postDirPath}")
                 continue
             jsonFilePath = os.path.join(postDirPath, jsonFileName)
 
             self.handleOnePost(postFolderName, jsonFilePath, newArtist_SQLObj)
+            print('.', flush=True, end='')
 
     def handleExistedArtist(self, artist_SQLObj, artistDirPath: str):
         posts_SQLObj = PixivPost.select().where(
@@ -180,7 +180,54 @@ class PixivSyncer:
 
         latestDateTimeInDb = datetime.datetime.strptime(posts_SQLObj.first().post_date.split('.')[0], '%Y-%m-%dT%H:%M:%S')
 
-        raise ValueError("not implemented yet")
+        postsFolderName_notProcessed = self.getNotProcessedPostsFolderName(artistDirPath, latestDateTimeInDb)
+
+        for postFolderName in postsFolderName_notProcessed:
+            postDirPath = os.path.join(artistDirPath, postFolderName)
+            jsonFileName = self.getJsonFileName(postDirPath, '.json')
+            if not jsonFileName:
+                print(f"跳过没有或有多个json文件的帖子: {postDirPath}")
+                continue
+            jsonFilePath = os.path.join(postDirPath, jsonFileName)
+
+            self.handleOnePost(postFolderName, jsonFilePath, artist_SQLObj)
+            print('.', flush=True, end='')
+
+        if not postsFolderName_notProcessed:
+            print('(No new posts)', flush=True, end='')
+
+    def getNotProcessedPostsFolderName(self, artistDirPath: str, latestDateTimeInDb):
+        notProcessedPostsFolderName = []
+
+        postsFolderName = Util.getSubdirectoryNames(artistDirPath)
+        for currentPostFolderName in postsFolderName:
+            currentPostDateTime = datetime.datetime.strptime(currentPostFolderName.split(']')[0].strip('['), '%Y-%m-%d')
+
+            if Util.checkYMDSmall(currentPostDateTime, latestDateTimeInDb):
+                continue
+
+            if Util.checkYMDEqual(currentPostDateTime, latestDateTimeInDb):
+                postDirPath = os.path.join(artistDirPath, currentPostFolderName)
+                currentPostJsonFileName = self.getJsonFileName(postDirPath, '.json')
+                if not currentPostJsonFileName:
+                    print(f"跳过没有或有多个json文件的帖子: {postDirPath}")
+                    continue
+                currentPostJsonFilePath = os.path.join(postDirPath, currentPostJsonFileName)
+                try:
+                    with open(currentPostJsonFilePath, 'r', encoding='utf-8') as f:
+                        jsonData = json.load(f)
+                except Exception as e:
+                    print(f"打开或解析 JSON 文件失败: {currentPostJsonFilePath} - {e}")
+                    continue
+
+                post_SQLObj = PixivPost.select().where(PixivPost.pixiv_post_id == jsonData['illustId'])
+                if not post_SQLObj:
+                    notProcessedPostsFolderName.append(currentPostFolderName)
+
+            else:
+                notProcessedPostsFolderName.append(currentPostFolderName)
+
+        return notProcessedPostsFolderName
 
     def handleOnePost(self, postFolderName: str, jsonFilePath: str, artist_SQLObj):
         try:
@@ -216,12 +263,21 @@ class PixivSyncer:
                 raise ValueError("帖子缺少原始图片 URL")
             firstFileName = os.path.basename(firstFileURL)
 
-            for i in range(imageNumber):
-                imageFileName = firstFileName.replace('_p0', '_p{}'.format(i))
+
+            if jsonData['illustType'] == 2:
+                # Ugoira file
+                imageFileName = firstFileName.split("_ugoira0")[0] + '_ugoira1920x1080.mkv'
                 PixivImage.create(
                     post=post,
                     imageName=imageFileName
                 )
+            else:
+                for i in range(imageNumber):
+                    imageFileName = firstFileName.replace('_p0', '_p{}'.format(i))
+                    PixivImage.create(
+                        post=post,
+                        imageName=imageFileName
+                    )
         except Exception as e:
             print(f"处理帖子失败: {postFolderName} - {e}")
 

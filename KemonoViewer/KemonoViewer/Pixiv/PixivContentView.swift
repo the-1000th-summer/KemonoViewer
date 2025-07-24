@@ -14,6 +14,8 @@ struct PixivContentView: View {
     
     @State private var selectedArtistTab: PostTab = .listTab
     
+    @State private var artistQueryConfig = ArtistQueryConfig()
+    
     @State private var isLoadingArtists = false
 
     var body: some View {
@@ -21,7 +23,7 @@ struct PixivContentView: View {
             VStack {
                 HStack {
                     PostTabView(selectedTab: $selectedArtistTab)
-//                    ArtistQueryView(queryConfig: $artistQueryConfig)
+                    ArtistQueryView(queryConfig: $artistQueryConfig)
                 }
                 if isLoadingArtists {
                     VStack {
@@ -38,6 +40,13 @@ struct PixivContentView: View {
 //                        ArtistRichListView(artistsData: $artistsData, artistSelectedIndex: $artistSelectedIndex)
 //                            .frame(minWidth: 200, maxWidth: 480)
                     }
+                }
+            }
+            .onAppear {
+                isLoadingArtists = true
+                Task {
+                    artistsData = await PixivDataReader.readArtistData(queryConfig: artistQueryConfig) ?? []
+                    isLoadingArtists = false
                 }
             }
         }
