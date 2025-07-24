@@ -31,7 +31,7 @@ struct PostGridView: View {
     
     @Binding var autoScrollToFirstNotViewedImage: Bool
     
-    var queryConfig: PostQueryConfig
+    var queryConfig: KemonoPostQueryConfig
     let tagNotViewAction: (Int, Bool) -> Void
 
     

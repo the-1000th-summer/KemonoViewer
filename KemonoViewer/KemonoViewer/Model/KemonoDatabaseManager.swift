@@ -173,7 +173,7 @@ struct Artist_write {
     let service: String
 }
 
-final class DataWriter {
+final class KemonoDataWriter {
     private static let sharedFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
@@ -417,7 +417,7 @@ final class DataWriter {
     }
 }
 
-final class DataReader {
+final class KemonoDataReader {
     static func readArtistData(queryConfig: ArtistQueryConfig) async -> [KemonoArtist_show]? {
         guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
@@ -464,7 +464,7 @@ final class DataReader {
         return nil
     }
     
-    static func addQueryConfigFilter(query: SQLite.Table, queryConfig: PostQueryConfig) -> SQLite.Table {
+    static func addQueryConfigFilter(query: SQLite.Table, queryConfig: KemonoPostQueryConfig) -> SQLite.Table {
         var outputQuery = query
         switch queryConfig.sortKey {
         case .date:
@@ -475,7 +475,7 @@ final class DataReader {
         return outputQuery
     }
     
-    static func readPostData(artistId: Int64, queryConfig: PostQueryConfig) -> [Post_show]? {
+    static func readPostData(artistId: Int64, queryConfig: KemonoPostQueryConfig) -> [Post_show]? {
         guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return nil

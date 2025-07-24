@@ -21,7 +21,7 @@ protocol QueryConfig: Equatable, Codable, Hashable {
     var onlyShowNotViewedPost: Bool { get set }
 }
 
-struct PostQueryConfig: QueryConfig {
+struct KemonoPostQueryConfig: QueryConfig {
     enum SortKey: String, CaseIterable, Codable {
         case date = "post_date"
         case postTitle = "name"
@@ -40,6 +40,17 @@ struct TwitterImageQueryConfig: QueryConfig {
         case favoriteCount = "Favorite count"
         case retweetCount = "Retweet count"
         case replyCount = "Reply count"
+    }
+    
+    var sortKey: SortKey = .date
+    var sortOrder: SortOrder = .ascending
+    var onlyShowNotViewedPost = false
+}
+
+struct PixivPostQueryConfig: QueryConfig {
+    enum SortKey: String, CaseIterable, Codable {
+        case date = "post_date"
+        case postTitle = "name"
     }
     
     var sortKey: SortKey = .date

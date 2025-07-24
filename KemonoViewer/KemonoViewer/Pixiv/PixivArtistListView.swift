@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PixivArtist_show {
     let name: String
+    let folderName: String
     let pixivId: String
     let hasNotViewed: Bool
     let id: Int64
@@ -51,6 +52,7 @@ struct PixivArtistListView: View {
         let artistData = artistsData[artistIndex]
         artistsData[artistIndex] = PixivArtist_show(
             name: artistData.name,
+            folderName: artistData.folderName,
             pixivId: artistData.pixivId,
             hasNotViewed: hasNotViewed,
             id: artistData.id

@@ -139,7 +139,7 @@ struct PostTextContentView: View {
         guard let kemonoPostId = imagePointer.getCurrentPostKemonoId() else { return nil }
         guard let apiUrl = URL(string: "https://kemono.su/api/v1/\(imagePointer.getArtistService())/user/\(imagePointer.getArtistKemonoId())/post/\(kemonoPostId)/comments") else { return nil }
         do {
-            let fetcheddata = try await DataWriter.fetchData(from: apiUrl)
+            let fetcheddata = try await KemonoDataWriter.fetchData(from: apiUrl)
             
 //            let (data, response) = try await URLSession.shared.data(from: apiUrl)
 //            guard let httpResponse = response as? HTTPURLResponse,

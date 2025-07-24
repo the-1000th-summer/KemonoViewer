@@ -22,7 +22,7 @@ struct ImagePointerData: Hashable, Codable {
     let currentPostIndex: Int
     let currentImageIndex: Int
     
-    let postQueryConfig: PostQueryConfig
+    let postQueryConfig: KemonoPostQueryConfig
 }
 
 final class KemonoImagePointer: ObservableObject {
@@ -39,7 +39,7 @@ final class KemonoImagePointer: ObservableObject {
     private var currentPostIndex = 0
     private var currentImageIndex = 0
     
-    private var postQueryConfig = PostQueryConfig()
+    private var postQueryConfig = KemonoPostQueryConfig()
     
     // 存储点击进入全屏时未浏览的post的信息
     private var notViewedPost_firstLoad: [Int: [Int64]] = [:]
@@ -331,14 +331,14 @@ final class KemonoImagePointer: ObservableObject {
         return false
     }
     
-    private func getPostsData(postsId: [Int64], queryConfig: PostQueryConfig) -> ([String], [Int64], [Bool]) {
+    private func getPostsData(postsId: [Int64], queryConfig: KemonoPostQueryConfig) -> ([String], [Int64], [Bool]) {
         guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return ([], [], [])
         }
         
         var query = KemonoPost.postTable.select(KemonoPost.e_postFolderName, KemonoPost.e_postId, KemonoPost.e_viewed).filter(postsId.contains(KemonoPost.e_postId))
-        query = DataReader.addQueryConfigFilter(query: query, queryConfig: postQueryConfig)
+        query = KemonoDataReader.addQueryConfigFilter(query: query, queryConfig: postQueryConfig)
         
         do {
             let readResult = try db.prepare(query).map {(
@@ -360,7 +360,7 @@ final class KemonoImagePointer: ObservableObject {
         }
         
         var query = KemonoPost.postTable.select(KemonoPost.e_postFolderName, KemonoPost.e_postId, KemonoPost.e_viewed).filter(KemonoPost.e_artistIdRef == artistId)
-        query = DataReader.addQueryConfigFilter(query: query, queryConfig: postQueryConfig)
+        query = KemonoDataReader.addQueryConfigFilter(query: query, queryConfig: postQueryConfig)
         
         if postQueryConfig.onlyShowNotViewedPost {
             query = query.filter(KemonoPost.e_viewed == false)

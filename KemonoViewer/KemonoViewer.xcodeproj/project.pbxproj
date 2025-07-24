@@ -50,6 +50,9 @@
 		79F5022B2E2A757F005C682D /* TweetImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F5022A2E2A757F005C682D /* TweetImageView.swift */; };
 		79F5022E2E2A918B005C682D /* PixivContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F5022D2E2A918B005C682D /* PixivContentView.swift */; };
 		79F502302E2A9F38005C682D /* TwitterFullScreenImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F5022F2E2A9F38005C682D /* TwitterFullScreenImageView.swift */; };
+		79FB9BCF2E3261290076C74A /* PixivRichListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FB9BCE2E3261290076C74A /* PixivRichListView.swift */; };
+		79FB9BD12E3262560076C74A /* PixivArtistGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FB9BD02E3262560076C74A /* PixivArtistGridItemView.swift */; };
+		79FB9BD32E328CF70076C74A /* PixivPostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FB9BD22E328CF70076C74A /* PixivPostListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -114,6 +117,9 @@
 		79F5022A2E2A757F005C682D /* TweetImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetImageView.swift; sourceTree = "<group>"; };
 		79F5022D2E2A918B005C682D /* PixivContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixivContentView.swift; sourceTree = "<group>"; };
 		79F5022F2E2A9F38005C682D /* TwitterFullScreenImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterFullScreenImageView.swift; sourceTree = "<group>"; };
+		79FB9BCE2E3261290076C74A /* PixivRichListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixivRichListView.swift; sourceTree = "<group>"; };
+		79FB9BD02E3262560076C74A /* PixivArtistGridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixivArtistGridItemView.swift; sourceTree = "<group>"; };
+		79FB9BD22E328CF70076C74A /* PixivPostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixivPostListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -261,6 +267,9 @@
 			children = (
 				79F5022D2E2A918B005C682D /* PixivContentView.swift */,
 				79003D0F2E30D29A00BC4BE3 /* PixivArtistListView.swift */,
+				79FB9BCE2E3261290076C74A /* PixivRichListView.swift */,
+				79FB9BD02E3262560076C74A /* PixivArtistGridItemView.swift */,
+				79FB9BD22E328CF70076C74A /* PixivPostListView.swift */,
 			);
 			path = Pixiv;
 			sourceTree = "<group>";
@@ -416,6 +425,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				792D1F952E2B6B3500E763E8 /* TwitterImagePointer.swift in Sources */,
+				79FB9BD12E3262560076C74A /* PixivArtistGridItemView.swift in Sources */,
 				7974C51E2E1829B700F8E9DC /* DatabaseManagerExt.swift in Sources */,
 				79F5022E2E2A918B005C682D /* PixivContentView.swift in Sources */,
 				797E4A172E118DF700C3A3A7 /* FullScreenImageView.swift in Sources */,
@@ -449,11 +459,13 @@
 				792D1F932E2B509A00E763E8 /* StatusMessageManager.swift in Sources */,
 				79DE3AAB2E268D670018412B /* ArtistRichListView.swift in Sources */,
 				7959EE362E11104600ACF809 /* ArtistListView.swift in Sources */,
+				79FB9BD32E328CF70076C74A /* PixivPostListView.swift in Sources */,
 				7950F0BE2E20A68B00B57A95 /* ContextMenuView.swift in Sources */,
 				79A627B32E1567D9001F0212 /* PostImageGridItemView.swift in Sources */,
 				798F07E72E2F3CEB008434CB /* ScrollToTopBottomButton.swift in Sources */,
 				79F502272E2A1DA6005C682D /* TwitterContentView.swift in Sources */,
 				79E04C852E167470002932DF /* ResizableView.swift in Sources */,
+				79FB9BCF2E3261290076C74A /* PixivRichListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

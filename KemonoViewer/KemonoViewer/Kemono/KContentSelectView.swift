@@ -27,7 +27,7 @@ struct KContentSelectView: View {
     @State private var selectedArtistTab: PostTab = .listTab
     
     @State private var artistQueryConfig = ArtistQueryConfig()
-    @State private var postQueryConfig = PostQueryConfig()
+    @State private var postQueryConfig = KemonoPostQueryConfig()
     
     @State private var isProcessing = false
     @State private var readingProgress: Double = 0.0
@@ -48,7 +48,7 @@ struct KContentSelectView: View {
                 Button("Load Data") {
                     isProcessing = true
                     currentTask = Task {
-                        await DataWriter.writeKemonoDataToDatabase(isProcessing: $isProcessing, progress: $readingProgress)
+                        await KemonoDataWriter.writeKemonoDataToDatabase(isProcessing: $isProcessing, progress: $readingProgress)
                     }
                     isProcessing = false
                 }
@@ -56,7 +56,7 @@ struct KContentSelectView: View {
                 Button("Load data 2") {
 //                    isProcessing = true
                     currentTask = Task {
-                        await DataWriter.getDataFromKemonoApi(isProcessing: $isProcessing, progress: $readingProgress)
+                        await KemonoDataWriter.getDataFromKemonoApi(isProcessing: $isProcessing, progress: $readingProgress)
                     }
 //                    DataWriter.getDataFromKemonoApi(isProcessing: $isProcessing, progress: $readingProgress)
                     
@@ -93,7 +93,7 @@ struct KContentSelectView: View {
                 .onAppear {
                     isLoadingArtists = true
                     Task {
-                        artistsData = await DataReader.readArtistData(queryConfig: artistQueryConfig) ?? []
+                        artistsData = await KemonoDataReader.readArtistData(queryConfig: artistQueryConfig) ?? []
                         isLoadingArtists = false
                     }
                 }
@@ -187,7 +187,7 @@ struct KContentSelectView: View {
                 artistSelectedIndex = nil
                 isLoadingArtists = true
                 Task {
-                    artistsData = await DataReader.readArtistData(queryConfig: artistQueryConfig) ?? []
+                    artistsData = await KemonoDataReader.readArtistData(queryConfig: artistQueryConfig) ?? []
                     isLoadingArtists = false
                 }
             }
@@ -228,7 +228,7 @@ struct KContentSelectView: View {
     
     private func reloadPostsData() async {
         if let artistSelectedIndex {
-            postsData = DataReader.readPostData(artistId: artistsData[artistSelectedIndex].id, queryConfig: postQueryConfig) ?? []
+            postsData = KemonoDataReader.readPostData(artistId: artistsData[artistSelectedIndex].id, queryConfig: postQueryConfig) ?? []
         } else {
             postsData = []
         }

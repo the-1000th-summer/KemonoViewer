@@ -350,7 +350,7 @@ struct FullScreenImageView: View {
         currentArtistIndex: 0,
         currentPostIndex: 0,
         currentImageIndex: 0,
-        postQueryConfig: PostQueryConfig()
+        postQueryConfig: KemonoPostQueryConfig()
     ))
 }
 

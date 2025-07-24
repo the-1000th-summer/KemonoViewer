@@ -1,18 +1,24 @@
 //
-//  PostListView.swift
+//  PixivPostListView.swift
 //  KemonoViewer
 //
-//  Created on 2025/6/29.
+//  Created on 2025/7/24.
 //
 
 import SwiftUI
 
-struct PostListView: View {
-    @Binding var postsData: [Post_show]
+struct PixivPost_show {
+    let name: String
+    let folderName: String
+    let id: Int64
+    let imageNumber: Int
+    let postDate: Date
+    let viewed: Bool
+}
+
+struct PixivPostListView: View {
+    @Binding var postsData: [PixivPost_show]
     @Binding var postSelectedIndex: Int?
-    
-    var queryConfig: KemonoPostQueryConfig
-    let tagNotViewAction: (Int, Bool) -> Void
     
     var body: some View {
         List(postsData.indices, id: \.self, selection: $postSelectedIndex) { postCurrentIndex in
@@ -22,17 +28,10 @@ struct PostListView: View {
                     .opacity(postsData[postCurrentIndex].viewed ? 0 : 1)
                 Text(postsData[postCurrentIndex].name)
             }
-//            .selectionDisabled(true)
-            .contextMenu {
-                Button("标记为未读") {
-                    tagNotViewAction(postCurrentIndex, false)
-                }
-            }
         }
     }
-    
 }
 
 //#Preview {
-//    PostListView(postSelectedId: .constant(0))
+//    PixivPostListView()
 //}

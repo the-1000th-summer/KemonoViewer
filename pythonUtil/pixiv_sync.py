@@ -5,6 +5,7 @@ from peewee import *
 import json
 import datetime
 import os
+from pathlib import Path
 
 from Util import Util
 from filePathConfig import Config
@@ -30,6 +31,7 @@ class PixivArtist(BaseModel):
     pixiv_artist_id = TextField(column_name='pixiv_artist_id')
     name = TextField(column_name='name')
     userAccount = TextField(column_name='user_account')
+    artistFolderName = TextField(column_name='artist_folder_name')
 
     class Meta:
         table_name = 'pixivArtist'
@@ -147,10 +149,13 @@ class PixivSyncer:
             print(f"打开 JSON 文件失败: {refPostJsonFilePath} - {e}")
             return None
 
+        artistFolderName = os.path.basename(Path(refPostJsonFilePath).parent.parent.absolute())
+
         artist_SQLObj = PixivArtist.create(
             pixiv_artist_id=jsonData['userId'],
             name=jsonData['userName'],
-            userAccount=jsonData['userAccount']
+            userAccount=jsonData['userAccount'],
+            artistFolderName=artistFolderName,
         )
         return artist_SQLObj
 

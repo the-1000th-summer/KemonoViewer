@@ -21,7 +21,7 @@ struct PostImageView: View {
     @Binding var artistSelectedIndex: Int?
     
     var postSelectedIndex: Int?
-    var postQueryConfig: PostQueryConfig
+    var postQueryConfig: KemonoPostQueryConfig
     
     @ViewBuilder
     private func mainPostImageView() -> some View {
@@ -79,7 +79,7 @@ struct PostImageView: View {
             if let postSelectedIndex {
                 isLoadingData = true
                 Task {
-                    let imageData = await DataReader.readImageData(postId: postsData[postSelectedIndex].id)
+                    let imageData = await KemonoDataReader.readImageData(postId: postsData[postSelectedIndex].id)
                     imagesName = imageData.0 ?? []
                     postDirPath = imageData.1
                     isLoadingData = false
