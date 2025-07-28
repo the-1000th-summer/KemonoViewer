@@ -20,6 +20,13 @@ struct PixivPost {
     static let e_viewed = Expression<Bool>("viewed")
 }
 
+struct PixivImage {
+    static let imageTable = Table("pixivImage")
+    static let e_imageId = Expression<Int64>("id")
+    static let e_postIdRef = Expression<Int64>("post_id")
+    static let e_imageName = Expression<String>("name")
+}
+
 class PixivDatabaseManager {
     static let shared = PixivDatabaseManager()
     private var db: Connection?
@@ -152,6 +159,25 @@ final class PixivDataReader {
             print(error.localizedDescription)
         }
         return postsData
+    }
+    
+    static func readImageData(postId: Int64) async -> [String]? {
+        guard let db = PixivDatabaseManager.shared.getConnection() else {
+            print("数据库初始化失败")
+            return nil
+        }
+        
+        let imageNameQuery = PixivImage.imageTable.select(PixivImage.e_imageName).filter(PixivImage.e_postIdRef == postId)
+        
+        do {
+            return try db.prepare(imageNameQuery).map {
+                $0[PixivImage.e_imageName]
+            }
+        } catch {
+            print(error)
+        }
+            
+        return nil
     }
     
     static func addQueryConfigFilter(query: SQLite.Table, queryConfig: PixivPostQueryConfig) -> SQLite.Table {

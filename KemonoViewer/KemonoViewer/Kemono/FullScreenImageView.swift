@@ -144,14 +144,12 @@ struct MediaView: View {
     var body: some View {
         if (UTType(filenameExtension: mediaURL.pathExtension)?.conforms(to: .image) ?? false) {
             if (UTType(filenameExtension: mediaURL.pathExtension)?.conforms(to: .gif) ?? false) {
-                KFAnimatedImage(source:
-                    .provider(LocalFileImageDataProvider(fileURL: mediaURL))
+                AniImagePlayerView(
+                    insideView: $insideView,
+                    transform: $transform,
+                    messageManager: messageManager,
+                    gifURL: mediaURL
                 )
-                .configure { view in
-                    view.imageScaling = .scaleProportionallyUpOrDown
-                }
-                .resizableView(insideView: $insideView, transform: $transform, messageManager: messageManager)
-                .scaledToFit()
             } else {
                 AsyncImage(url: mediaURL) { phase in
                     if let image = phase.image {
@@ -187,7 +185,7 @@ struct MediaView: View {
                     .font(.largeTitle)
                 Text("\(mediaURL.lastPathComponent)\nNot an image file")
                 Button("Show in Finder") {
-                    if localFileExists(at: mediaURL) {
+                    if UtilFunc.localFileExists(at: mediaURL) {
                         NSWorkspace.shared.activateFileViewerSelecting([mediaURL])
                     } else {
                         fileNotFoundPresented = true
@@ -238,7 +236,7 @@ struct FullScreenImageView: View {
         ZStack {
             HStack(spacing: .zero) {   // zero spacing for divider
                 ZStack(alignment: .topTrailing) {
-                    HSplitView {
+                    HSplitView {        // prevent image across views
                         if let currentURL = imagePointer.currentImageURL {
                             MediaView(
                                 mediaURL: currentURL,

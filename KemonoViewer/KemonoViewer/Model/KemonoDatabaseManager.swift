@@ -182,7 +182,7 @@ final class KemonoDataWriter {
     }()
     
     static func getArtistIdAndService(artistDirPath: String) -> Artist_write? {
-        guard let postsName = getSubdirectoryNames(atPath: artistDirPath), !postsName.isEmpty else { return nil }
+        guard let postsName = UtilFunc.getSubdirectoryNames(atPath: artistDirPath), !postsName.isEmpty else { return nil }
         let firstPostJsonFileURL = URL(filePath: artistDirPath).appendingPathComponent(postsName[0]).appendingPathComponent("post.json")
         guard let jsonFileData = try? Data(contentsOf: firstPostJsonFileURL) else {
             print("打开Json文件失败")
@@ -229,11 +229,11 @@ final class KemonoDataWriter {
             return
         }
         
-        guard let artistsName = getSubdirectoryNames(atPath: inputFolderPath) else { return }
+        guard let artistsName = UtilFunc.getSubdirectoryNames(atPath: inputFolderPath) else { return }
         for (i, artistName) in artistsName.enumerated() {
             let artistDirPath = URL(filePath: inputFolderPath).appendingPathComponent(artistName).path(percentEncoded: false)
             
-            if let postsName = getSubdirectoryNames(atPath: artistDirPath) {
+            if let postsName = UtilFunc.getSubdirectoryNames(atPath: artistDirPath) {
 
                 try! db.transaction {
                     
@@ -328,7 +328,7 @@ final class KemonoDataWriter {
         let inputFolderPath = "/Volumes/ACG/kemono"
         let batchSize = 5
         
-        guard let artistsName = getSubdirectoryNames(atPath: inputFolderPath) else { return }
+        guard let artistsName = UtilFunc.getSubdirectoryNames(atPath: inputFolderPath) else { return }
         
         
         for batchStart in stride(from: 0, to: artistsName.count, by: batchSize) {

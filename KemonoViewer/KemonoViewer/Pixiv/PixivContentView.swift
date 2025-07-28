@@ -104,8 +104,19 @@ struct PixivContentView: View {
                             //  .frame(idealWidth: 100)
                         }
                     }
+                    
+                    PixivPostImageView(
+                        artistsData: $artistsData,
+                        postsData: $postsData,
+                        artistSelectedIndex: artistSelectedIndex,
+                        postSelectedIndex: postSelectedIndex,
+//                        postQueryConfig: postQueryConfig
+                    )
+                    .frame(maxWidth: .infinity)
                 }
+                .layoutPriority(1)
             }
+            .layoutPriority(1)
         }
         .onChange(of: artistSelectedIndex) {
             isLoadingPosts = true

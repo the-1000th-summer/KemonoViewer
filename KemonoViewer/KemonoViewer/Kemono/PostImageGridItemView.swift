@@ -14,7 +14,7 @@ import QuickLookThumbnailing
 struct ThumbnailImageView: View {
     let url: URL
     let initialSize: Double
-
+    
     @State private var thumbnail: CGImage? = nil
 
     var body: some View {
@@ -81,23 +81,35 @@ struct PostImageGridItemView: View {
                     }
                 }
                 .frame(width: size, height: size)
+                
+            } else if (imageURL.pathExtension == "ugoira") {
+                
             } else if ((UTType(filenameExtension: imageURL.pathExtension)?.conforms(to: .image)) ?? false) {
-                KFImage(imageURL)
-                    .placeholder { ProgressView() }
-                    .onFailureView {
-                        VStack {
-                            Image(systemName: "exclamationmark.triangle")
-                            Text("Image load failed.")
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                if (UTType(filenameExtension: imageURL.pathExtension)?.conforms(to: .gif) ?? false) {
+                    KFAnimatedImage(imageURL)
+                    .configure { view in
+                        view.imageScaling = .scaleProportionallyUpOrDown
                     }
-//                    .setProcessor(ShortSideDownsamplingProcessor(targetShortSide: 300))
-                    .cacheMemoryOnly(true)
-                    .memoryCacheExpiration(.expired) // no cache
-                    .diskCacheExpiration(.expired)   // no cache
-                    .resizable()
                     .scaledToFill()
                     .frame(width: size, height: size)
+                } else {
+                    KFImage(imageURL)
+                        .placeholder { ProgressView() }
+                        .onFailureView {
+                            VStack {
+                                Image(systemName: "exclamationmark.triangle")
+                                Text("Image load failed.")
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
+    //                    .setProcessor(ShortSideDownsamplingProcessor(targetShortSide: 300))
+                        .cacheMemoryOnly(true)
+                        .memoryCacheExpiration(.expired) // no cache
+                        .diskCacheExpiration(.expired)   // no cache
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: size, height: size)
+                }
             } else if (UTType(filenameExtension: imageURL.pathExtension)?.conforms(to: .movie) ?? false) {
                 ZStack {
                     ThumbnailImageView(url: imageURL, initialSize: size)

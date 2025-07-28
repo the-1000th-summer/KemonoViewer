@@ -39,6 +39,8 @@ struct KemonoViewerApp: App {
             } else {
                 Text("lack of image pointer data")
             }
+        }
+        WindowGroup("my pixiv fullScreen window", id: "pixivFsViewer") {
             
         }
     }

@@ -65,7 +65,7 @@ class PixivPost(BaseModel):
 class PixivImage(BaseModel):
     id = AutoField(column_name='id')
     post = ForeignKeyField(PixivPost, column_name='post_id', backref='images', on_delete='CASCADE')
-    imageName = TextField(column_name='image_name')
+    imageName = TextField(column_name='name')
 
     class Meta:
         table_name = 'pixivImage'
@@ -271,7 +271,7 @@ class PixivSyncer:
 
             if jsonData['illustType'] == 2:
                 # Ugoira file
-                imageFileName = firstFileName.split("_ugoira0")[0] + '_ugoira1920x1080.mkv'
+                imageFileName = firstFileName.split("_ugoira0")[0] + '_ugoira1920x1080.ugoira'
                 PixivImage.create(
                     post=post,
                     imageName=imageFileName

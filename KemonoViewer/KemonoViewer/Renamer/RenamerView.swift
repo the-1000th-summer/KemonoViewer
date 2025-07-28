@@ -64,10 +64,10 @@ struct RenamerView: View {
         
         
         
-        guard let artistsName = getSubdirectoryNames(atPath: Constants.kemonoBaseDir) else { return }
+        guard let artistsName = UtilFunc.getSubdirectoryNames(atPath: Constants.kemonoBaseDir) else { return }
         for (i, artistName) in artistsName.enumerated() {
             let artistDirURL = URL(filePath: Constants.kemonoBaseDir).appendingPathComponent(artistName)
-            guard let postsName = getSubdirectoryNames(atURL: artistDirURL) else { return }
+            guard let postsName = UtilFunc.getSubdirectoryNames(atURL: artistDirURL) else { return }
             let fm = FileManager.default
             for postName in postsName {
 //                try Task.checkCancellation()
@@ -110,17 +110,17 @@ struct RenamerView: View {
     }
     
     private func getPathBeforeRename() -> String {
-        guard let firstArtistName = getSubdirectoryNames(atPath: Constants.kemonoBaseDir)?.first else { return "" }
+        guard let firstArtistName = UtilFunc.getSubdirectoryNames(atPath: Constants.kemonoBaseDir)?.first else { return "" }
         let firstArtistDirURL = URL(filePath: Constants.kemonoBaseDir).appendingPathComponent(firstArtistName)
-        guard let firstPostName = getSubdirectoryNames(atURL: firstArtistDirURL)?.first else { return "" }
+        guard let firstPostName = UtilFunc.getSubdirectoryNames(atURL: firstArtistDirURL)?.first else { return "" }
         
         return "\(firstArtistName) / \(firstPostName)"
     }
     
     private func getPathAfterRename() -> String {
-        guard let firstArtistName = getSubdirectoryNames(atPath: Constants.kemonoBaseDir)?.first else { return "" }
+        guard let firstArtistName = UtilFunc.getSubdirectoryNames(atPath: Constants.kemonoBaseDir)?.first else { return "" }
         let firstArtistDirURL = URL(filePath: Constants.kemonoBaseDir).appendingPathComponent(firstArtistName)
-        guard let firstPostName = getSubdirectoryNames(atURL: firstArtistDirURL)?.first else { return "" }
+        guard let firstPostName = UtilFunc.getSubdirectoryNames(atURL: firstArtistDirURL)?.first else { return "" }
         let firstPostJsonFileURL = firstArtistDirURL.appendingPathComponent(firstPostName).appendingPathComponent("post.json")
         
         guard let jsonFileData = try? Data(contentsOf: firstPostJsonFileURL) else {
