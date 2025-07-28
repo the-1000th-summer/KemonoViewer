@@ -11,7 +11,7 @@ struct AniImageControlView: View {
     @Binding var currentFrameIndex: Int
     @State private var sliderValue: Double = 1.0
     @State private var durationCompensationStart: DispatchTime = DispatchTime.now()
-    @State private var autoPlay = false
+    @State private var autoPlay = true
     @State private var isEditingSlider = false
     
     var durations: [Double]
@@ -73,6 +73,9 @@ struct AniImageControlView: View {
             startPlayingWorkItem = DispatchWorkItem(block: {
                 startPlayingWork()
             })
+            if autoPlay {
+                startPlayingWork()
+            }
         }
         .onChange(of: currentFrameIndex) {
             if !isEditingSlider {
@@ -95,6 +98,7 @@ struct AniImageControlView: View {
     }
     
     private func startPlayingWork() {
+        guard !durations.isEmpty else { return }
         durationCompensationStart = DispatchTime.now()
         goToFrame(currentFrameIndex + 1)
     }

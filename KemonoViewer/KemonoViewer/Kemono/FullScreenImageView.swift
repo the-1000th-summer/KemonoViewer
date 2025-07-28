@@ -144,11 +144,11 @@ struct MediaView: View {
     var body: some View {
         if (UTType(filenameExtension: mediaURL.pathExtension)?.conforms(to: .image) ?? false) {
             if (UTType(filenameExtension: mediaURL.pathExtension)?.conforms(to: .gif) ?? false) {
-                AniImagePlayerView(
+                AniImagePlayerView_hasControl(
                     insideView: $insideView,
                     transform: $transform,
                     messageManager: messageManager,
-                    gifURL: mediaURL
+                    inputFileURL: mediaURL
                 )
             } else {
                 AsyncImage(url: mediaURL) { phase in
@@ -179,6 +179,8 @@ struct MediaView: View {
                 slideManager.restart()
             }
             .resizableView(insideView: $insideView, transform: $transform, messageManager: messageManager)
+        } else if mediaURL.pathExtension == "ugoira" {
+            AniImagePlayerView_hasControl(insideView: $insideView, transform: $transform, messageManager: messageManager, inputFileURL: mediaURL)
         } else {
             VStack {
                 Image("custom.document.fill.badge.questionmark")
@@ -205,9 +207,10 @@ struct FullScreenImageView: View {
     
     @StateObject private var imagePointer = KemonoImagePointer()
     
+    @StateObject private var messageManager = StatusMessageManager()
     @StateObject private var slideManager = SlideShowManager()
     @StateObject private var playerManager = VideoPlayerManager()
-    @StateObject private var messageManager = StatusMessageManager()
+    
     
     @State private var showSidebar = false
     @State private var insideView = false

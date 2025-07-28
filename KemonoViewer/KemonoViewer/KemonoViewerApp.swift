@@ -40,8 +40,12 @@ struct KemonoViewerApp: App {
                 Text("lack of image pointer data")
             }
         }
-        WindowGroup("my pixiv fullScreen window", id: "pixivFsViewer") {
-            
+        WindowGroup("my pixiv fullScreen window", id: "pixivFsViewer", for: PixivImagePointerData.self) {  $imagePointerData in
+            if let imagePointerData {
+                PixivFullScreenImageView(imagePointerData: imagePointerData)
+            } else {
+                Text("lack of image pointer data")
+            }
         }
     }
 }

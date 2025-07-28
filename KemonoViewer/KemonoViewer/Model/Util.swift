@@ -7,6 +7,9 @@
 
 import Foundation
 import SQLite
+import SwiftyJSON
+import ZIPFoundation
+import UniformTypeIdentifiers
 import SwiftUI
 
 struct Constants {
@@ -19,8 +22,23 @@ struct Constants {
     static let pixivDatabaseFilePath = "/Volumes/imagesShown/pixiv.sqlite3"
 }
 
-class UtilFunc {
-    static func decodeGIF(data: Data) -> (images: [Image], durations: [Double]) {
+class AniImageDecoder {
+    static func parseAniImage(imageURL: URL) async -> (images: [Image], durations: [Double]) {
+        if imageURL.pathExtension == "gif" {
+            if let data = try? Data(contentsOf: imageURL) {
+                return await AniImageDecoder.decodeGIF(data: data)
+            }
+        }
+        if imageURL.pathExtension == "ugoira" {
+            guard let parseResult = try? await AniImageDecoder.parseUgoiraFile(from: imageURL) else {
+                return ([], [])
+            }
+            return parseResult
+        }
+        return ([], [])
+    }
+    
+    static func decodeGIF(data: Data) async -> (images: [Image], durations: [Double]) {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else { return ([], []) }
         let frameCount = CGImageSourceGetCount(source)
         
@@ -55,6 +73,58 @@ class UtilFunc {
         return (images, framesDuration)
     }
     
+    static func parseUgoiraFile(from url: URL) async throws -> (images: [Image], durations: [Double]) {
+        guard let archive = try? Archive(url: url, accessMode: .read, pathEncoding: nil) else {
+            throw NSError(domain: "UgoiraParser", code: 1, userInfo: [NSLocalizedDescriptionKey: "无法读取压缩包"])
+        }
+        
+        var jsonData: Data?
+        var imageFiles: [String: Data] = [:] // 文件名: 图片数据
+        
+        for entry in archive {
+            if entry.path.lowercased().hasSuffix(".json") {
+                // 读取JSON文件
+                var data = Data()
+                _ = try archive.extract(entry) { chunk in
+                    data.append(chunk)
+                }
+                jsonData = data
+            } else if let fileExtension = entry.path.split(separator: ".").last, (UTType(filenameExtension: String(fileExtension))?.conforms(to: .image) ?? false) {
+                // 读取图片文件
+                var data = Data()
+                _ = try archive.extract(entry) { chunk in
+                    data.append(chunk)
+                }
+                imageFiles[entry.path] = data
+            }
+        }
+        
+        guard let jsonData = jsonData else {
+            throw NSError(domain: "UgoiraParser", code: 2, userInfo: [NSLocalizedDescriptionKey: "JSON文件未找到"])
+        }
+        
+        guard let jsonObj = try? JSON(data: jsonData) else {
+            print("转换为Json对象失败")
+            return ([], [])
+        }
+        
+        var images = [Image]()
+        var durations = [Double]()
+        
+        for frame in jsonObj["frames"] {
+            guard let imageData = imageFiles[frame.1["file"].stringValue], let nsImage = NSImage(data: imageData) else {
+                throw NSError(domain: "UgoiraParser", code: 3, userInfo: [NSLocalizedDescriptionKey: "图片加载失败: \(frame.1["file"])"])
+            }
+            
+            images.append(Image(nsImage: nsImage))
+            durations.append(Double(frame.1["delay"].intValue) / 1000.0) // 毫秒转秒
+        }
+        
+        return (images, durations)
+    }
+}
+
+class UtilFunc {
     static func getSubdirectoryNames(atURL directoryURL: URL) -> [String]? {
         let fileManager = FileManager.default
         do {

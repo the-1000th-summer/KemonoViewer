@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PixivArtist_show {
+struct PixivArtist_show: Hashable, Codable {
     let name: String
     let folderName: String
     let pixivId: String

@@ -38,7 +38,15 @@ struct PixivPostImageView: View {
                             ForEach(imagesName.indices, id: \.self) { imageIndex in
                                 GeometryReader { geo in
                                     Button(action: {
-                                        
+                                        let fsWindowData = PixivImagePointerData(
+                                            artistsData: artistsData,
+                                            postsData: postsData,
+                                            currentPostImagesName: imagesName,
+                                            currentArtistIndex: artistSelectedIndex,
+                                            currentPostIndex: postSelectedIndex,
+                                            currentImageIndex: imageIndex
+                                        )
+                                        openWindow(id: "pixivFsViewer", value: fsWindowData)
                                     }) {
                                         PostImageGridItemView(
                                             size: geo.size.width,

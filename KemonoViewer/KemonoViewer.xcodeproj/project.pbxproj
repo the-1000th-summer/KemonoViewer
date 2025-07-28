@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		79002C0F2E372C4100ACC3BD /* AniImagePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79002C0E2E372C4100ACC3BD /* AniImagePlayerView.swift */; };
+		79002C122E3737E300ACC3BD /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 79002C112E3737E300ACC3BD /* ZIPFoundation */; };
 		79003D102E30D29A00BC4BE3 /* PixivArtistListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79003D0F2E30D29A00BC4BE3 /* PixivArtistListView.swift */; };
 		79003D122E30D5B300BC4BE3 /* PixivDatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79003D112E30D5B300BC4BE3 /* PixivDatabaseManager.swift */; };
 		7928378E2E28BFD90093E179 /* PostCommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7928378D2E28BFD90093E179 /* PostCommentView.swift */; };
@@ -155,6 +156,7 @@
 				79A627B12E15130B001F0212 /* Kingfisher in Frameworks */,
 				7959EE2B2E10F43B00ACF809 /* SwiftyJSON in Frameworks */,
 				79B3E8B52E10F1F800567F1D /* SQLite in Frameworks */,
+				79002C122E3737E300ACC3BD /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,6 +314,7 @@
 				79B3E8B42E10F1F800567F1D /* SQLite */,
 				7959EE2A2E10F43B00ACF809 /* SwiftyJSON */,
 				79A627B02E15130B001F0212 /* Kingfisher */,
+				79002C112E3737E300ACC3BD /* ZIPFoundation */,
 			);
 			productName = KemonoViewer;
 			productReference = 7986A0BF2E105BBB0008D9EE /* KemonoViewer.app */;
@@ -399,6 +402,7 @@
 				79B3E8B32E10F1F800567F1D /* XCRemoteSwiftPackageReference "SQLite.swift" */,
 				7959EE292E10F43B00ACF809 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				79A627AF2E15130B001F0212 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				79002C102E3737E300ACC3BD /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7986A0C02E105BBB0008D9EE /* Products */;
@@ -797,6 +801,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		79002C102E3737E300ACC3BD /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.19;
+			};
+		};
 		7959EE292E10F43B00ACF809 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON.git";
@@ -824,6 +836,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		79002C112E3737E300ACC3BD /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 79002C102E3737E300ACC3BD /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
 		7959EE2A2E10F43B00ACF809 /* SwiftyJSON */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 7959EE292E10F43B00ACF809 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;

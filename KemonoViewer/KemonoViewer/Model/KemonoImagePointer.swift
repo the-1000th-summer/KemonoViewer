@@ -43,9 +43,10 @@ final class KemonoImagePointer: ObservableObject {
     
     // 存储点击进入全屏时未浏览的post的信息
     private var notViewedPost_firstLoad: [Int: [Int64]] = [:]
-
-    @Published var currentImageURL: URL?
+    
     @Published var currentPostDirURL: URL?
+    @Published var currentImageURL: URL?
+    
     
     private static let postDateFormatter: DateFormatter = {
         let formatter = DateFormatter()

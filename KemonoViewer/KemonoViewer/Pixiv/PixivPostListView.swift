@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PixivPost_show {
+struct PixivPost_show: Hashable, Codable {
     let name: String
     let folderName: String
     let id: Int64

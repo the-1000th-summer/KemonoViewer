@@ -83,7 +83,8 @@ struct PostImageGridItemView: View {
                 .frame(width: size, height: size)
                 
             } else if (imageURL.pathExtension == "ugoira") {
-                
+                AniImagePlayerView_noControl(inputFileURL: imageURL)
+                    .frame(width: size, height: size)
             } else if ((UTType(filenameExtension: imageURL.pathExtension)?.conforms(to: .image)) ?? false) {
                 if (UTType(filenameExtension: imageURL.pathExtension)?.conforms(to: .gif) ?? false) {
                     KFAnimatedImage(imageURL)
