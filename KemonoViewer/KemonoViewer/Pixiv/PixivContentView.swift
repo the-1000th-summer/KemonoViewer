@@ -23,6 +23,8 @@ struct PixivContentView: View {
     
     @State private var isLoadingArtists = false
     @State private var isLoadingPosts = false
+    
+    private let onePostViewedPub = NotificationCenter.default.publisher(for: .updateNewViewedPixivPostUI)
 
     var body: some View {
         HSplitView {
@@ -110,7 +112,7 @@ struct PixivContentView: View {
                         postsData: $postsData,
                         artistSelectedIndex: artistSelectedIndex,
                         postSelectedIndex: postSelectedIndex,
-//                        postQueryConfig: postQueryConfig
+                        postQueryConfig: postQueryConfig
                     )
                     .frame(maxWidth: .infinity)
                 }
@@ -126,6 +128,24 @@ struct PixivContentView: View {
             }
             postSelectedIndex = nil
         }
+        .onChange(of: postSelectedIndex) {
+            guard let postSelectedIndex else { return }
+            updateDB_newViewedStatusPost(postIndex: postSelectedIndex, viewed: true)
+            updateUI_newViewedStatusPost(postIndex: postSelectedIndex, viewed: true)
+            updateUI_newViewedStatisArtist()
+        }
+        .onReceive(onePostViewedPub) { notification in
+            guard let currentArtistIdFromPointer = notification.userInfo?["currentArtistId"] as? Int64, let viewedPostId = notification.userInfo?["viewedPostId"] as? Int64, let currentArtistShouldUpdateUI = notification.userInfo?["currentArtistShouldUpdateUI"] as? Bool else { return }
+            // PostImageView中选中的artist与全屏中浏览的artist可能不同
+            if let artistSelectedIndex {
+                if artistsData[artistSelectedIndex].id == currentArtistIdFromPointer {
+                    updateUI_newViewedStatusPost(postId: viewedPostId, viewed: true)
+                }
+            }
+            if currentArtistShouldUpdateUI {
+                refreshArtistData(artistId: currentArtistIdFromPointer, hasNotViewed: false)
+            }
+        }
     }
     
     private func reloadPostsData() async {
@@ -134,6 +154,66 @@ struct PixivContentView: View {
         } else {
             postsData = []
         }
+    }
+    
+    private func updateUI_newViewedStatusPost(postId: Int64, viewed: Bool) {
+        if let postIndex = postsData.firstIndex(where: { $0.id == postId }) {
+            updateUI_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
+        }
+    }
+    
+    private func updateUI_newViewedStatusPost(postIndex: Int, viewed: Bool) {
+        let originalPostData = postsData[postIndex]
+        // prevent unnecessary view refreshing and database reading
+        guard originalPostData.viewed != viewed else { return }
+        
+        postsData[postIndex] = PixivPost_show(
+            name: originalPostData.name,
+            folderName: originalPostData.folderName,
+            id: originalPostData.id,
+            imageNumber: originalPostData.imageNumber,
+            postDate: originalPostData.postDate,
+            viewed: viewed
+        )
+    }
+    
+    private func updateUI_newViewedStatisArtist() {
+        Task {
+            await checkForArtistNotViewed()
+        }
+    }
+    
+    private func updateDB_newViewedStatusPost(postIndex: Int, viewed: Bool) {
+        Task {
+            await PixivDatabaseManager.shared.tagPost(postId: postsData[postIndex].id, viewed: viewed)
+        }
+    }
+    
+    private func checkForArtistNotViewed() async {
+        let artist_hasNotViewed = artistsData[artistSelectedIndex!].hasNotViewed
+        let posts_hasNotViewed = postsData.contains { !$0.viewed }
+        if artist_hasNotViewed != posts_hasNotViewed {
+            await MainActor.run {
+                refreshArtistData(artistIndex: artistSelectedIndex!, hasNotViewed: posts_hasNotViewed)
+            }
+        }
+    }
+    
+    private func refreshArtistData(artistId: Int64, hasNotViewed: Bool) {
+        if let artistIndex = artistsData.firstIndex(where: { $0.id == artistId }) {
+            refreshArtistData(artistIndex: artistIndex, hasNotViewed: hasNotViewed)
+        }
+    }
+    
+    private func refreshArtistData(artistIndex: Int, hasNotViewed: Bool) {
+        let artistData = artistsData[artistIndex]
+        artistsData[artistIndex] = PixivArtist_show(
+            name: artistData.name,
+            folderName: artistData.folderName,
+            pixivId: artistData.pixivId,
+            hasNotViewed: hasNotViewed,
+            id: artistData.id
+        )
     }
 }
 

@@ -72,6 +72,15 @@ class PixivDatabaseManager {
         }
     }
     
+    func tagPost(postId: Int64, viewed: Bool) async {
+        do {
+            try db?.run(PixivPost.postTable.filter(PixivPost.e_postId == postId).update(PixivPost.e_viewed <- viewed))
+        } catch {
+            print(error.localizedDescription)
+            return
+        }
+    }
+    
 }
 
 final class PixivDataReader {
@@ -121,12 +130,44 @@ final class PixivDataReader {
         return nil
     }
     
+    static func readPostsData(postsId: [Int64], queryConfig: PixivPostQueryConfig) -> [PixivPost_show]? {
+        guard let db = PixivDatabaseManager.shared.getConnection() else {
+            print("数据库初始化失败")
+            return nil
+        }
+        
+        var query = PixivPost.postTable.select(
+            PixivPost.e_postName,
+            PixivPost.e_postFolderName,
+            PixivPost.e_postId,
+            PixivPost.e_imageNumber,
+            PixivPost.e_postDate,
+            PixivPost.e_viewed
+        ).filter(postsId.contains(PixivPost.e_postId))
+        query = addQueryConfigFilter(query: query, queryConfig: queryConfig)
+        
+        do {
+            return try db.prepare(query).map {
+                PixivPost_show(
+                    name: $0[PixivPost.e_postName],
+                    folderName: $0[PixivPost.e_postFolderName],
+                    id: $0[PixivPost.e_postId],
+                    imageNumber: Int($0[PixivPost.e_imageNumber]),
+                    postDate: $0[PixivPost.e_postDate],
+                    viewed: $0[PixivPost.e_viewed]
+                )
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+        return nil
+    }
+    
     static func readPostData(artistId: Int64, queryConfig: PixivPostQueryConfig) -> [PixivPost_show]? {
         guard let db = PixivDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return nil
         }
-        var postsData = [PixivPost_show]()
         
         var query = PixivPost.postTable.select(
             PixivPost.e_postName,
@@ -143,25 +184,27 @@ final class PixivDataReader {
         }
         
         do {
-            
-            for row in try db.prepare(query) {
-                let currentPost = PixivPost_show(
-                    name: row[PixivPost.e_postName],
-                    folderName: row[PixivPost.e_postFolderName],
-                    id: row[PixivPost.e_postId],
-                    imageNumber: Int(row[PixivPost.e_imageNumber]),
-                    postDate: row[PixivPost.e_postDate],
-                    viewed: row[PixivPost.e_viewed]
+            return try db.prepare(query).map {
+                PixivPost_show(
+                    name: $0[PixivPost.e_postName],
+                    folderName: $0[PixivPost.e_postFolderName],
+                    id: $0[PixivPost.e_postId],
+                    imageNumber: Int($0[PixivPost.e_imageNumber]),
+                    postDate: $0[PixivPost.e_postDate],
+                    viewed: $0[PixivPost.e_viewed]
                 )
-                postsData.append(currentPost)
             }
         } catch {
             print(error.localizedDescription)
         }
-        return postsData
+        return nil
     }
     
-    static func readImageData(postId: Int64) async -> [String]? {
+    static func readImageData_async(postId: Int64) async -> [String]? {
+        return readImageData(postId: postId)
+    }
+    
+    static func readImageData(postId: Int64) -> [String]? {
         guard let db = PixivDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
             return nil
@@ -176,7 +219,6 @@ final class PixivDataReader {
         } catch {
             print(error)
         }
-            
         return nil
     }
     

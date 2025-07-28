@@ -38,8 +38,8 @@ struct KContentSelectView: View {
     
     @State private var autoScrollToFirstNotViewedImage = true
     
-    private let pub = NotificationCenter.default.publisher(for: .updateNewViewedPostUI)
-    private let viewedPub = NotificationCenter.default.publisher(for: .updateAllPostViewedStatus)
+    private let onePostViewedPub = NotificationCenter.default.publisher(for: .updateNewViewedKemonoPostUI)
+    private let viewedPub = NotificationCenter.default.publisher(for: .updateAllKemonoPostViewedStatus)
     private let fullScrViewClosedPub = NotificationCenter.default.publisher(for: .kemonoFullScreenViewClosed)
     
     var body: some View {
@@ -81,10 +81,10 @@ struct KContentSelectView: View {
                         .frame(maxWidth: .infinity)
                     } else {
                         if selectedArtistTab == .listTab {
-                            ArtistListView(artistsData: $artistsData, artistSelectedIndex: $artistSelectedIndex)
+                            KemonoArtistListView(artistsData: $artistsData, artistSelectedIndex: $artistSelectedIndex)
                                 .frame(minWidth: 150)
                         } else {
-                            ArtistRichListView(artistsData: $artistsData, artistSelectedIndex: $artistSelectedIndex)
+                            KemonoArtistRichListView(artistsData: $artistsData, artistSelectedIndex: $artistSelectedIndex)
                                 .frame(minWidth: 200, maxWidth: 480)
                         }
                     }
@@ -191,7 +191,7 @@ struct KContentSelectView: View {
                     isLoadingArtists = false
                 }
             }
-            .onReceive(pub) { notification in
+            .onReceive(onePostViewedPub) { notification in
                 guard let currentArtistIdFromPointer = notification.userInfo?["currentArtistId"] as? Int64, let viewedPostId = notification.userInfo?["viewedPostId"] as? Int64, let currentArtistShouldUpdateUI = notification.userInfo?["currentArtistShouldUpdateUI"] as? Bool else { return }
                 // PostImageView中选中的artist与全屏中浏览的artist可能不同
                 if let artistSelectedIndex {

@@ -100,6 +100,18 @@ struct AniImagePlayerView_hasControl: View {
         }
         .onAppear {
             isLoadingImage = true
+            currentFrameIndex = 0
+            Task {
+                let parseResult = await AniImageDecoder.parseAniImage(imageURL: inputFileURL)
+                await MainActor.run {
+                    (frames, durations) = parseResult
+                    isLoadingImage = false
+                }
+            }
+        }
+        .onChange(of: inputFileURL) {
+            isLoadingImage = true
+            currentFrameIndex = 0
             Task {
                 let parseResult = await AniImageDecoder.parseAniImage(imageURL: inputFileURL)
                 await MainActor.run {

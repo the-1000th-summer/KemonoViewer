@@ -559,14 +559,15 @@ final class KemonoDataReader {
 
 
 extension Notification.Name {
-    static let updateNewViewedPostUI = Notification.Name("UpdateNewViewedPostUINotification")
-    static let updateAllPostViewedStatus = Notification.Name("updateAllPostViewedStatusNotification")
-    
+    static let updateNewViewedKemonoPostUI = Notification.Name("updateNewViewedKemonoPostUINotification")
+    static let updateAllKemonoPostViewedStatus = Notification.Name("updateAllKemonoPostViewedStatusNotification")
     static let kemonoFullScreenViewClosed = Notification.Name("kemonoFullScreenViewClosedNotification")
     
     static let updateNewViewedTwitterImageUI = Notification.Name("updateNewViewedTwitterImageUINotification")
     static let updateAllTwitterImageViewedStatus = Notification.Name("updateAllTwitterImageViewedStatusNotification")
-    
     static let tweetFullScreenViewClosed = Notification.Name("tweetFullScreenViewClosedNotification")
+    
+    static let updateNewViewedPixivPostUI = Notification.Name("updateNewViewedPixivPostUINotification")
+    
 }
 

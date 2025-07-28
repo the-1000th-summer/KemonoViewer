@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct PixivFullScreenImageView: View {
     
@@ -17,7 +18,28 @@ struct PixivFullScreenImageView: View {
     @StateObject private var slideManager = SlideShowManager()
     @StateObject private var playerManager = VideoPlayerManager()
     
+    @State private var showSidebar = false
     @State private var insideView = false
+    
+    @ViewBuilder
+    private func changeImageButtonView() -> some View {
+        VStack {
+            Spacer()
+            HStack {
+                PreviousButtonView {
+                    showPreviousImage()
+                    slideManager.restart()
+                }
+                Spacer()
+                NextButtonView {
+                    showNextImage()
+                    slideManager.restart()
+                }
+                
+            }
+            Spacer()
+        }
+    }
     
     var body: some View {
         ZStack {
@@ -43,10 +65,60 @@ struct PixivFullScreenImageView: View {
                             window.toggleFullScreen(nil)
                         }
                     }
+                    MessageView(messageManager: messageManager)
+                    changeImageButtonView()
+                    ShowSidebarButtonView(showSidebar: $showSidebar)
+                }
+                .onHover { hovering in
+                    insideView = hovering
+                }
+                .background {
+                    Color.black
                 }
             }
+            ImagePathShowView(pathText: "\(imagePointer.currentPostDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")")
         }
     }
+    
+    private func showNextImage() {
+        let dirURLChanged = imagePointer.nextImage()
+        if dirURLChanged, let currentPostDirURL = imagePointer.currentPostDirURL {
+            messageManager.show(
+                message: "下一个文件夹：\n" + currentPostDirURL.path(percentEncoded: false)
+            )
+        }
+        if !dirURLChanged && imagePointer.isLastPost() {
+            messageManager.show(message: "已经是最后一张图片")
+        } else {
+            setMovieCompleted()
+        }
+    }
+    
+    private func showPreviousImage() {
+        let dirURLChanged = imagePointer.previousImage()
+        if dirURLChanged, let currentPostDirURL = imagePointer.currentPostDirURL {
+            messageManager.show(
+                message: "上一个文件夹：\n" + currentPostDirURL.path(percentEncoded: false)
+            )
+        }
+        if !dirURLChanged && imagePointer.isFirstPost() {
+            messageManager.show(
+                message: "已经是第一张图片"
+            )
+        } else {
+            setMovieCompleted()
+        }
+    }
+    
+    private func setMovieCompleted() {
+        if let currentImageURL = imagePointer.currentImageURL, (UTType(filenameExtension: currentImageURL.pathExtension)?.conforms(to: .movie) ?? false) {
+            slideManager.setMovieCompleted(completed: false)
+            slideManager.pauseForMovie()
+        } else {
+            slideManager.setMovieCompleted(completed: true)
+        }
+    }
+    
 }
 
 //#Preview {

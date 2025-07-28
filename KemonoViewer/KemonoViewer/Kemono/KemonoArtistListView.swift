@@ -15,7 +15,7 @@ struct KemonoArtist_show: Hashable, Codable {
     let id: Int64
 }
 
-struct ArtistListView: View {
+struct KemonoArtistListView: View {
     @Binding var artistsData: [KemonoArtist_show]
 //    @Binding var artistSelectedData: Artist_show?
     @Binding var artistSelectedIndex: Int?
@@ -32,7 +32,7 @@ struct ArtistListView: View {
                 Button("标记为全部已读") {
                     tagArtistAllPost(artistData: artistsData[artistIndex], viewed: true)
                     NotificationCenter.default.post(
-                        name: .updateAllPostViewedStatus,
+                        name: .updateAllKemonoPostViewedStatus,
                         object: nil
                     )
                     refreshArtistData(artistIndex: artistIndex, hasNotViewed: false)
@@ -40,7 +40,7 @@ struct ArtistListView: View {
                 Button("标记为全部未读") {
                     tagArtistAllPost(artistData: artistsData[artistIndex], viewed: false)
                     NotificationCenter.default.post(
-                        name: .updateAllPostViewedStatus,
+                        name: .updateAllKemonoPostViewedStatus,
                         object: nil
                     )
                     refreshArtistData(artistIndex: artistIndex, hasNotViewed: true)

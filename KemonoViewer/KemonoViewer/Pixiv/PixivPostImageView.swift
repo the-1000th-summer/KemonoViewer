@@ -24,6 +24,8 @@ struct PixivPostImageView: View {
     var artistSelectedIndex: Int?
     var postSelectedIndex: Int?
     
+    var postQueryConfig: PixivPostQueryConfig
+    
     @ViewBuilder
     private func mainPostImageView() -> some View {
         if isLoadingData {
@@ -44,7 +46,8 @@ struct PixivPostImageView: View {
                                             currentPostImagesName: imagesName,
                                             currentArtistIndex: artistSelectedIndex,
                                             currentPostIndex: postSelectedIndex,
-                                            currentImageIndex: imageIndex
+                                            currentImageIndex: imageIndex,
+                                            postQueryConfig: postQueryConfig
                                         )
                                         openWindow(id: "pixivFsViewer", value: fsWindowData)
                                     }) {
@@ -72,7 +75,7 @@ struct PixivPostImageView: View {
                 if let postSelectedIndex {
                     isLoadingData = true
                     Task {
-                        let readResult = await PixivDataReader.readImageData(postId: postsData[postSelectedIndex].id)
+                        let readResult = await PixivDataReader.readImageData_async(postId: postsData[postSelectedIndex].id)
                         await MainActor.run {
                             imagesName = readResult ?? []
                             isLoadingData = false

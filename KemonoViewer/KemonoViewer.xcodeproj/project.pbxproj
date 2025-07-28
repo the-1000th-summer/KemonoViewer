@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		79002C0F2E372C4100ACC3BD /* AniImagePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79002C0E2E372C4100ACC3BD /* AniImagePlayerView.swift */; };
 		79002C122E3737E300ACC3BD /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 79002C112E3737E300ACC3BD /* ZIPFoundation */; };
+		79002C142E37A4BD00ACC3BD /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79002C132E37A4BD00ACC3BD /* MediaView.swift */; };
 		79003D102E30D29A00BC4BE3 /* PixivArtistListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79003D0F2E30D29A00BC4BE3 /* PixivArtistListView.swift */; };
 		79003D122E30D5B300BC4BE3 /* PixivDatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79003D112E30D5B300BC4BE3 /* PixivDatabaseManager.swift */; };
 		7928378E2E28BFD90093E179 /* PostCommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7928378D2E28BFD90093E179 /* PostCommentView.swift */; };
@@ -23,7 +24,7 @@
 		7950F0BC2E20A5AD00B57A95 /* SlideShowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7950F0BB2E20A5AD00B57A95 /* SlideShowManager.swift */; };
 		7950F0BE2E20A68B00B57A95 /* ContextMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7950F0BD2E20A68B00B57A95 /* ContextMenuView.swift */; };
 		7959EE2B2E10F43B00ACF809 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 7959EE2A2E10F43B00ACF809 /* SwiftyJSON */; };
-		7959EE362E11104600ACF809 /* ArtistListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7959EE352E11104600ACF809 /* ArtistListView.swift */; };
+		7959EE362E11104600ACF809 /* KemonoArtistListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7959EE352E11104600ACF809 /* KemonoArtistListView.swift */; };
 		7973DC192E14451200ECD58D /* PostGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7973DC182E14451200ECD58D /* PostGridView.swift */; };
 		7974C51E2E1829B700F8E9DC /* DatabaseManagerExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7974C51D2E1829B700F8E9DC /* DatabaseManagerExt.swift */; };
 		797E49E22E1125D600C3A3A7 /* PostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797E49E12E1125D600C3A3A7 /* PostListView.swift */; };
@@ -45,7 +46,7 @@
 		79B3E8B52E10F1F800567F1D /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 79B3E8B42E10F1F800567F1D /* SQLite */; };
 		79BC81852E366C89006AECEE /* AniImageControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BC81842E366C89006AECEE /* AniImageControlView.swift */; };
 		79CB7BD72E124A9300FA7B77 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CB7BD62E124A9300FA7B77 /* Util.swift */; };
-		79DE3AAB2E268D670018412B /* ArtistRichListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DE3AAA2E268D670018412B /* ArtistRichListView.swift */; };
+		79DE3AAB2E268D670018412B /* KemonoArtistRichListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DE3AAA2E268D670018412B /* KemonoArtistRichListView.swift */; };
 		79E04C852E167470002932DF /* ResizableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E04C842E167470002932DF /* ResizableView.swift */; };
 		79E2E4CB2E33225500D2F375 /* PixivPostImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E2E4CA2E33225500D2F375 /* PixivPostImageView.swift */; };
 		79E2E4CD2E332B2D00D2F375 /* PixivPostImageGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E2E4CC2E332B2D00D2F375 /* PixivPostImageGridItemView.swift */; };
@@ -81,6 +82,7 @@
 
 /* Begin PBXFileReference section */
 		79002C0E2E372C4100ACC3BD /* AniImagePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AniImagePlayerView.swift; sourceTree = "<group>"; };
+		79002C132E37A4BD00ACC3BD /* MediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaView.swift; sourceTree = "<group>"; };
 		79003D0F2E30D29A00BC4BE3 /* PixivArtistListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixivArtistListView.swift; sourceTree = "<group>"; };
 		79003D112E30D5B300BC4BE3 /* PixivDatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixivDatabaseManager.swift; sourceTree = "<group>"; };
 		7928378D2E28BFD90093E179 /* PostCommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCommentView.swift; sourceTree = "<group>"; };
@@ -94,7 +96,7 @@
 		7948904F2E27F10D00AA96A1 /* PostTextContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTextContentView.swift; sourceTree = "<group>"; };
 		7950F0BB2E20A5AD00B57A95 /* SlideShowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideShowManager.swift; sourceTree = "<group>"; };
 		7950F0BD2E20A68B00B57A95 /* ContextMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuView.swift; sourceTree = "<group>"; };
-		7959EE352E11104600ACF809 /* ArtistListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistListView.swift; sourceTree = "<group>"; };
+		7959EE352E11104600ACF809 /* KemonoArtistListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KemonoArtistListView.swift; sourceTree = "<group>"; };
 		7973DC182E14451200ECD58D /* PostGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostGridView.swift; sourceTree = "<group>"; };
 		7974C51D2E1829B700F8E9DC /* DatabaseManagerExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManagerExt.swift; sourceTree = "<group>"; };
 		797E49E12E1125D600C3A3A7 /* PostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostListView.swift; sourceTree = "<group>"; };
@@ -118,7 +120,7 @@
 		79B3E8A82E10EEE600567F1D /* KemonoDatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KemonoDatabaseManager.swift; sourceTree = "<group>"; };
 		79BC81842E366C89006AECEE /* AniImageControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AniImageControlView.swift; sourceTree = "<group>"; };
 		79CB7BD62E124A9300FA7B77 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
-		79DE3AAA2E268D670018412B /* ArtistRichListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistRichListView.swift; sourceTree = "<group>"; };
+		79DE3AAA2E268D670018412B /* KemonoArtistRichListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KemonoArtistRichListView.swift; sourceTree = "<group>"; };
 		79E04C842E167470002932DF /* ResizableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizableView.swift; sourceTree = "<group>"; };
 		79E2E4CA2E33225500D2F375 /* PixivPostImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixivPostImageView.swift; sourceTree = "<group>"; };
 		79E2E4CC2E332B2D00D2F375 /* PixivPostImageGridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixivPostImageGridItemView.swift; sourceTree = "<group>"; };
@@ -224,6 +226,7 @@
 				7948904D2E279C4100AA96A1 /* LoadingDataView.swift */,
 				79BC81842E366C89006AECEE /* AniImageControlView.swift */,
 				79002C0E2E372C4100ACC3BD /* AniImagePlayerView.swift */,
+				79002C132E37A4BD00ACC3BD /* MediaView.swift */,
 				7986A10A2E105E1C0008D9EE /* KemonoViewerApp.swift */,
 			);
 			path = KemonoViewer;
@@ -233,8 +236,8 @@
 			isa = PBXGroup;
 			children = (
 				7986A1352E105EE40008D9EE /* KContentSelectView.swift */,
-				7959EE352E11104600ACF809 /* ArtistListView.swift */,
-				79DE3AAA2E268D670018412B /* ArtistRichListView.swift */,
+				7959EE352E11104600ACF809 /* KemonoArtistListView.swift */,
+				79DE3AAA2E268D670018412B /* KemonoArtistRichListView.swift */,
 				7948904B2E27254900AA96A1 /* ArtistGridItemView.swift */,
 				797E49E12E1125D600C3A3A7 /* PostListView.swift */,
 				7973DC182E14451200ECD58D /* PostGridView.swift */,
@@ -446,6 +449,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79002C142E37A4BD00ACC3BD /* MediaView.swift in Sources */,
 				792D1F952E2B6B3500E763E8 /* TwitterImagePointer.swift in Sources */,
 				79E2E4CB2E33225500D2F375 /* PixivPostImageView.swift in Sources */,
 				79FB9BD12E3262560076C74A /* PixivArtistGridItemView.swift in Sources */,
@@ -484,8 +488,8 @@
 				79A811A02E2CD8020002D8C9 /* TweetTextContentView.swift in Sources */,
 				797E49E22E1125D600C3A3A7 /* PostListView.swift in Sources */,
 				792D1F932E2B509A00E763E8 /* StatusMessageManager.swift in Sources */,
-				79DE3AAB2E268D670018412B /* ArtistRichListView.swift in Sources */,
-				7959EE362E11104600ACF809 /* ArtistListView.swift in Sources */,
+				79DE3AAB2E268D670018412B /* KemonoArtistRichListView.swift in Sources */,
+				7959EE362E11104600ACF809 /* KemonoArtistListView.swift in Sources */,
 				79E2E4CD2E332B2D00D2F375 /* PixivPostImageGridItemView.swift in Sources */,
 				79FB9BD32E328CF70076C74A /* PixivPostListView.swift in Sources */,
 				7950F0BE2E20A68B00B57A95 /* ContextMenuView.swift in Sources */,

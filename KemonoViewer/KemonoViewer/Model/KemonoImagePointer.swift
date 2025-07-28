@@ -90,7 +90,6 @@ final class KemonoImagePointer: ObservableObject {
     func isFirstPost() -> Bool {
         return currentPostIndex == 0 && (currentImageIndex == -2 || currentImageIndex == 0)
     }
-    
     func isLastPost() -> Bool {
         return currentPostIndex == postsFolderName.count - 1 && (currentImageIndex == -2 || currentImageIndex == currentPostImagesName.count - 1)
     }
@@ -244,7 +243,7 @@ final class KemonoImagePointer: ObservableObject {
             
             await MainActor.run {
                 NotificationCenter.default.post(
-                    name: .updateNewViewedPostUI,
+                    name: .updateNewViewedKemonoPostUI,
                     object: nil,
                     userInfo: [
                         "currentArtistId": artistsData[currentArtistIndex].id,
