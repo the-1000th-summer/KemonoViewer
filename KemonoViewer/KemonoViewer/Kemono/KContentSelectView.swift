@@ -136,7 +136,6 @@ struct KContentSelectView: View {
                                 PostListView(
                                     postsData: $postsData,
                                     postSelectedIndex: $postSelectedIndex,
-                                    queryConfig: postQueryConfig,
                                     tagNotViewAction: { postIndex, viewed in
                                         updateDB_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
                                         updateUI_newViewedStatusPost(postIndex: postIndex, viewed: viewed)

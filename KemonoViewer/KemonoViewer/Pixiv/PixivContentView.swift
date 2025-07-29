@@ -25,6 +25,7 @@ struct PixivContentView: View {
     @State private var isLoadingPosts = false
     
     private let onePostViewedPub = NotificationCenter.default.publisher(for: .updateNewViewedPixivPostUI)
+    private let allViewedPub = NotificationCenter.default.publisher(for: .updateAllPixivPostViewedStatus)
 
     var body: some View {
         HSplitView {
@@ -77,31 +78,28 @@ struct PixivContentView: View {
                         .frame(maxWidth: .infinity)
                     } else {
                         if selectedTab == .imageTab {
-                            //                            PostGridView(
-                            //                                postsData: $postsData,
-                            //                                artistSelectedData: (artistSelectedIndex != nil) ? artistsData[artistSelectedIndex!] : nil,
-                            //                                postSelectedIndex: $postSelectedIndex,
+                            PixivPostGridView(
+                                postsData: $postsData,
+                                artistSelectedData: (artistSelectedIndex != nil) ? artistsData[artistSelectedIndex!] : nil,
+                                postSelectedIndex: $postSelectedIndex,
                             //                                autoScrollToFirstNotViewedImage: $autoScrollToFirstNotViewedImage,
                             //                                queryConfig: postQueryConfig,
-                            //                                tagNotViewAction: { postIndex, viewed in
-                            //                                    updateDB_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
-                            //                                    updateUI_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
-                            //                                    updateUI_newViewedStatisArtist()
-                            //                                }
+                                tagNotViewAction: { postIndex, viewed in
+                                    updateDB_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
+                                    updateUI_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
+                                    updateUI_newViewedStatisArtist()
+                                }
                             //
-                            //                            )
-                            Text("not implemented")
-                                .frame(minWidth: 200, maxWidth: .infinity)
+                            )
                         } else {
                             PixivPostListView(
                                 postsData: $postsData,
                                 postSelectedIndex: $postSelectedIndex,
-                                //                                queryConfig: postQueryConfig,
-                                //                                tagNotViewAction: { postIndex, viewed in
-                                //                                    updateDB_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
-                                //                                    updateUI_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
-                                //                                    updateUI_newViewedStatisArtist()
-                                //                                }
+                                tagNotViewAction: { postIndex, viewed in
+                                    updateDB_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
+                                    updateUI_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
+                                    updateUI_newViewedStatisArtist()
+                                }
                             )
                             //  .frame(idealWidth: 100)
                         }
@@ -146,6 +144,11 @@ struct PixivContentView: View {
                 refreshArtistData(artistId: currentArtistIdFromPointer, hasNotViewed: false)
             }
         }
+        .onReceive(allViewedPub) { notification in
+            Task {
+                await reloadPostsData()
+            }
+        }
     }
     
     private func reloadPostsData() async {
@@ -170,9 +173,11 @@ struct PixivContentView: View {
         postsData[postIndex] = PixivPost_show(
             name: originalPostData.name,
             folderName: originalPostData.folderName,
+            coverName: originalPostData.coverName,
             id: originalPostData.id,
             imageNumber: originalPostData.imageNumber,
             postDate: originalPostData.postDate,
+            xRestrict: originalPostData.xRestrict,
             viewed: viewed
         )
     }

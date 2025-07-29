@@ -43,6 +43,7 @@ class PixivPost(BaseModel):
     name = TextField(column_name='name')
     post_date = TextField(column_name='post_date')
     postFolderName = TextField(column_name='post_folder_name')
+    coverName = TextField(column_name='cover_name')
     imageNumber = IntegerField(column_name='image_number')
 
     bookmarkCount = IntegerField(column_name='bookmark_count')
@@ -245,12 +246,25 @@ class PixivSyncer:
         try:
             imageNumber = jsonData['pageCount']
 
+            firstFileURL = jsonData['urls']['original']
+            if not firstFileURL:
+                raise ValueError("帖子缺少原始图片 URL")
+            firstFileName = os.path.basename(firstFileURL)
+
+            if jsonData['illustType'] == 2:
+                # Ugoira file
+                firstFileName_forPost = firstFileName.split("_ugoira0")[0] + '_ugoira1920x1080.ugoira'
+            else:
+                firstFileName_forPost = firstFileName
+
+
             post = PixivPost.create(
                 pixiv_post_id=jsonData['illustId'],
                 artist=artist_SQLObj,
                 name=jsonData['illustTitle'],
                 post_date=self.parseDate(jsonData['uploadDate']),
                 postFolderName=postFolderName,
+                coverName=firstFileName_forPost,
                 imageNumber=imageNumber,
                 bookmarkCount=jsonData['bookmarkCount'],
                 likeCount=jsonData['likeCount'],
@@ -262,11 +276,6 @@ class PixivSyncer:
                 isOriginal=jsonData['isOriginal'],
                 aiType=jsonData['aiType']
             )
-
-            firstFileURL = jsonData['urls']['original']
-            if not firstFileURL:
-                raise ValueError("帖子缺少原始图片 URL")
-            firstFileName = os.path.basename(firstFileURL)
 
 
             if jsonData['illustType'] == 2:

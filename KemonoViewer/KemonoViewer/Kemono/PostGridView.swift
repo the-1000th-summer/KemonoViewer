@@ -101,8 +101,9 @@ struct PostGridView: View {
         }
     }
     
-    private func getPostCoverURL(postIndex: Int, artistName: String) -> URL {
-        return URL(filePath: "/Volumes/ACG/kemono")
+    private func getPostCoverURL(postIndex: Int, artistName: String) -> URL? {
+        guard !postsData[postIndex].coverName.isEmpty else { return nil }
+        return URL(filePath: Constants.kemonoBaseDir)
             .appendingPathComponent(artistName)
             .appendingPathComponent(postsData[postIndex].folderName)
             .appendingPathComponent(postsData[postIndex].coverName)

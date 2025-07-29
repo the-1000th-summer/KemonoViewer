@@ -568,6 +568,6 @@ extension Notification.Name {
     static let tweetFullScreenViewClosed = Notification.Name("tweetFullScreenViewClosedNotification")
     
     static let updateNewViewedPixivPostUI = Notification.Name("updateNewViewedPixivPostUINotification")
-    
+    static let updateAllPixivPostViewedStatus = Notification.Name("updateAllPixivPostViewedStatusNotification")
 }
 

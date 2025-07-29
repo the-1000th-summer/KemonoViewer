@@ -11,6 +11,7 @@ import Kingfisher
 struct PixivArtistGridItemView: View {
     let artistData: PixivArtist_show
     let size: CGSize
+    let isSelected: Bool
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -50,7 +51,16 @@ struct PixivArtistGridItemView: View {
                     }
                 }
             }
+            Image(systemName: "circlebadge.fill")
+                .padding(.top, 2)
+                .padding(.trailing, 2)
+                .foregroundStyle(.blue)
+                .opacity(artistData.hasNotViewed ? 1 : 0)
         }
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 3)
+        )
     }
     
     private func findFileURL(fileNameWithoutExt: String) -> URL? {

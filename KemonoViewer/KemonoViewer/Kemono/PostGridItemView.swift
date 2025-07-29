@@ -10,52 +10,71 @@ import Kingfisher
 import ImageIO
 import UniformTypeIdentifiers
 
+struct GridItemMediaView: View {
+    let initialSize: Double
+    let imageURL: URL?
+    
+    var body: some View {
+        if let imageURL {
+            if (imageURL.pathExtension == "psd" || imageURL.pathExtension == "psb") {
+                VStack {
+                    Image(systemName: "document.fill")
+                    Text("Adobe photoshop file")
+                }
+            } else if (UTType(filenameExtension: imageURL.pathExtension)?.conforms(to: .image)) ?? false {
+                KFImage(imageURL)
+                    .placeholder { ProgressView() }
+                    .onFailureView {
+                        VStack {
+                            Image(systemName: "exclamationmark.triangle")
+                            Text("Cover image load failed.")
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                    .setProcessor(ShortSideDownsamplingProcessor(targetShortSide: initialSize))
+                    .cacheMemoryOnly(true)
+                    .resizable()
+                    .scaledToFill()
+            } else if imageURL.pathExtension == "ugoira" {
+                if let firstImageData = AniImageDecoder.getFirstImageDataFromUgoiraFile(from: imageURL) {
+                    KFImage(source: .provider(
+                        RawImageDataProvider(data: firstImageData, cacheKey: imageURL.path(percentEncoded: false))
+                    ))
+                    .setProcessor(ShortSideDownsamplingProcessor(targetShortSide: initialSize))
+                    .cacheMemoryOnly(true)
+                    .resizable()
+                    .scaledToFill()
+                } else {
+                    EmptyView()
+                }
+                
+            } else {
+                Image("custom.document.fill.badge.questionmark")
+                    .font(.largeTitle)
+                Text("\(imageURL.lastPathComponent)\nNot an image file")
+            }
+        } else {
+            VStack {
+                Image(systemName: "photo.badge.exclamationmark")
+                    .font(.largeTitle)
+                Text("No cover image")
+            }
+        }
+    }
+}
+
 struct PostGridItemView: View {
     let postData: Post_show
     let size: Double
     let initialSize: Double
-    let imageURL: URL
+    let imageURL: URL?
     let isSelected: Bool
     
     var body: some View {
         Group {
             ZStack(alignment: .topTrailing) {
-                if (imageURL.pathExtension == "psd" || imageURL.pathExtension == "psb") {
-                    VStack {
-                        Image(systemName: "document.fill")
-                        Text("Adobe photoshop file")
-                    }
+                GridItemMediaView(initialSize: initialSize, imageURL: imageURL)
                     .frame(width: size, height: size)
-                } else if (UTType(filenameExtension: imageURL.pathExtension)?.conforms(to: .image)) ?? false {
-                    KFImage(imageURL)
-                        .placeholder { ProgressView() }
-                        .onFailureView {
-                            VStack {
-                                Image(systemName: "exclamationmark.triangle")
-                                Text("Cover image load failed.")
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        }
-                        .setProcessor(ShortSideDownsamplingProcessor(targetShortSide: initialSize))
-                        .cacheMemoryOnly(true)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: size, height: size)
-                } else {
-                    
-                    VStack {
-                        if postData.coverName.isEmpty {
-                            Image(systemName: "photo.badge.exclamationmark")
-                                .font(.largeTitle)
-                            Text("No cover image")
-                        } else {
-                            Image("custom.document.fill.badge.questionmark")
-                                .font(.largeTitle)
-                            Text("\(imageURL.lastPathComponent)\nNot an image file")
-                        }
-                    }
-                    .frame(width: size, height: size)
-                }
                 VStack {
                     Text(postData.name)
                         .padding(5)
@@ -89,18 +108,16 @@ struct PostGridItemView: View {
         }
     }
     
-    
-    
-    private func getErrorTxt(err: KingfisherError) -> String {
-        switch err.errorCode {
-        case 5003:
-            return "Cover image: \(imageURL.path(percentEncoded: false)) not exists."
-        case 4001:
-            return "Not a valid image file: \(imageURL.lastPathComponent)."
-        default:
-            return "\(err.errorCode)rrr\n" + (err.errorDescription ?? "")
-        }
-    }
+//    private func getErrorTxt(err: KingfisherError) -> String {
+//        switch err.errorCode {
+//        case 5003:
+//            return "Cover image: \(imageURL.path(percentEncoded: false)) not exists."
+//        case 4001:
+//            return "Not a valid image file: \(imageURL.lastPathComponent)."
+//        default:
+//            return "\(err.errorCode)rrr\n" + (err.errorDescription ?? "")
+//        }
+//    }
     
     private func formatDateStr(dateData: Date) -> String {
         let dateFormatter = DateFormatter()

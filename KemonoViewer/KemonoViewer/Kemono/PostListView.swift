@@ -11,7 +11,6 @@ struct PostListView: View {
     @Binding var postsData: [Post_show]
     @Binding var postSelectedIndex: Int?
     
-    var queryConfig: KemonoPostQueryConfig
     let tagNotViewAction: (Int, Bool) -> Void
     
     var body: some View {

@@ -46,6 +46,8 @@
 		79B3E8B52E10F1F800567F1D /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 79B3E8B42E10F1F800567F1D /* SQLite */; };
 		79BC81852E366C89006AECEE /* AniImageControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BC81842E366C89006AECEE /* AniImageControlView.swift */; };
 		79CB7BD72E124A9300FA7B77 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CB7BD62E124A9300FA7B77 /* Util.swift */; };
+		79D4586B2E387B8500920D5E /* PixivPostGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D4586A2E387B8500920D5E /* PixivPostGridView.swift */; };
+		79D4586D2E38812700920D5E /* PixivPostGridItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D4586C2E38812700920D5E /* PixivPostGridItemView.swift */; };
 		79DE3AAB2E268D670018412B /* KemonoArtistRichListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DE3AAA2E268D670018412B /* KemonoArtistRichListView.swift */; };
 		79E04C852E167470002932DF /* ResizableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E04C842E167470002932DF /* ResizableView.swift */; };
 		79E2E4CB2E33225500D2F375 /* PixivPostImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E2E4CA2E33225500D2F375 /* PixivPostImageView.swift */; };
@@ -120,6 +122,8 @@
 		79B3E8A82E10EEE600567F1D /* KemonoDatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KemonoDatabaseManager.swift; sourceTree = "<group>"; };
 		79BC81842E366C89006AECEE /* AniImageControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AniImageControlView.swift; sourceTree = "<group>"; };
 		79CB7BD62E124A9300FA7B77 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
+		79D4586A2E387B8500920D5E /* PixivPostGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixivPostGridView.swift; sourceTree = "<group>"; };
+		79D4586C2E38812700920D5E /* PixivPostGridItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixivPostGridItemView.swift; sourceTree = "<group>"; };
 		79DE3AAA2E268D670018412B /* KemonoArtistRichListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KemonoArtistRichListView.swift; sourceTree = "<group>"; };
 		79E04C842E167470002932DF /* ResizableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizableView.swift; sourceTree = "<group>"; };
 		79E2E4CA2E33225500D2F375 /* PixivPostImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixivPostImageView.swift; sourceTree = "<group>"; };
@@ -290,6 +294,8 @@
 				79FB9BCE2E3261290076C74A /* PixivRichListView.swift */,
 				79FB9BD02E3262560076C74A /* PixivArtistGridItemView.swift */,
 				79FB9BD22E328CF70076C74A /* PixivPostListView.swift */,
+				79D4586A2E387B8500920D5E /* PixivPostGridView.swift */,
+				79D4586C2E38812700920D5E /* PixivPostGridItemView.swift */,
 				79E2E4CA2E33225500D2F375 /* PixivPostImageView.swift */,
 				79E2E4CC2E332B2D00D2F375 /* PixivPostImageGridItemView.swift */,
 				79F6896D2E34DFE60045370B /* PixivFullScreenImageView.swift */,
@@ -454,11 +460,13 @@
 				79E2E4CB2E33225500D2F375 /* PixivPostImageView.swift in Sources */,
 				79FB9BD12E3262560076C74A /* PixivArtistGridItemView.swift in Sources */,
 				7974C51E2E1829B700F8E9DC /* DatabaseManagerExt.swift in Sources */,
+				79D4586B2E387B8500920D5E /* PixivPostGridView.swift in Sources */,
 				79F5022E2E2A918B005C682D /* PixivContentView.swift in Sources */,
 				797E4A172E118DF700C3A3A7 /* FullScreenImageView.swift in Sources */,
 				79AB58222E1FFD990038384E /* VideoPlayerManager.swift in Sources */,
 				79F502302E2A9F38005C682D /* TwitterFullScreenImageView.swift in Sources */,
 				79A811AA2E2D30790002D8C9 /* TwitterDatabaseManager.swift in Sources */,
+				79D4586D2E38812700920D5E /* PixivPostGridItemView.swift in Sources */,
 				79B3E8A92E10EEE600567F1D /* KemonoDatabaseManager.swift in Sources */,
 				794890502E27F10D00AA96A1 /* PostTextContentView.swift in Sources */,
 				7973DC192E14451200ECD58D /* PostGridView.swift in Sources */,

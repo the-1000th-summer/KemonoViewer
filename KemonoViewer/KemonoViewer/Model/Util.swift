@@ -23,6 +23,25 @@ struct Constants {
 }
 
 class AniImageDecoder {
+    static func getFirstImageDataFromUgoiraFile(from url: URL) -> Data? {
+        guard let archive = try? Archive(url: url, accessMode: .read, pathEncoding: nil) else {
+            print("无法读取压缩包")
+            return nil
+        }
+            
+        for entry in archive {
+            if let fileExtension = entry.path.split(separator: ".").last, (UTType(filenameExtension: String(fileExtension))?.conforms(to: .image) ?? false) {
+                var data = Data()
+                if let _ = try? archive.extract(entry, consumer: { chunk in
+                    data.append(chunk)
+                }) {
+                    return data
+                }
+            }
+        }
+        return nil
+    }
+    
     static func parseAniImage(imageURL: URL) async -> (images: [Image], durations: [Double]) {
         if imageURL.pathExtension == "gif" {
             if let data = try? Data(contentsOf: imageURL) {

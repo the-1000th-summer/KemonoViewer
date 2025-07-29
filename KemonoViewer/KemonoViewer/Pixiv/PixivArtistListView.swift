@@ -31,7 +31,7 @@ struct PixivArtistListView: View {
                 Button("标记为全部已读") {
                     tagArtistAllPost(artistData: artistsData[artistIndex], viewed: true)
                     NotificationCenter.default.post(
-                        name: .updateAllKemonoPostViewedStatus,
+                        name: .updateAllPixivPostViewedStatus,
                         object: nil
                     )
                     refreshArtistData(artistIndex: artistIndex, hasNotViewed: false)
@@ -39,7 +39,7 @@ struct PixivArtistListView: View {
                 Button("标记为全部未读") {
                     tagArtistAllPost(artistData: artistsData[artistIndex], viewed: false)
                     NotificationCenter.default.post(
-                        name: .updateAllKemonoPostViewedStatus,
+                        name: .updateAllPixivPostViewedStatus,
                         object: nil
                     )
                     refreshArtistData(artistIndex: artistIndex, hasNotViewed: true)

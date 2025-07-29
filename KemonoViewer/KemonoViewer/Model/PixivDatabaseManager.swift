@@ -16,7 +16,9 @@ struct PixivPost {
     static let e_postName = Expression<String>("name")
     static let e_postDate = Expression<Date>("post_date")
     static let e_postFolderName = Expression<String>("post_folder_name")
+    static let e_coverName = Expression<String>("cover_name")
     static let e_imageNumber = Expression<Int64>("image_number")
+    static let e_xRestrict = Expression<Int64>("x_restrict")
     static let e_viewed = Expression<Bool>("viewed")
 }
 
@@ -139,9 +141,11 @@ final class PixivDataReader {
         var query = PixivPost.postTable.select(
             PixivPost.e_postName,
             PixivPost.e_postFolderName,
+            PixivPost.e_coverName,
             PixivPost.e_postId,
             PixivPost.e_imageNumber,
             PixivPost.e_postDate,
+            PixivPost.e_xRestrict,
             PixivPost.e_viewed
         ).filter(postsId.contains(PixivPost.e_postId))
         query = addQueryConfigFilter(query: query, queryConfig: queryConfig)
@@ -151,9 +155,11 @@ final class PixivDataReader {
                 PixivPost_show(
                     name: $0[PixivPost.e_postName],
                     folderName: $0[PixivPost.e_postFolderName],
+                    coverName: $0[PixivPost.e_coverName],
                     id: $0[PixivPost.e_postId],
                     imageNumber: Int($0[PixivPost.e_imageNumber]),
                     postDate: $0[PixivPost.e_postDate],
+                    xRestrict: Int($0[PixivPost.e_xRestrict]),
                     viewed: $0[PixivPost.e_viewed]
                 )
             }
@@ -172,9 +178,11 @@ final class PixivDataReader {
         var query = PixivPost.postTable.select(
             PixivPost.e_postName,
             PixivPost.e_postFolderName,
+            PixivPost.e_coverName,
             PixivPost.e_postId,
             PixivPost.e_imageNumber,
             PixivPost.e_postDate,
+            PixivPost.e_xRestrict,
             PixivPost.e_viewed
         ).filter(KemonoPost.e_artistIdRef == artistId)
         query = addQueryConfigFilter(query: query, queryConfig: queryConfig)
@@ -188,9 +196,11 @@ final class PixivDataReader {
                 PixivPost_show(
                     name: $0[PixivPost.e_postName],
                     folderName: $0[PixivPost.e_postFolderName],
+                    coverName: $0[PixivPost.e_coverName],
                     id: $0[PixivPost.e_postId],
                     imageNumber: Int($0[PixivPost.e_imageNumber]),
                     postDate: $0[PixivPost.e_postDate],
+                    xRestrict: Int($0[PixivPost.e_xRestrict]),
                     viewed: $0[PixivPost.e_viewed]
                 )
             }
