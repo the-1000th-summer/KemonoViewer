@@ -11,6 +11,8 @@ struct PixivArtist_show: Hashable, Codable {
     let name: String
     let folderName: String
     let pixivId: String
+    let avatarName: String
+    let backgroundName: String
     let hasNotViewed: Bool
     let id: Int64
 }
@@ -54,6 +56,8 @@ struct PixivArtistListView: View {
             name: artistData.name,
             folderName: artistData.folderName,
             pixivId: artistData.pixivId,
+            avatarName: artistData.avatarName,
+            backgroundName: artistData.backgroundName,
             hasNotViewed: hasNotViewed,
             id: artistData.id
         )

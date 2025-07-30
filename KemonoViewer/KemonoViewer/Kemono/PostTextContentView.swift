@@ -30,6 +30,7 @@ struct PostTextContentView: View {
             VStack(alignment: .leading) {
                 HStack {
                     KFImage(URL(string: "https://img.kemono.su/icons/\(imagePointer.getArtistService())/\(imagePointer.getArtistKemonoId())"))
+                        .cacheMemoryOnly(true)
                         .resizable()
                         .scaledToFill()
                         .frame(width: 40, height: 40)

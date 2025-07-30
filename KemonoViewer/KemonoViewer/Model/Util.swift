@@ -175,6 +175,34 @@ class UtilFunc {
         let fileManager = FileManager.default
         return fileManager.fileExists(atPath: url.path)
     }
+    
+    static func findFileURL(inputDirURL: URL, fileNameWithoutExt: String) -> URL? {
+        let fileManager = FileManager.default
+        
+        do {
+            // 获取目录下所有文件URL
+            let fileURLs = try fileManager.contentsOfDirectory(
+                at: inputDirURL,
+                includingPropertiesForKeys: [.isRegularFileKey],
+                options: [.skipsHiddenFiles, .skipsSubdirectoryDescendants]
+            )
+            let filesOnlyURLs = fileURLs.filter { !$0.hasDirectoryPath }
+            let targetFilesURL = filesOnlyURLs.filter { $0.deletingPathExtension().lastPathComponent == fileNameWithoutExt }
+            
+            if targetFilesURL.isEmpty {
+                return nil
+            } else {
+                if targetFilesURL.count > 1 {
+                    print("warning: multiple avatar files, get first file as avatar.")
+                }
+                return targetFilesURL[0]
+            }
+        } catch {
+            print("Error reading directory: \(error)")
+            return nil
+        }
+    }
+    
 }
 
 

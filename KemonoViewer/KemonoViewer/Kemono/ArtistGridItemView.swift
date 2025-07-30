@@ -75,6 +75,7 @@ struct ArtistGridItemView: View {
                     .frame(width: size.width, height: size.height)
                 HStack {
                     KFImage(URL(string: "https://img.kemono.su/icons/\(artistData.service)/\(artistData.kemonoId)"))
+                        .cacheMemoryOnly(true)
                         .resizable()
                         .scaledToFill()
                         .frame(width: 80.0, height: 80.0)

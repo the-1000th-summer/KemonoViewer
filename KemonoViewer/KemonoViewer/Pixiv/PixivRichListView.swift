@@ -63,6 +63,8 @@ struct PixivRichListView: View {
             name: artistData.name,
             folderName: artistData.folderName,
             pixivId: artistData.pixivId,
+            avatarName: artistData.avatarName,
+            backgroundName: artistData.backgroundName,
             hasNotViewed: hasNotViewed,
             id: artistData.id
         )

@@ -1,6 +1,8 @@
 """_"""
 
 import sys
+from zoneinfo import available_timezones
+
 from peewee import *
 import json
 import datetime
@@ -32,6 +34,8 @@ class PixivArtist(BaseModel):
     name = TextField(column_name='name')
     userAccount = TextField(column_name='user_account')
     artistFolderName = TextField(column_name='artist_folder_name')
+    avatarName = TextField(column_name='avatar_name')
+    backgroundName = TextField(column_name='background_name')
 
     class Meta:
         table_name = 'pixivArtist'
@@ -41,6 +45,7 @@ class PixivPost(BaseModel):
     pixiv_post_id = TextField(column_name='pixiv_post_id')
     artist = ForeignKeyField(PixivArtist, column_name='artist_id', backref='posts', on_delete='CASCADE')
     name = TextField(column_name='name')
+    comment = TextField(column_name='comment')
     post_date = TextField(column_name='post_date')
     postFolderName = TextField(column_name='post_folder_name')
     coverName = TextField(column_name='cover_name')
@@ -151,14 +156,28 @@ class PixivSyncer:
             return None
 
         artistFolderName = os.path.basename(Path(refPostJsonFilePath).parent.parent.absolute())
+        artistFolderPath = os.path.join(Config.PIXIV_BASEPATH, artistFolderName)
 
         artist_SQLObj = PixivArtist.create(
             pixiv_artist_id=jsonData['userId'],
             name=jsonData['userName'],
             userAccount=jsonData['userAccount'],
             artistFolderName=artistFolderName,
+            avatarName=self.findFileName(artistFolderPath, 'avatar'),
+            backgroundName=self.findFileName(artistFolderPath, 'background')
         )
         return artist_SQLObj
+
+    def findFileName(self, inputFolderPath: str, fileNameWithoutExt: str) -> str:
+        targetFilesName = sorted([f for f in os.listdir(inputFolderPath) if os.path.isfile(os.path.join(inputFolderPath, f)) and Path(f).stem == fileNameWithoutExt])
+        if len(targetFilesName) == 0:
+            # print(f"WARNING: 在 {inputFolderPath} 中未找到名为 {fileNameWithoutExt} 的文件")
+            return ""
+        elif len(targetFilesName) > 1:
+            print(f"ERROR: 在 {inputFolderPath} 中找到多个名为 {fileNameWithoutExt} 的文件: {targetFilesName}, 返回第一个文件名")
+        return targetFilesName[0]
+
+
 
     def handleNewArtist(self, artistDirPath: str, refPostJsonFilePath: str):
         newArtist_SQLObj = self.writeArtistDataToDatabase(refPostJsonFilePath)
@@ -262,6 +281,7 @@ class PixivSyncer:
                 pixiv_post_id=jsonData['illustId'],
                 artist=artist_SQLObj,
                 name=jsonData['illustTitle'],
+                comment=jsonData['illustComment'],
                 post_date=self.parseDate(jsonData['uploadDate']),
                 postFolderName=postFolderName,
                 coverName=firstFileName_forPost,

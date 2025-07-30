@@ -132,7 +132,7 @@ struct TwitterFullScreenImageView: View {
     }
     
     private func setMovieCompleted() {
-        if let currentImageURL = imagePointer.currentImageURL, (UTType(filenameExtension: currentImageURL.pathExtension)?.conforms(to: .movie) ?? false) {
+        if let currentImageURL = imagePointer.currentImageURL, (UTType(filenameExtension: currentImageURL.pathExtension)?.conforms(to: .movie) ?? false) || (UTType(filenameExtension: currentImageURL.pathExtension)?.conforms(to: .image) ?? false) || currentImageURL.pathExtension == "ugoira" {
             slideManager.setMovieCompleted(completed: false)
             slideManager.pauseForMovie()
         } else {

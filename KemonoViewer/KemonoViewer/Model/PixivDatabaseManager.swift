@@ -14,11 +14,21 @@ struct PixivPost {
     static let e_pixivPostId = Expression<String>("pixiv_post_id")
     static let e_artistIdRef = Expression<Int64>("artist_id")
     static let e_postName = Expression<String>("name")
+    static let e_postComment = Expression<String>("comment")
     static let e_postDate = Expression<Date>("post_date")
     static let e_postFolderName = Expression<String>("post_folder_name")
     static let e_coverName = Expression<String>("cover_name")
     static let e_imageNumber = Expression<Int64>("image_number")
     static let e_xRestrict = Expression<Int64>("x_restrict")
+    
+    static let e_likeCount = Expression<Int64>("like_count")
+    static let e_bookmarkCount = Expression<Int64>("bookmark_count")
+    static let e_viewCount = Expression<Int64>("view_count")
+    static let e_commentCount = Expression<Int64>("comment_count")
+    static let e_isHowto = Expression<Bool>("is_howto")
+    static let e_isOriginal = Expression<Bool>("is_original")
+    static let e_aiType = Expression<Int64>("ai_type")
+    
     static let e_viewed = Expression<Bool>("viewed")
 }
 
@@ -97,6 +107,8 @@ final class PixivDataReader {
           a."name",
           a."artist_folder_name",
           a."pixiv_artist_id",
+          a."avatar_name",
+          a."background_name",
           a."id",
           EXISTS(
             SELECT 1
@@ -122,8 +134,10 @@ final class PixivDataReader {
                     name: row[0] as! String,
                     folderName: row[1] as! String,
                     pixivId: row[2] as! String,
-                    hasNotViewed: (row[4] as! Int64 == 1),
-                    id: row[3] as! Int64
+                    avatarName: row[3] as! String,
+                    backgroundName: row[4] as! String,
+                    hasNotViewed: (row[6] as! Int64 == 1),
+                    id: row[5] as! Int64
                 )
             }
         } catch {

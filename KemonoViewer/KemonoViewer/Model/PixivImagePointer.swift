@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SQLite
 
 struct PixivImagePointerData: Hashable, Codable {
     var id = UUID()
@@ -66,6 +67,19 @@ final class PixivImagePointer: ObservableObject {
     }
     func isLastPost() -> Bool {
         return currentPostIndex == postsFolderName.count - 1 && (currentImageIndex == -2 || currentImageIndex == currentPostImagesName.count - 1)
+    }
+    
+    func getArtistName() -> String {
+        return artistsData[currentArtistIndex].name
+    }
+    func getArtistAvatarURL() -> URL? {
+        guard !artistsData[currentArtistIndex].avatarName.isEmpty else { return nil }
+        return URL(filePath: Constants.pixivBaseDir).appendingPathComponent(artistsData[currentArtistIndex].folderName)
+            .appendingPathComponent(artistsData[currentArtistIndex].avatarName)
+    }
+    
+    func getPostId() -> Int64 {
+        return postsId[currentPostIndex]
     }
     
     private func getCurrentPostDirURL() -> URL? {
@@ -259,6 +273,44 @@ final class PixivImagePointer: ObservableObject {
         }
     }
     
+    func loadContentData() async -> PixivContent_show? {
+        guard let db = PixivDatabaseManager.shared.getConnection() else {
+            print("数据库初始化失败")
+            return nil
+        }
+        
+        let query = PixivPost.postTable.select(
+            PixivPost.e_postName,
+            PixivPost.e_postComment,
+            PixivPost.e_likeCount,
+            PixivPost.e_bookmarkCount,
+            PixivPost.e_viewCount,
+            PixivPost.e_commentCount,
+            PixivPost.e_xRestrict,
+            PixivPost.e_isHowto,
+            PixivPost.e_isOriginal,
+            PixivPost.e_aiType
+        ).filter(PixivPost.e_postId == getPostId())
+        do {
+            guard let pluckResult = try db.pluck(query) else { return nil }
+            return PixivContent_show(
+                postName: pluckResult[PixivPost.e_postName],
+                comment: pluckResult[PixivPost.e_postComment],
+                likeCount: Int(pluckResult[PixivPost.e_likeCount]),
+                bookmarkCount: Int(pluckResult[PixivPost.e_bookmarkCount]),
+                viewCount: Int(pluckResult[PixivPost.e_viewCount]),
+                commentCount: Int(pluckResult[PixivPost.e_commentCount]),
+                xRestrict: Int(pluckResult[PixivPost.e_xRestrict]),
+                isHowto: pluckResult[PixivPost.e_isHowto],
+                isOriginal: pluckResult[PixivPost.e_isOriginal],
+                aiType: Int(pluckResult[PixivPost.e_aiType])
+            )
+        } catch {
+            print(error.localizedDescription)
+        }
+        return nil
+    }
+    
     private func checkForArtistNotViewed() async -> Bool {
         let artist_hasNotViewed = artistsData[currentArtistIndex].hasNotViewed
         let posts_hasNotViewed = postsViewed.contains { !$0 }
@@ -274,6 +326,8 @@ final class PixivImagePointer: ObservableObject {
             name: artistData.name,
             folderName: artistData.folderName,
             pixivId: artistData.pixivId,
+            avatarName: artistData.avatarName,
+            backgroundName: artistData.backgroundName,
             hasNotViewed: hasNotViewed,
             id: artistData.id
         )
