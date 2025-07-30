@@ -19,6 +19,8 @@ struct AniImageControlView: View {
     @State private var startPlayingWorkItem: DispatchWorkItem?
     let workFallenBack = DispatchWorkItem(block: {})
     
+    let aniImageFinishedAction: () -> Void
+    
     @ViewBuilder
     private func controlButton(imageSystemName: String, action: @escaping () -> Void) -> some View {
         Button(action: {
@@ -108,10 +110,14 @@ struct AniImageControlView: View {
             currentFrameIndex = durations.count + index
         } else {
             currentFrameIndex = index % durations.count
+            
+            if index >= durations.count {
+                aniImageFinishedAction()
+            }
         }
     }
 }
 
 #Preview {
-    AniImageControlView(currentFrameIndex: .constant(0), durations: Array(repeating: 0.2, count: 50))
+    AniImageControlView(currentFrameIndex: .constant(0), durations: Array(repeating: 0.2, count: 50)) {}
 }

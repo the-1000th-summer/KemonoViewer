@@ -75,6 +75,7 @@ struct AniImagePlayerView_hasControl: View {
     @Binding var insideView: Bool
     @Binding var transform: Transform
     @ObservedObject var messageManager: StatusMessageManager
+    @ObservedObject var slideShowManager: SlideShowManager
     
     var inputFileURL: URL
     
@@ -89,35 +90,37 @@ struct AniImagePlayerView_hasControl: View {
                         .scaledToFit()
                         .resizableView(insideView: $insideView, transform: $transform, messageManager: messageManager)
                     GeometryReader { geometry in
-                        AniImageControlView(currentFrameIndex: $currentFrameIndex, durations: durations)
-                            .position(
-                                x: 100,
-                                y: geometry.size.height - 100
-                            )
+                        AniImageControlView(currentFrameIndex: $currentFrameIndex, durations: durations) {
+                            if !slideShowManager.getMovieCompleted() {
+                                slideShowManager.setMovieCompleted(completed: true)
+                                slideShowManager.restart()
+                            }
+                        }
+                        .position(
+                            x: 100,
+                            y: geometry.size.height - 100
+                        )
                     }
                 }
             }
         }
         .onAppear {
-            isLoadingImage = true
-            currentFrameIndex = 0
-            Task {
-                let parseResult = await AniImageDecoder.parseAniImage(imageURL: inputFileURL)
-                await MainActor.run {
-                    (frames, durations) = parseResult
-                    isLoadingImage = false
-                }
-            }
+            loadImageData()
         }
         .onChange(of: inputFileURL) {
-            isLoadingImage = true
-            currentFrameIndex = 0
-            Task {
-                let parseResult = await AniImageDecoder.parseAniImage(imageURL: inputFileURL)
-                await MainActor.run {
-                    (frames, durations) = parseResult
-                    isLoadingImage = false
-                }
+            loadImageData()
+        }
+    }
+    
+    private func loadImageData() {
+        slideShowManager.setMovieCompleted(completed: false)
+        isLoadingImage = true
+        currentFrameIndex = 0
+        Task {
+            let parseResult = await AniImageDecoder.parseAniImage(imageURL: inputFileURL)
+            await MainActor.run {
+                (frames, durations) = parseResult
+                isLoadingImage = false
             }
         }
     }

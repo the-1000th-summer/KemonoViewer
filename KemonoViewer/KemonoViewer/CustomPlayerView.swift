@@ -58,7 +58,6 @@ struct CustomPlayerView: View {
                             playerManager.pause()
                         }
                         .onChange(of: url) {
-                            
                             playerManager.loadFromUrl(url: url, timeInterval: slideShowManager.currentInterval, postPlayAction: self.postPlayAction)
                             slideShowManager.setMovieCompleted(completed: false)
                             playerManager.setupPlaybackObserver()

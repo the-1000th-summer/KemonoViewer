@@ -254,10 +254,11 @@ struct FullScreenImageView: View {
     }
     
     private func setMovieCompleted() {
-        if let currentImageURL = imagePointer.currentImageURL, (UTType(filenameExtension: currentImageURL.pathExtension)?.conforms(to: .movie) ?? false) {
+        if let currentImageURL = imagePointer.currentImageURL, (UTType(filenameExtension: currentImageURL.pathExtension)?.conforms(to: .movie) ?? false) || (UTType(filenameExtension: currentImageURL.pathExtension)?.conforms(to: .gif) ?? false) || currentImageURL.pathExtension == "ugoira" {
             slideManager.setMovieCompleted(completed: false)
             slideManager.pauseForMovie()
         } else {
+            // the file is not media file, no need to wait loading data
             slideManager.setMovieCompleted(completed: true)
         }
     }

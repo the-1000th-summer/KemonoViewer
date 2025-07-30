@@ -8,6 +8,27 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+extension View {
+    func onImageLoad(perform action: @escaping () -> Void) -> some View {
+        modifier(ImageLoadModifier(action: action))
+    }
+}
+
+struct ImageLoadModifier: ViewModifier {
+    let action: () -> Void
+    @State private var didLoad = false
+    
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                if !didLoad {
+                    action()
+                    didLoad = true
+                }
+            }
+    }
+}
+
 struct MediaView: View {
     
     let mediaURL: URL
@@ -27,6 +48,7 @@ struct MediaView: View {
                     insideView: $insideView,
                     transform: $transform,
                     messageManager: messageManager,
+                    slideShowManager: slideManager,
                     inputFileURL: mediaURL
                 )
             } else {
@@ -41,6 +63,14 @@ struct MediaView: View {
                                     transform = Transform()
                                 }
                             }
+                            .onAppear {
+                                slideManager.setMovieCompleted(completed: true)
+                                slideManager.restart()
+                            }
+                            .onChange(of: mediaURL) {
+                                slideManager.setMovieCompleted(completed: true)
+                                slideManager.restart()
+                            }
                     } else if phase.error != nil {
                         VStack {
                             Image(systemName: "photo.badge.exclamationmark")
@@ -51,6 +81,7 @@ struct MediaView: View {
                         ProgressView()  // Acts as a placeholder.
                     }
                 }
+                
             }
         } else if (UTType(filenameExtension: mediaURL.pathExtension)?.conforms(to: .movie) ?? false) {
             CustomPlayerView(url: mediaURL, slideShowManager: slideManager, playerManager: playerManager) {
@@ -59,7 +90,13 @@ struct MediaView: View {
             }
             .resizableView(insideView: $insideView, transform: $transform, messageManager: messageManager)
         } else if mediaURL.pathExtension == "ugoira" {
-            AniImagePlayerView_hasControl(insideView: $insideView, transform: $transform, messageManager: messageManager, inputFileURL: mediaURL)
+            AniImagePlayerView_hasControl(
+                insideView: $insideView,
+                transform: $transform,
+                messageManager: messageManager,
+                slideShowManager: slideManager,
+                inputFileURL: mediaURL
+            )
         } else {
             VStack {
                 Image("custom.document.fill.badge.questionmark")

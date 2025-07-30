@@ -11,7 +11,7 @@ struct PixivImageNumberView: View {
     let imageNumber: Int
     
     var body: some View {
-        if imageNumber != 1 {
+        if imageNumber > 1 {
             HStack {
                 Image(systemName: "square.fill.on.square.fill")
                     .font(.system(size: 11))

@@ -58,6 +58,13 @@ struct PixivFullScreenImageView: View {
                             Text("No attachments.")
                         }
                     }
+                    .contextMenu {
+                        ContextMenuView(manager: slideManager, playerManager: playerManager) {
+                            if slideManager.getMovieCompleted() {
+                                showNextImage()
+                            }
+                        }
+                    }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .onAppear {
                         imagePointer.loadData(imagePointerData: imagePointerData)
@@ -111,7 +118,7 @@ struct PixivFullScreenImageView: View {
     }
     
     private func setMovieCompleted() {
-        if let currentImageURL = imagePointer.currentImageURL, (UTType(filenameExtension: currentImageURL.pathExtension)?.conforms(to: .movie) ?? false) {
+        if let currentImageURL = imagePointer.currentImageURL, (UTType(filenameExtension: currentImageURL.pathExtension)?.conforms(to: .movie) ?? false) || (UTType(filenameExtension: currentImageURL.pathExtension)?.conforms(to: .image) ?? false) || currentImageURL.pathExtension == "ugoira" {
             slideManager.setMovieCompleted(completed: false)
             slideManager.pauseForMovie()
         } else {
