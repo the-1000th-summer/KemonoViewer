@@ -76,6 +76,9 @@ class PixivImage(BaseModel):
     class Meta:
         table_name = 'pixivImage'
 
+class PixivTag(BaseModel):
+    id = AutoField(column_name='id')
+    
 
 @singleton  # 应用单例装饰器
 class PixivSyncer:

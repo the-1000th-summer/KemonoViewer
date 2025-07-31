@@ -20,6 +20,14 @@ struct Constants {
     static let kemonoDatabaseFilePath = "/Volumes/imagesShown/images.sqlite3"
     
     static let pixivDatabaseFilePath = "/Volumes/imagesShown/pixiv.sqlite3"
+    
+    static let pixivValidEmojiNames: Set<String> = [
+        "normal", "surprise", "serious", "heaven", "happy", "excited", "sing", "cry",
+        "normal2", "shame2", "love2", "interesting2", "blush2", "fire2", "angry2", "shine2", "panic2",
+        "normal3", "satisfaction3", "surprise3", "smile3", "shock3", "gaze3", "wink3", "happy3", "excited3", "love3",
+        "normal4", "surprise4", "serious4", "love4", "shine4", "sweat4", "shame4", "sleep4",
+        "heart", "teardrop", "star"
+    ]
 }
 
 class AniImageDecoder {

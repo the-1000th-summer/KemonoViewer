@@ -280,6 +280,7 @@ final class PixivImagePointer: ObservableObject {
         }
         
         let query = PixivPost.postTable.select(
+            PixivPost.e_pixivPostId,
             PixivPost.e_postName,
             PixivPost.e_postComment,
             PixivPost.e_likeCount,
@@ -294,6 +295,7 @@ final class PixivImagePointer: ObservableObject {
         do {
             guard let pluckResult = try db.pluck(query) else { return nil }
             return PixivContent_show(
+                pixivPostId: pluckResult[PixivPost.e_pixivPostId],
                 postName: pluckResult[PixivPost.e_postName],
                 comment: pluckResult[PixivPost.e_postComment],
                 likeCount: Int(pluckResult[PixivPost.e_likeCount]),

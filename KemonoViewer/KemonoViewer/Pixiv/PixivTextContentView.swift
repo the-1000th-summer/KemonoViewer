@@ -9,6 +9,7 @@ import SwiftUI
 import Kingfisher
 
 struct PixivContent_show {
+    let pixivPostId: String
     let postName: String
     let comment: String
     let likeCount: Int
@@ -73,7 +74,6 @@ struct PixivTextContentView: View {
                             .font(.system(size: 15))
                             .fontWeight(.medium)
                     }
-                    .padding(.horizontal)
                     
                     if let pixivContent {
                         Text(pixivContent.postName)
@@ -88,10 +88,16 @@ struct PixivTextContentView: View {
                         }
                     }
                     
-                    
-                    Divider()
                 }
-                .padding(.vertical)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                Divider()
+                    .padding(.horizontal)
+                if let pixivContent {
+                    PixivCommentView(pixivPostId: pixivContent.pixivPostId)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                }
             }
         }
         .onAppear {
