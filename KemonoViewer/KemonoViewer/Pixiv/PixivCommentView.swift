@@ -7,16 +7,18 @@
 
 import SwiftUI
 import Kingfisher
+import SwiftyJSON
 
 struct PixivCommentView: View {
-    @StateObject private var viewModel = CommentViewModel()
+    @StateObject private var viewModel = PixivCommentViewModel()
     
     let pixivPostId: String
     
     var body: some View {
         LazyVStack(alignment: .leading) {
             ForEach(viewModel.comments) { comment in
-                PixivCommentRow(comment: comment)
+                PixivCommentRowWithReply(comment: comment)
+                    .padding(.top, 20)
                     .onAppear {
                         // when about to reach bottom, load more comments
                         if shouldLoadMore(currentItem: comment) {
@@ -34,7 +36,6 @@ struct PixivCommentView: View {
                     .foregroundColor(.secondary)
             }
         }
-        
         .task {
             if viewModel.comments.isEmpty {
                 await viewModel.loadMoreComments(pixivPostId: pixivPostId)
@@ -56,20 +57,187 @@ struct PixivCommentView: View {
     }
 }
 
+struct PixivReplyView: View {
+    @State private var isLoadingReplies = false
+    @State private var replies = [PixivComment]()
+    @State private var currentPage = 1
+    @State private var canLoadMore = false
+    @State private var errorMessage: String? = nil
+    
+    let commentId: String
+    
+    var body: some View {
+        VStack {
+            if let errorMessage {
+                Text(errorMessage)
+                    .font(.system(size: 15))
+                    .foregroundStyle(.gray)
+            } else {
+                ForEach(replies) { reply in
+                    PixivCommentRow(comment: reply)
+                }
+                if isLoadingReplies {
+                    ProgressView()
+                } else {
+                    if canLoadMore {
+                        LoadMoreCommentsButton(buttonStr: "查看更多回复") {
+                            Task {
+                                await loadReplies(page: currentPage)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .onAppear {
+            Task {
+                await loadReplies(page: currentPage)
+            }
+        }
+    }
+    
+    private func loadReplies(page: Int) async {
+        await MainActor.run {
+            isLoadingReplies = true
+        }
+        
+        do {
+//            let (fetcheddata, _) = try await URLSession.shared.data(from: url)
+            let url = URL(string: "https://www.pixiv.net/ajax/illusts/comments/replies?comment_id=\(commentId)&page=\(page)")!
+            let request = URLRequest(url: url)
+//            request.setValue("PHPSESSID=YOURCOOKIE", forHTTPHeaderField: "Cookie")
+            let (fetcheddata, _) = try await URLSession.shared.data(for: request)
+            let jsonObj = try JSON(data: fetcheddata)
+            
+            if jsonObj["error"].boolValue {
+                await MainActor.run {
+                    canLoadMore = false
+                    errorMessage = jsonObj["message"].stringValue
+                    isLoadingReplies = false
+                }
+            } else {
+                let newReplies = jsonObj["body"]["comments"].map {
+                    PixivComment(
+                        id: $0.1["id"].stringValue,
+                        userId: $0.1["userId"].stringValue,
+                        name: $0.1["userName"].stringValue,
+                        avatar: URL(string: $0.1["img"].stringValue.replacingOccurrences(of: "i.pximg.net", with: "i.pixiv.re"))!,
+                        content: $0.1["comment"].stringValue,
+                        stampId: $0.1["stampId"].string,
+                        date: $0.1["commentDate"].stringValue,
+                        hasReplies: false
+                    )
+                }
+                
+                await MainActor.run {
+                    if currentPage == 1 {
+                        replies = newReplies
+                    } else {
+                        replies.append(contentsOf: newReplies)
+                    }
+                    
+                    canLoadMore = jsonObj["body"]["hasNext"].boolValue
+                    currentPage += 1
+                    isLoadingReplies = false
+                }
+                
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+}
+
+struct PixivCommentRowWithReply: View {
+    let comment: PixivComment
+    
+    @State private var showReplies = false
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            PixivCommentRow(comment: comment)
+            if comment.hasReplies {
+                if showReplies {
+                    PixivReplyView(commentId: comment.id)
+                } else {
+                    LoadMoreCommentsButton(buttonStr: "查看回复") {
+                        showReplies = true
+                    }
+                }
+            }
+        }
+        .onAppear {
+            showReplies = false
+        }
+    }
+}
+
+struct LoadMoreCommentsButton: View {
+    let buttonStr: String
+    let buttonAction: () -> Void
+    
+    var body: some View {
+        Button(action: buttonAction) {
+            Text(buttonStr)
+                .font(.system(size: 15))
+                .fontWeight(.medium)
+                .padding(.vertical, 12)
+                .padding(.horizontal, 20)
+                .background(
+                    Capsule()
+                        .fill(Color(red: 56.0/255.0, green: 56.0/255.0, blue: 56.0/255.0))
+                )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
 struct PixivCommentRow: View {
     let comment: PixivComment
     
     var body: some View {
-        VStack(alignment: .leading) {
-            if !comment.name.isEmpty {
-                Text(comment.name)
+        HStack(alignment: .top) {
+            Link(destination: URL(string: "https://www.pixiv.net/users/\(comment.userId)")!){
+                KFImage(comment.avatar)
+                    .cacheMemoryOnly(true)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 50, height: 50)
+                    .clipShape(Circle())
+                    .onHover { isHovering in
+                        if isHovering {
+                            NSCursor.pointingHand.push()
+                        } else {
+                            NSCursor.pop()
+                        }
+                    }
             }
-            if let stampId = comment.stampId {
-                Image("\(stampId)_s")
-            } else {
-                PixivEmojiTextView(content: comment.content)
+            .buttonStyle(PlainButtonStyle())
+            .padding(.trailing, 12)
+            
+            VStack(alignment: .leading) {
+                if !comment.name.isEmpty {
+                    Text(comment.name)
+                        .font(.system(size: 15))
+                        .fontWeight(.semibold)
+                        .padding(.bottom, 3)
+                }
+                if let stampId = comment.stampId {
+                    Image("\(stampId)_s")
+                        .cornerRadius(5)
+                } else {
+                    PixivEmojiTextView(content: comment.content)
+                        .fontWeight(.regular)
+                        .font(.system(size: 15))
+                        .padding(.bottom, 3)
+                }
+                Text(comment.date)
+                    .foregroundStyle(.gray)
+                    .font(.system(size: 15))
+                
             }
         }
+        
     }
 }
 

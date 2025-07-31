@@ -12,6 +12,7 @@ struct PixivContent_show {
     let pixivPostId: String
     let postName: String
     let comment: String
+    let postDate: Date
     let likeCount: Int
     let bookmarkCount: Int
     let viewCount: Int
@@ -52,6 +53,23 @@ struct PixivTextContentView: View {
     
     @ObservedObject var imagePointer: PixivImagePointer
     
+    private static let postDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+        formatter.timeZone = TimeZone(abbreviation: "UTC")
+        return formatter
+    }()
+    
+    @ViewBuilder
+    private func contentView(contentStr: String) -> some View {
+        if let htmlData = contentStr.data(using: .utf16), let nsAttributedString = try? NSAttributedString(data: htmlData, options: [.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil),
+           let attributedString = try? AttributedString(nsAttributedString, including: \.appKit) {
+            Text(attributedString)
+        } else {
+            Text(contentStr)
+        }
+    }
+    
     var body: some View {
         ScrollView {
             if contentLoading {
@@ -76,9 +94,23 @@ struct PixivTextContentView: View {
                     }
                     
                     if let pixivContent {
-                        Text(pixivContent.postName)
-                            .font(.system(size: 20))
-                            .fontWeight(.medium)
+                        Link(destination: URL(string: "https://www.pixiv.net/artworks/\(pixivContent.pixivPostId)")!) {
+                            VStack(alignment: .leading) {
+                                Text(pixivContent.postName)
+                                    .font(.system(size: 20))
+                                    .fontWeight(.medium)
+                                contentView(contentStr: String(format:"<span style=\"font-family: '-apple-system', 'HelveticaNeue'; font-size: 15\">%@</span>", pixivContent.comment))
+                            }
+                        }
+                        .foregroundStyle(.foreground)
+                        .buttonStyle(PlainButtonStyle())
+                        .onHover { isHovering in
+                            if isHovering {
+                                NSCursor.pointingHand.push()
+                            } else {
+                                NSCursor.pop()
+                            }
+                        }
                         
                         HStack {
                             PixivCountView(systemImageName: "face.smiling", countNumber: pixivContent.likeCount)
@@ -86,18 +118,22 @@ struct PixivTextContentView: View {
                             PixivCountView(systemImageName: "eye.fill", countNumber: pixivContent.viewCount)
                             PixivCountView(systemImageName: "message.fill", countNumber: pixivContent.commentCount)
                         }
+                        
+                        Text(PixivTextContentView.postDateFormatter.string(from: pixivContent.postDate))
+                            .font(.system(size: 15))
+                            .foregroundStyle(.gray)
                     }
-                    
+                    Divider()
+                        .padding(.horizontal)
+                    if let pixivContent {
+                        PixivCommentView(pixivPostId: pixivContent.pixivPostId)
+//                            .frame(maxWidth: .infinity, alignment: .leading)
+//                            .padding()
+                    }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+//                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
-                Divider()
-                    .padding(.horizontal)
-                if let pixivContent {
-                    PixivCommentView(pixivPostId: pixivContent.pixivPostId)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
-                }
+                
             }
         }
         .onAppear {

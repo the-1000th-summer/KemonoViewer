@@ -9,14 +9,17 @@ import Foundation
 import SwiftyJSON
 
 struct PixivComment: Identifiable {
-    let id = UUID()
+    let id: String
+    let userId: String
     let name: String
+    let avatar: URL
     let content: String
     let stampId: String?
-//    let date: Date
+    let date: String
+    let hasReplies: Bool
 }
 
-class CommentViewModel: ObservableObject {
+class PixivCommentViewModel: ObservableObject {
     @Published var comments: [PixivComment] = []
     @Published var isLoading = false
     @Published var canLoadMore = true
@@ -35,7 +38,6 @@ class CommentViewModel: ObservableObject {
     }
 
     func loadMoreComments(pixivPostId: String) async {
-        // 确保在主线程更新状态
         await MainActor.run {
             guard !isLoading && canLoadMore else { return }
             isLoading = true
@@ -51,9 +53,14 @@ class CommentViewModel: ObservableObject {
             
             let newComments = jsonObj["body"]["comments"].map {
                 PixivComment(
+                    id: $0.1["id"].stringValue,
+                    userId: $0.1["userId"].stringValue,
                     name: $0.1["userName"].stringValue,
+                    avatar: URL(string: $0.1["img"].stringValue.replacingOccurrences(of: "i.pximg.net", with: "i.pixiv.re"))!,
                     content: $0.1["comment"].stringValue,
-                    stampId: $0.1["stampId"].string
+                    stampId: $0.1["stampId"].string,
+                    date: $0.1["commentDate"].stringValue,
+                    hasReplies: $0.1["hasReplies"].boolValue
                 )
             }
             

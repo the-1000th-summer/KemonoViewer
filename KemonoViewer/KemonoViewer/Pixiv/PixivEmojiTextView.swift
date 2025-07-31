@@ -18,7 +18,15 @@ enum TextSegment: Identifiable {
         }
     }
 }
-
+extension Image {
+    func textStyle(width: CGFloat, height: CGFloat, offset: CGFloat = -4) -> some View {
+        self
+            .resizable()
+            .scaledToFit()
+            .frame(width: width, height: height)
+            .baselineOffset(offset) // 修正垂直对齐
+    }
+}
 struct PixivEmojiTextView: View {
     let segments: [TextSegment]
     

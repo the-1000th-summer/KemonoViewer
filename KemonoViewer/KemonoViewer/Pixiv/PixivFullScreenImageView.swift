@@ -88,6 +88,7 @@ struct PixivFullScreenImageView: View {
                         .frame(width: 500)
                         .transition(.move(edge: .trailing))
                         .zIndex(1)
+                        .background(Color(red: 29.0/255.0, green: 29.0/255.0, blue: 29.0/255.0))
                 }
             }
             ImagePathShowView(pathText: "\(imagePointer.currentPostDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")")
