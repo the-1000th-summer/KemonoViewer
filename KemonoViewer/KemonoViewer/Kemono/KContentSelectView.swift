@@ -38,6 +38,8 @@ struct KContentSelectView: View {
     
     @State private var autoScrollToFirstNotViewedImage = true
     
+    @StateObject private var windowOpenState = WindowOpenStatusManager.shared
+    
     private let onePostViewedPub = NotificationCenter.default.publisher(for: .updateNewViewedKemonoPostUI)
     private let viewedPub = NotificationCenter.default.publisher(for: .updateAllKemonoPostViewedStatus)
     private let fullScrViewClosedPub = NotificationCenter.default.publisher(for: .kemonoFullScreenViewClosed)
@@ -221,6 +223,8 @@ struct KContentSelectView: View {
                 .padding()
                 .interactiveDismissDisabled()
         }
+        .onAppear { windowOpenState.kemonoMainOpened = true }
+        .onDisappear { windowOpenState.kemonoMainOpened = false }
         
     }
     

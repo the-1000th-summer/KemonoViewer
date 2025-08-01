@@ -23,8 +23,9 @@ protocol QueryConfig: Equatable, Codable, Hashable {
 
 struct KemonoPostQueryConfig: QueryConfig {
     enum SortKey: String, CaseIterable, Codable {
-        case date = "post_date"
-        case postTitle = "name"
+        case date = "Post date"
+        case postTitle = "Name"
+        case attachmentNumber = "Attachment number"
     }
     
     var sortKey: SortKey = .date
@@ -49,8 +50,13 @@ struct TwitterImageQueryConfig: QueryConfig {
 
 struct PixivPostQueryConfig: QueryConfig {
     enum SortKey: String, CaseIterable, Codable {
-        case date = "post_date"
-        case postTitle = "name"
+        case date = "Post date"
+        case postTitle = "Name"
+        case likeCount = "Like count"
+        case bookmarkCount = "Bookmark count"
+        case viewCount = "View count"
+        case commentCount = "Comment count"
+        case imageNumber = "Image number"
     }
     
     var sortKey: SortKey = .date

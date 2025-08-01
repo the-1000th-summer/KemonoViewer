@@ -21,6 +21,8 @@ struct TwitterFullScreenImageView: View {
     @State private var showSidebar = false
     @State private var insideView = false
     
+    @StateObject private var windowOpenState = WindowOpenStatusManager.shared
+    
     @ViewBuilder
     private func changeImageButtonView() -> some View {
         VStack {
@@ -93,11 +95,13 @@ struct TwitterFullScreenImageView: View {
             }
             ImagePathShowView(pathText: "\(imagePointer.currentArtistDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")")
         }
+        .onAppear { windowOpenState.twitterFsOpened = true }
         .onDisappear {
             NotificationCenter.default.post(
                 name: .tweetFullScreenViewClosed,
                 object: nil
             )
+            windowOpenState.twitterFsOpened = false
         }
     }
     

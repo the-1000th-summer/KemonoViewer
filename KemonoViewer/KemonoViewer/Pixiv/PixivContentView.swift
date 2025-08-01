@@ -26,6 +26,8 @@ struct PixivContentView: View {
     
     @State private var autoScrollToFirstNotViewedImage = true
     
+    @StateObject private var windowOpenState = WindowOpenStatusManager.shared
+    
     private let onePostViewedPub = NotificationCenter.default.publisher(for: .updateNewViewedPixivPostUI)
     private let allViewedPub = NotificationCenter.default.publisher(for: .updateAllPixivPostViewedStatus)
 
@@ -165,6 +167,8 @@ struct PixivContentView: View {
                 await reloadPostsData()
             }
         }
+        .onAppear { windowOpenState.pixivMainOpened = true }
+        .onDisappear { windowOpenState.pixivMainOpened = false }
     }
     
     private func reloadPostsData() async {

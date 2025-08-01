@@ -198,11 +198,11 @@ final class PixivDataReader {
             PixivPost.e_postDate,
             PixivPost.e_xRestrict,
             PixivPost.e_viewed
-        ).filter(KemonoPost.e_artistIdRef == artistId)
+        ).filter(PixivPost.e_artistIdRef == artistId)
         query = addQueryConfigFilter(query: query, queryConfig: queryConfig)
         
         if queryConfig.onlyShowNotViewedPost {
-            query = query.filter(KemonoPost.e_viewed == false)
+            query = query.filter(PixivPost.e_viewed == false)
         }
         
         do {
@@ -246,14 +246,32 @@ final class PixivDataReader {
         return nil
     }
     
+    private static func getSortItemExpression(sortKey: PixivPostQueryConfig.SortKey) -> any ExpressionType {
+        switch sortKey {
+        case .date:
+            return PixivPost.e_postDate
+        case .postTitle:
+            return PixivPost.e_postName
+        case .likeCount:
+            return PixivPost.e_likeCount
+        case .bookmarkCount:
+            return PixivPost.e_bookmarkCount
+        case .viewCount:
+            return PixivPost.e_viewCount
+        case .commentCount:
+            return PixivPost.e_commentCount
+        case .imageNumber:
+            return PixivPost.e_imageNumber
+        }
+    }
+    
     static func addQueryConfigFilter(query: SQLite.Table, queryConfig: PixivPostQueryConfig) -> SQLite.Table {
         var outputQuery = query
-        switch queryConfig.sortKey {
-        case .date:
-            outputQuery = outputQuery.order(queryConfig.sortOrder == .ascending ? KemonoPost.e_postDate.asc : KemonoPost.e_postDate.desc)
-        case .postTitle:
-            outputQuery = outputQuery.order(queryConfig.sortOrder == .ascending ? KemonoPost.e_postName.asc : KemonoPost.e_postName.desc)
-        }
+        
+        let sortItemExpression = getSortItemExpression(sortKey: queryConfig.sortKey)
+        
+        outputQuery = outputQuery.order(queryConfig.sortOrder == .ascending ? sortItemExpression.expression.asc : sortItemExpression.expression.desc)
+        
         return outputQuery
     }
     

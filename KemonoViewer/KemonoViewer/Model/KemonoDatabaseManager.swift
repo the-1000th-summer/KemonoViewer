@@ -61,10 +61,14 @@ final class KemonoDatabaseManager {
     }
     
     func getConnection() -> Connection? {
+        if DBShouldReload.kemonoReload {
+            initDatabase()
+        }
         return db
     }
     
     private func initDatabase() {
+        print("init kemono database")
         let fm = FileManager.default
         
         if fm.fileExists(atPath: Constants.kemonoDatabaseFilePath) {
@@ -83,6 +87,8 @@ final class KemonoDatabaseManager {
                 print(error.localizedDescription)
             }
         }
+        
+        DBShouldReload.kemonoReload = false
     }
     
     func createTable(db: Connection) {
@@ -222,7 +228,7 @@ final class KemonoDataWriter {
             progress.wrappedValue = 0.0
         }
         
-        let inputFolderPath = "/Volumes/ACG/kemono"
+        let inputFolderPath = Constants.kemonoBaseDir
         
         guard let db = KemonoDatabaseManager.shared.getConnection() else {
             print("数据库初始化失败")
@@ -325,7 +331,8 @@ final class KemonoDataWriter {
             return
         }
         
-        let inputFolderPath = "/Volumes/ACG/kemono"
+        let inputFolderPath = Constants.kemonoBaseDir
+
         let batchSize = 5
         
         guard let artistsName = UtilFunc.getSubdirectoryNames(atPath: inputFolderPath) else { return }
@@ -393,8 +400,7 @@ final class KemonoDataWriter {
     }
     
     static func getArtistDirPath(artistName: String) -> String {
-        let inputFolderPath = "/Volumes/ACG/kemono"
-        return URL(filePath: inputFolderPath).appendingPathComponent(artistName).path(percentEncoded: false)
+        return URL(filePath: Constants.kemonoBaseDir).appendingPathComponent(artistName).path(percentEncoded: false)
     }
     
     static func getArtistPostsApi(artistDirPath: String, page: Int) -> URL? {
@@ -467,14 +473,24 @@ final class KemonoDataReader {
         return nil
     }
     
+    private static func getSortItemExpression(sortKey: KemonoPostQueryConfig.SortKey) -> any ExpressionType {
+        switch sortKey {
+        case .date:
+            return KemonoPost.e_postDate
+        case .postTitle:
+            return KemonoPost.e_postName
+        case .attachmentNumber:
+            return KemonoPost.e_attachmentNumber
+        }
+    }
+    
     static func addQueryConfigFilter(query: SQLite.Table, queryConfig: KemonoPostQueryConfig) -> SQLite.Table {
         var outputQuery = query
-        switch queryConfig.sortKey {
-        case .date:
-            outputQuery = outputQuery.order(queryConfig.sortOrder == .ascending ? KemonoPost.e_postDate.asc : KemonoPost.e_postDate.desc)
-        case .postTitle:
-            outputQuery = outputQuery.order(queryConfig.sortOrder == .ascending ? KemonoPost.e_postName.asc : KemonoPost.e_postName.desc)
-        }
+        
+        let sortItemExpression = getSortItemExpression(sortKey: queryConfig.sortKey)
+        
+        outputQuery = outputQuery.order(queryConfig.sortOrder == .ascending ? sortItemExpression.expression.asc : sortItemExpression.expression.desc)
+
         return outputQuery
     }
     
@@ -547,7 +563,7 @@ final class KemonoDataReader {
             let artistNameQuery = KemonoArtist.artistTable.select(KemonoArtist.e_artistName).filter(KemonoArtist.e_artistId == artistId)
             if let artistQueryResult = try db.pluck(artistNameQuery) {
                 let artistName = artistQueryResult[KemonoArtist.e_artistName]
-                let postDirPath = URL(filePath: "/Volumes/ACG/kemono").appendingPathComponent(artistName).appendingPathComponent(postFolderName).path(percentEncoded: false)
+                let postDirPath = URL(filePath: Constants.kemonoBaseDir).appendingPathComponent(artistName).appendingPathComponent(postFolderName).path(percentEncoded: false)
                 return (imagesName, postDirPath)
             }
             

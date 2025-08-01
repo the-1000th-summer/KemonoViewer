@@ -15,6 +15,8 @@ struct PostImageView: View {
     @State private var postDirPath: String? = nil
     @State private var isLoadingData: Bool = false
     
+    @State private var showErrorView = false
+    
     @Binding var postsData: [Post_show]
 //    let artistData: Artist_show
     @Binding var artistsData: [KemonoArtist_show]
@@ -22,6 +24,8 @@ struct PostImageView: View {
     
     var postSelectedIndex: Int?
     var postQueryConfig: KemonoPostQueryConfig
+    
+    @StateObject private var windowOpenState = WindowOpenStatusManager.shared
     
     @ViewBuilder
     private func mainPostImageView() -> some View {
@@ -37,18 +41,22 @@ struct PostImageView: View {
                             ForEach(imagesName.indices, id: \.self) { imageIndex in
                                 GeometryReader { geo in
                                     Button(action: {
-                                        let fsWindowData = ImagePointerData(
-                                            artistsData: artistsData,
-                                            postsFolderName: postsData.map { $0.folderName },
-                                            postsId: postsData.map { $0.id },
-                                            postsViewed: postsData.map { $0.viewed },
-                                            currentPostImagesName: imagesName,
-                                            currentArtistIndex: artistSelectedIndex!,
-                                            currentPostIndex: postSelectedIndex!,
-                                            currentImageIndex: imageIndex,
-                                            postQueryConfig: postQueryConfig
-                                        )
-                                        openWindow(id: "fsViewer", value: fsWindowData)
+                                        if windowOpenState.kemonoFsOpened {
+                                            showErrorView = true
+                                        } else {
+                                            let fsWindowData = ImagePointerData(
+                                                artistsData: artistsData,
+                                                postsFolderName: postsData.map { $0.folderName },
+                                                postsId: postsData.map { $0.id },
+                                                postsViewed: postsData.map { $0.viewed },
+                                                currentPostImagesName: imagesName,
+                                                currentArtistIndex: artistSelectedIndex!,
+                                                currentPostIndex: postSelectedIndex!,
+                                                currentImageIndex: imageIndex,
+                                                postQueryConfig: postQueryConfig
+                                            )
+                                            openWindow(id: "fsViewer", value: fsWindowData)
+                                        }
                                     }) {
                                         PostImageGridItemView(
                                             size: geo.size.width,
@@ -70,6 +78,11 @@ struct PostImageView: View {
                         Spacer()
                     }
                 }
+            }
+            .alert("Error", isPresented: $showErrorView) {
+                Button("OK") { }
+            } message: {
+                Text("Already opened a full screen view")
             }
         }
     }

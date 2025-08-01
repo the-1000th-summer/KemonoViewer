@@ -12,14 +12,26 @@ import ZIPFoundation
 import UniformTypeIdentifiers
 import SwiftUI
 
+
 struct Constants {
-    static let kemonoBaseDir = "/Volumes/ACG/kemono"
-    static let twitterBaseDir = "/Volumes/ACG/twitter"
-    static let pixivBaseDir = "/Volumes/ACG/pixiv"
-    
-    static let kemonoDatabaseFilePath = "/Volumes/imagesShown/images.sqlite3"
-    
-    static let pixivDatabaseFilePath = "/Volumes/imagesShown/pixiv.sqlite3"
+    static var kemonoBaseDir: String {
+        UserDefaults.standard.string(forKey: AppStorageKeys.kemonoBaseDir)!
+    }
+    static var twitterBaseDir: String {
+        UserDefaults.standard.string(forKey: AppStorageKeys.twitterBaseDir)!
+    }
+    static var pixivBaseDir: String {
+        UserDefaults.standard.string(forKey: AppStorageKeys.pixivBaseDir)!
+    }
+    static var kemonoDatabaseFilePath: String {
+        UserDefaults.standard.string(forKey: AppStorageKeys.kemonoDatabaseFilePath)!
+    }
+    static var twitterDatabaseFilePath: String {
+        UserDefaults.standard.string(forKey: AppStorageKeys.twitterDatabaseFilePath)!
+    }
+    static var pixivDatabaseFilePath: String {
+        UserDefaults.standard.string(forKey: AppStorageKeys.pixivDatabaseFilePath)!
+    }
     
     static let pixivValidEmojiNames: Set<String> = [
         "normal", "surprise", "serious", "heaven", "happy", "excited", "sing", "cry",
@@ -29,6 +41,29 @@ struct Constants {
         "heart", "teardrop", "star"
     ]
 }
+class WindowOpenStatusManager: ObservableObject {
+    static let shared = WindowOpenStatusManager()
+    
+    @Published var kemonoMainOpened = false
+    @Published var kemonoFsOpened = false
+    
+    @Published var twitterMainOpened = false
+    @Published var twitterFsOpened = false
+    
+    @Published var pixivMainOpened = false
+    @Published var pixivFsOpened = false
+    
+    var shouldDisableKemonoControl: Bool {
+        kemonoMainOpened || kemonoFsOpened
+    }
+    var shouldDisableTwitterControl: Bool {
+        twitterMainOpened || twitterFsOpened
+    }
+    var shouldDisablePixivControl: Bool {
+        pixivMainOpened || pixivFsOpened
+    }
+}
+
 
 class AniImageDecoder {
     static func getFirstImageDataFromUgoiraFile(from url: URL) -> Data? {
@@ -219,6 +254,15 @@ class UtilFunc {
         request.setValue("https://www.google.com/", forHTTPHeaderField: "Referer")
         request.setValue("1", forHTTPHeaderField: "Upgrade-Insecure-Requests")
         request.setValue("?0", forHTTPHeaderField: "Sec-Fetch-Dest")
+    }
+    
+    static func checkIfIsValidSQLiteFile(inputPath: String) -> Bool {
+        do {
+            let db = try Connection(inputPath, readonly: true)
+            return true
+        } catch {
+            return false
+        }
     }
     
 }

@@ -21,7 +21,7 @@ final class TwitterDatabaseManager {
     }
     
     private func initDatabase() {
-        let dbFilePath = "/Volumes/imagesShown/twitter.sqlite3"
+        let dbFilePath = Constants.twitterDatabaseFilePath
         let fm = FileManager.default
         
         if fm.fileExists(atPath: dbFilePath) {

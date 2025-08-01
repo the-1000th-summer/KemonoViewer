@@ -22,6 +22,8 @@ struct TwitterContentView: View {
     
     @State private var imageQueryConfig = TwitterImageQueryConfig()
     
+    @StateObject private var windowOpenState = WindowOpenStatusManager.shared
+    
     var body: some View {
         HSplitView {
             VStack {
@@ -71,6 +73,8 @@ struct TwitterContentView: View {
         .onChange(of: artistQueryConfig) {
             reloadArtistData()
         }
+        .onAppear { windowOpenState.twitterMainOpened = true }
+        .onDisappear { windowOpenState.twitterMainOpened = false }
     }
     
     private func reloadArtistData() {

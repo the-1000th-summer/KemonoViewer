@@ -21,6 +21,8 @@ struct PixivFullScreenImageView: View {
     @State private var showSidebar = false
     @State private var insideView = false
     
+    @StateObject private var windowOpenState = WindowOpenStatusManager.shared
+    
     @ViewBuilder
     private func changeImageButtonView() -> some View {
         VStack {
@@ -93,6 +95,8 @@ struct PixivFullScreenImageView: View {
             }
             ImagePathShowView(pathText: "\(imagePointer.currentPostDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")")
         }
+        .onAppear { windowOpenState.pixivFsOpened = true }
+        .onDisappear { windowOpenState.pixivFsOpened = false }
     }
     
     private func showNextImage() {

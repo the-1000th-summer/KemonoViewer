@@ -129,7 +129,7 @@ struct MessageView: View {
     }
 }
 
-struct FullScreenImageView: View {
+struct KemonoFullScreenImageView: View {
     
     let imagePointerData: ImagePointerData
     
@@ -138,6 +138,8 @@ struct FullScreenImageView: View {
     @StateObject private var messageManager = StatusMessageManager()
     @StateObject private var slideManager = SlideShowManager()
     @StateObject private var playerManager = VideoPlayerManager()
+    
+    @StateObject private var windowOpenState = WindowOpenStatusManager.shared
     
     
     @State private var showSidebar = false
@@ -215,11 +217,13 @@ struct FullScreenImageView: View {
             }
             ImagePathShowView(pathText: "\(imagePointer.currentPostDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")")
         }
+        .onAppear { windowOpenState.kemonoFsOpened = true }
         .onDisappear {
             NotificationCenter.default.post(
                 name: .kemonoFullScreenViewClosed,
                 object: nil
             )
+            windowOpenState.kemonoFsOpened = false
         }
     }
     
@@ -265,7 +269,7 @@ struct FullScreenImageView: View {
 }
 
 #Preview {
-    FullScreenImageView(imagePointerData: ImagePointerData(
+    KemonoFullScreenImageView(imagePointerData: ImagePointerData(
         artistsData: [KemonoArtist_show(
             name: "Belko",
             service: "fanbox",

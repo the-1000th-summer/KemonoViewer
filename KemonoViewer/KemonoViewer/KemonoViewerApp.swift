@@ -13,7 +13,19 @@ struct KemonoViewerApp: App {
         WindowGroup {
             ContentView()
         }
-        Window("my kemono window", id: "viewer") {
+        
+        Settings {
+            SettingsView()
+        }
+        
+        MenuBarExtra("My App", systemImage: "gear") {
+            SettingsLink {
+                Text("Settings")
+            }
+        }
+        .keyboardShortcut(".", modifiers: .command)
+        
+        Window("my kemono window", id: "kemonoViewer") {
             KContentSelectView()
         }
         Window("my twitter window", id: "twitterViewer") {
@@ -28,7 +40,7 @@ struct KemonoViewerApp: App {
         
         WindowGroup("my fullScreen window", id: "fsViewer", for: ImagePointerData.self) { $imagePointerData in
             if let imagePointerData {
-                FullScreenImageView(imagePointerData: imagePointerData)
+                KemonoFullScreenImageView(imagePointerData: imagePointerData)
             } else {
                 Text("lack of image pointer data")
             }
