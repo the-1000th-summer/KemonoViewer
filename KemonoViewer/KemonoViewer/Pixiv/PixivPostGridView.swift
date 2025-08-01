@@ -22,6 +22,8 @@ struct PixivPostGridView: View {
     
     @State private var gridColumns = Array(repeating: GridItem(.flexible()), count: initialColumns)
     
+    @Binding var autoScrollToFirstNotViewedImage: Bool
+    
     let tagNotViewAction: (Int, Bool) -> Void
     
     var body: some View {
@@ -66,6 +68,12 @@ struct PixivPostGridView: View {
                                 }
                                 .aspectRatio(0.85, contentMode: .fit)
                                 .id(Int(postIndex))
+                            }
+                        }
+                        .onAppear {
+                            if autoScrollToFirstNotViewedImage {
+                                guard let firstNotViewedIndex: Int = postsData.firstIndex(where: { !$0.viewed }) else { return }
+                                proxy.scrollTo(firstNotViewedIndex, anchor: .top)
                             }
                         }
                         .onChange(of: scrollToTop) {

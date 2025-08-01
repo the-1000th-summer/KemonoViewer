@@ -123,7 +123,6 @@ struct KContentSelectView: View {
                                     artistSelectedData: (artistSelectedIndex != nil) ? artistsData[artistSelectedIndex!] : nil,
                                     postSelectedIndex: $postSelectedIndex,
                                     autoScrollToFirstNotViewedImage: $autoScrollToFirstNotViewedImage,
-                                    queryConfig: postQueryConfig,
                                     tagNotViewAction: { postIndex, viewed in
                                         updateDB_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
                                         updateUI_newViewedStatusPost(postIndex: postIndex, viewed: viewed)

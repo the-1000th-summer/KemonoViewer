@@ -261,8 +261,8 @@
 				797E4A122E11634700C3A3A7 /* PostImageView.swift */,
 				79A627B22E1567D9001F0212 /* PostImageGridItemView.swift */,
 				797E4A162E118DF700C3A3A7 /* FullScreenImageView.swift */,
-				7928378D2E28BFD90093E179 /* PostCommentView.swift */,
 				7948904F2E27F10D00AA96A1 /* PostTextContentView.swift */,
+				7928378D2E28BFD90093E179 /* PostCommentView.swift */,
 			);
 			path = Kemono;
 			sourceTree = "<group>";

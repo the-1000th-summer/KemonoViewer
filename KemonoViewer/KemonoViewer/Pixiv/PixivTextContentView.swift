@@ -139,18 +139,23 @@ struct PixivTextContentView: View {
             }
         }
         .onAppear {
-            contentLoading = true
-            Task {
-                let loadResult = await imagePointer.loadContentData()
-                await MainActor.run {
-                    pixivContent = loadResult
-                    contentLoading = false
-                }
-            }
+            loadAllData()
+        }
+        .onChange(of: imagePointer.currentPostDirURL) {
+            loadAllData()
         }
     }
     
-    
+    private func loadAllData() {
+        contentLoading = true
+        Task {
+            let loadResult = await imagePointer.loadContentData()
+            await MainActor.run {
+                pixivContent = loadResult
+                contentLoading = false
+            }
+        }
+    }
     
 }
 

@@ -24,6 +24,8 @@ struct PixivContentView: View {
     @State private var isLoadingArtists = false
     @State private var isLoadingPosts = false
     
+    @State private var autoScrollToFirstNotViewedImage = true
+    
     private let onePostViewedPub = NotificationCenter.default.publisher(for: .updateNewViewedPixivPostUI)
     private let allViewedPub = NotificationCenter.default.publisher(for: .updateAllPixivPostViewedStatus)
 
@@ -62,10 +64,10 @@ struct PixivContentView: View {
                 HStack {
                     PostTabView(selectedTab: $selectedTab)
                     Divider()
-                    //                    PostQueryView(queryConfig: $postQueryConfig)
-                    //                    Toggle(isOn: $autoScrollToFirstNotViewedImage) {
-                    //                        Text("Scroll to first not viewed post")
-                    //                    }
+                    PostQueryView(queryConfig: $postQueryConfig)
+                    Toggle(isOn: $autoScrollToFirstNotViewedImage) {
+                        Text("Scroll to first not viewed post")
+                    }
                 }
                 .padding([.leading, .trailing])
                 HStack {
@@ -82,14 +84,12 @@ struct PixivContentView: View {
                                 postsData: $postsData,
                                 artistSelectedData: (artistSelectedIndex != nil) ? artistsData[artistSelectedIndex!] : nil,
                                 postSelectedIndex: $postSelectedIndex,
-                            //                                autoScrollToFirstNotViewedImage: $autoScrollToFirstNotViewedImage,
-                            //                                queryConfig: postQueryConfig,
+                                autoScrollToFirstNotViewedImage: $autoScrollToFirstNotViewedImage,
                                 tagNotViewAction: { postIndex, viewed in
                                     updateDB_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
                                     updateUI_newViewedStatusPost(postIndex: postIndex, viewed: viewed)
                                     updateUI_newViewedStatisArtist()
                                 }
-                            //
                             )
                         } else {
                             PixivPostListView(
@@ -131,6 +131,22 @@ struct PixivContentView: View {
             updateDB_newViewedStatusPost(postIndex: postSelectedIndex, viewed: true)
             updateUI_newViewedStatusPost(postIndex: postSelectedIndex, viewed: true)
             updateUI_newViewedStatisArtist()
+        }
+        .onChange(of: postQueryConfig) {
+            isLoadingPosts = true
+            Task {
+                await reloadPostsData()
+                isLoadingPosts = false
+            }
+            postSelectedIndex = nil
+        }
+        .onChange(of: artistQueryConfig) {
+            artistSelectedIndex = nil
+            isLoadingArtists = true
+            Task {
+                artistsData = await PixivDataReader.readArtistData(queryConfig: artistQueryConfig) ?? []
+                isLoadingArtists = false
+            }
         }
         .onReceive(onePostViewedPub) { notification in
             guard let currentArtistIdFromPointer = notification.userInfo?["currentArtistId"] as? Int64, let viewedPostId = notification.userInfo?["viewedPostId"] as? Int64, let currentArtistShouldUpdateUI = notification.userInfo?["currentArtistShouldUpdateUI"] as? Bool else { return }
