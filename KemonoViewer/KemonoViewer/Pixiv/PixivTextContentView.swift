@@ -33,6 +33,7 @@ struct PixivCountView: View {
             Text("\(countNumber)")
                 .padding(.leading, -5)
         }
+        .font(.system(size: 15))
         .foregroundStyle(.gray)
         .padding(.trailing)
     }
@@ -118,6 +119,7 @@ struct PixivTextContentView: View {
                             PixivCountView(systemImageName: "eye.fill", countNumber: pixivContent.viewCount)
                             PixivCountView(systemImageName: "message.fill", countNumber: pixivContent.commentCount)
                         }
+                        .padding(.vertical, 5)
                         
                         Text(PixivTextContentView.postDateFormatter.string(from: pixivContent.postDate))
                             .font(.system(size: 15))

@@ -408,7 +408,10 @@ final class KemonoDataWriter {
     }
     
     static func fetchData(from apiUrl: URL) async throws -> Data {
-        let (data, response) = try await URLSession.shared.data(from: apiUrl)
+        var request = URLRequest(url: apiUrl)
+        UtilFunc.configureBrowserHeaders(for: &request)
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
             throw URLError(.badServerResponse)

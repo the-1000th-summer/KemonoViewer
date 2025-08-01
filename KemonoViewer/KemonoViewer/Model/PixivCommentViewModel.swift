@@ -46,8 +46,10 @@ class PixivCommentViewModel: ObservableObject {
         
         do {
             let url = URL(string: "https://www.pixiv.net/ajax/illusts/comments/roots?illust_id=\(pixivPostId)&offset=\((currentPage-1)*pageSize)&limit=\(pageSize)")!
+            var request = URLRequest(url: url)
+            UtilFunc.configureBrowserHeaders(for: &request)
 
-            let (fetcheddata, _) = try await URLSession.shared.data(from: url)
+            let (fetcheddata, _) = try await URLSession.shared.data(for: request)
             
             let jsonObj = try JSON(data: fetcheddata)
             
