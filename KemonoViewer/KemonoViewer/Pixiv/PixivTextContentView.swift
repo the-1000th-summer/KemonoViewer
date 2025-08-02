@@ -39,11 +39,23 @@ struct PixivCountView: View {
     }
 }
 
-struct PixivTagView: View {
-    let pixivContent: PixivContent_show
-    
-    var body: some View {
-        
+struct PointingHandCursorModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .onHover { isHovering in
+                if isHovering {
+                    NSCursor.pointingHand.push()
+                } else {
+                    NSCursor.pop()
+                }
+            }
+    }
+}
+
+// 扩展 View 使其更易使用
+extension View {
+    func pointingHandCursor() -> some View {
+        self.modifier(PointingHandCursorModifier())
     }
 }
 
@@ -105,13 +117,9 @@ struct PixivTextContentView: View {
                         }
                         .foregroundStyle(.foreground)
                         .buttonStyle(PlainButtonStyle())
-                        .onHover { isHovering in
-                            if isHovering {
-                                NSCursor.pointingHand.push()
-                            } else {
-                                NSCursor.pop()
-                            }
-                        }
+                        .pointingHandCursor()
+                        
+                        PixivTagView(pixivContent: pixivContent)
                         
                         HStack {
                             PixivCountView(systemImageName: "face.smiling", countNumber: pixivContent.likeCount)

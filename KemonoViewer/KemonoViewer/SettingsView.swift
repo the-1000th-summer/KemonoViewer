@@ -38,7 +38,7 @@ class AppStorageKeys {
         pixivBaseDir: BaseDirPathType.pixivBaseDir.rawValue,
         kemonoDatabaseFilePath: DatabasePathType.kemonoDatabaseFilePath.rawValue,
         twitterDatabaseFilePath: DatabasePathType.twitterDatabaseFilePath.rawValue,
-        pixivDatabaseFilePath: DatabasePathType.twitterDatabaseFilePath.rawValue
+        pixivDatabaseFilePath: DatabasePathType.pixivDatabaseFilePath.rawValue
     ]
     
     static let keyMapIsDir: [String: Bool] = [
@@ -151,7 +151,7 @@ struct SettingsView: View {
                 .disabled(windowState.shouldDisablePixivControl)
             }
             .fileImporter(isPresented: $showDatabasePicker, allowedContentTypes: [.sqliteFile, .sqlite3File], allowsMultipleSelection: false) { result in
-                    handleFolderSelection(result: result)
+                    handleDatabaseSelection(result: result)
             }
         }
         .padding()

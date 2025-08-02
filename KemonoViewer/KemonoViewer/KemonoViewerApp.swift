@@ -38,7 +38,7 @@ struct KemonoViewerApp: App {
             RenamerView()
         }
         
-        WindowGroup("my fullScreen window", id: "fsViewer", for: ImagePointerData.self) { $imagePointerData in
+        WindowGroup("my fullScreen window", id: "fsViewer", for: KemonoImagePointerData.self) { $imagePointerData in
             if let imagePointerData {
                 KemonoFullScreenImageView(imagePointerData: imagePointerData)
             } else {

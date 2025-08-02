@@ -8,7 +8,7 @@
 import SwiftUI
 import SQLite
 
-struct ImagePointerData: Hashable, Codable {
+struct KemonoImagePointerData: Hashable, Codable {
     var id = UUID()
     let artistsData: [KemonoArtist_show]
     
@@ -65,7 +65,7 @@ final class KemonoImagePointer: ObservableObject {
 //        self.currentImageIndex = currentImageIndex
 //    }
     
-    func loadData(imagePointerData: ImagePointerData) {
+    func loadData(imagePointerData: KemonoImagePointerData) {
         self.artistsData = imagePointerData.artistsData
         
         self.postsFolderName = imagePointerData.postsFolderName

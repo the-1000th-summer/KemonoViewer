@@ -44,7 +44,7 @@ struct PostImageView: View {
                                         if windowOpenState.kemonoFsOpened {
                                             showErrorView = true
                                         } else {
-                                            let fsWindowData = ImagePointerData(
+                                            let fsWindowData = KemonoImagePointerData(
                                                 artistsData: artistsData,
                                                 postsFolderName: postsData.map { $0.folderName },
                                                 postsId: postsData.map { $0.id },

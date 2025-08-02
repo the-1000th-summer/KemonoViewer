@@ -131,7 +131,7 @@ struct MessageView: View {
 
 struct KemonoFullScreenImageView: View {
     
-    let imagePointerData: ImagePointerData
+    let imagePointerData: KemonoImagePointerData
     
     @StateObject private var imagePointer = KemonoImagePointer()
     
@@ -269,7 +269,7 @@ struct KemonoFullScreenImageView: View {
 }
 
 #Preview {
-    KemonoFullScreenImageView(imagePointerData: ImagePointerData(
+    KemonoFullScreenImageView(imagePointerData: KemonoImagePointerData(
         artistsData: [KemonoArtist_show(
             name: "Belko",
             service: "fanbox",

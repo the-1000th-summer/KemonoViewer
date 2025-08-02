@@ -94,13 +94,7 @@ struct PixivCommentRow: View {
                     .scaledToFill()
                     .frame(width: 50, height: 50)
                     .clipShape(Circle())
-                    .onHover { isHovering in
-                        if isHovering {
-                            NSCursor.pointingHand.push()
-                        } else {
-                            NSCursor.pop()
-                        }
-                    }
+                    .pointingHandCursor()
             }
             .buttonStyle(PlainButtonStyle())
             .padding(.trailing, 12)
