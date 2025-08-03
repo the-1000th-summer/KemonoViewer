@@ -11,7 +11,7 @@ import SQLite
 import SwiftyJSON
 
 struct KemonoArtist {
-    static let artistTable = Table("artist")
+    static let artistTable = Table("kemonoArtist")
     static let e_artistId = Expression<Int64>("id")
     static let e_kemonoArtistId = Expression<String>("kemono_artist_id")
     static let e_artistName = Expression<String>("name")
@@ -36,20 +36,6 @@ struct KemonoImage {
     static let e_imageId = Expression<Int64>("id")
     static let e_postIdRef = Expression<Int64>("post_id")
     static let e_imageName = Expression<String>("name")
-}
-
-struct TwitterImage {
-    static let imageTable = Table("twitterImage")
-    static let e_imageId = Expression<Int64>("id")
-    static let e_tweetId = Expression<String>("tweet_id")
-    static let e_artistIdRef = Expression<Int64>("artist_id")
-    static let e_content = Expression<String>("content")
-    static let e_tweetDate = Expression<String>("tweet_date")
-    static let e_imageName = Expression<String>("name")
-    static let e_favoriteCount = Expression<Int64>("favorite_count")
-    static let e_retweetCount = Expression<Int64>("retweet_count")
-    static let e_replyCount = Expression<Int64>("reply_count")
-    static let e_viewed = Expression<Bool>("viewed")
 }
 
 final class KemonoDatabaseManager {
@@ -444,7 +430,7 @@ final class KemonoDataReader {
             FROM "kemonoPost"
             WHERE "artist_id" = a."id" AND "viewed" = 0
           ) AS has_unviewed
-        FROM "artist" AS a
+        FROM "kemonoArtist" AS a
         """
         if queryConfig.onlyShowNotFullyViewedArtist {
             sqlStr += """
@@ -468,7 +454,7 @@ final class KemonoDataReader {
                 )
             }
         } catch {
-            print(error.localizedDescription)
+            print(error)
         }
         return nil
     }
