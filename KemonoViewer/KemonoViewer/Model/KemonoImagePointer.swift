@@ -26,7 +26,6 @@ struct KemonoImagePointerData: Hashable, Codable {
 }
 
 final class KemonoImagePointer: ObservableObject {
-//    static let shared = ImagePointer()
     private var artistsData = [KemonoArtist_show]()
     
     private var postsFolderName = [String]()

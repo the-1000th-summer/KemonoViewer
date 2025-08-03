@@ -197,9 +197,7 @@ final class TwitterImagePointer: ObservableObject {
         currentImageURL = nil
         return false
     }
-    
-    
-    
+
     private func getCurrentArtistDirURL() -> URL? {
         if artistsData.isEmpty { return nil }
         return URL(filePath: Constants.twitterBaseDir).appendingPathComponent(artistsData[currentArtistIndex].twitterId)

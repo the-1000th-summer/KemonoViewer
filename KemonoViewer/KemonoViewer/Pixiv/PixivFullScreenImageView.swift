@@ -100,13 +100,17 @@ struct PixivFullScreenImageView: View {
     }
     
     private func showNextImage() {
-        let dirURLChanged = imagePointer.nextImage()
+        let (artistChanged, dirURLChanged) = imagePointer.nextImage()
         if dirURLChanged, let currentPostDirURL = imagePointer.currentPostDirURL {
-            messageManager.show(
-                message: "下一个文件夹：\n" + currentPostDirURL.path(percentEncoded: false)
-            )
+            let message: String
+            if artistChanged {
+                message = "下一个画师：\(imagePointer.getArtistName())\n文件夹：\n" + currentPostDirURL.path(percentEncoded: false)
+            } else {
+                message = "下一个文件夹：\n" + currentPostDirURL.path(percentEncoded: false)
+            }
+            messageManager.show(message: message, duration: artistChanged ? 2.0 : 1.0)
         }
-        if !dirURLChanged && imagePointer.isLastPost() {
+        if !dirURLChanged && imagePointer.isLastPostLastArtist() {
             messageManager.show(message: "已经是最后一张图片")
         } else {
             setMovieCompleted()
@@ -114,16 +118,18 @@ struct PixivFullScreenImageView: View {
     }
     
     private func showPreviousImage() {
-        let dirURLChanged = imagePointer.previousImage()
+        let (artistChanged, dirURLChanged) = imagePointer.previousImage()
         if dirURLChanged, let currentPostDirURL = imagePointer.currentPostDirURL {
-            messageManager.show(
-                message: "上一个文件夹：\n" + currentPostDirURL.path(percentEncoded: false)
-            )
+            let message: String
+            if artistChanged {
+                message = "上一个画师：\(imagePointer.getArtistName())\n文件夹：\n" + currentPostDirURL.path(percentEncoded: false)
+            } else {
+                message = "上一个文件夹：\n" + currentPostDirURL.path(percentEncoded: false)
+            }
+            messageManager.show(message: message, duration: artistChanged ? 2.0 : 1.0)
         }
-        if !dirURLChanged && imagePointer.isFirstPost() {
-            messageManager.show(
-                message: "已经是第一张图片"
-            )
+        if !dirURLChanged && imagePointer.isFirstPostFirstArtist() {
+            messageManager.show(message: "已经是第一张图片")
         } else {
             setMovieCompleted()
         }

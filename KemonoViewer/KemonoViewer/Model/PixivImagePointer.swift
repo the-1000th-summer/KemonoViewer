@@ -37,11 +37,11 @@ final class PixivImagePointer: ObservableObject {
     
     private var postQueryConfig = PixivPostQueryConfig()
     
-    @Published var currentPostDirURL: URL?
-    @Published var currentImageURL: URL?
-    
     // 存储点击进入全屏时未浏览的post的信息
     private var notViewedPost_firstLoad: [Int: [Int64]] = [:]
+    
+    @Published var currentPostDirURL: URL?
+    @Published var currentImageURL: URL?
     
     func loadData(imagePointerData: PixivImagePointerData) {
         self.artistsData = imagePointerData.artistsData
@@ -60,13 +60,14 @@ final class PixivImagePointer: ObservableObject {
         currentPostDirURL = getCurrentPostDirURL()
         currentImageURL = getCurrentImageURL()
         
+        notViewedPost_firstLoad[self.currentArtistIndex] = self.postsId
     }
     
-    func isFirstPost() -> Bool {
-        return currentPostIndex == 0 && (currentImageIndex == -2 || currentImageIndex == 0)
+    func isFirstPostFirstArtist() -> Bool {
+        return currentArtistIndex == 0 && currentPostIndex == 0 && (currentImageIndex == -2 || currentImageIndex == 0)
     }
-    func isLastPost() -> Bool {
-        return currentPostIndex == postsFolderName.count - 1 && (currentImageIndex == -2 || currentImageIndex == currentPostImagesName.count - 1)
+    func isLastPostLastArtist() -> Bool {
+        return (currentArtistIndex == artistsData.count - 1) && (currentPostIndex == postsFolderName.count - 1) && (currentImageIndex == -2 || currentImageIndex == currentPostImagesName.count - 1)
     }
     
     func getArtistName() -> String {
@@ -99,12 +100,12 @@ final class PixivImagePointer: ObservableObject {
     }
     
     // 返回post的文件夹是否发生了变化
-    func nextImage() -> Bool {
+    func nextImage() -> (artistChanged: Bool, postChanged: Bool) {
         if currentImageIndex >= 0 && currentImageIndex < currentPostImagesName.count - 1 {
             currentImageIndex += 1
             
             currentImageURL = getCurrentImageURL()
-            return false
+            return (false, false)
         }
         
         //    last attachment in current post
@@ -112,14 +113,16 @@ final class PixivImagePointer: ObservableObject {
         // OR no post in current artist
         if currentImageIndex == currentPostImagesName.count - 1 || currentImageIndex == -2 {
             
+            let artistChanged: Bool
             // last attachment in last post OR no post in current artist
             if currentPostIndex == postsFolderName.count - 1 || currentPostIndex == -2 {
                 // last attachment in last post in last artist
                 if currentArtistIndex == artistsData.count - 1 {
-                    return false
+                    return (false, false)
                 }
                 
                 // next artist
+                artistChanged = true
                 currentArtistIndex += 1
                 
                 if notViewedPost_firstLoad[currentArtistIndex] != nil {
@@ -141,13 +144,14 @@ final class PixivImagePointer: ObservableObject {
                     currentPostIndex = -2
                     currentPostDirURL = nil
                     currentImageURL = nil
-                    return true
+                    return (true, true)
                 }
                 
                 currentPostIndex = 0
             } else {
                 //     last attachment in current post (current post is not last post)
                 // AND current artist has post
+                artistChanged = false
                 currentPostIndex += 1
             }
             
@@ -161,39 +165,41 @@ final class PixivImagePointer: ObservableObject {
                 
                 currentPostDirURL = getCurrentPostDirURL()
                 currentImageURL = nil
-                return true
+                return (artistChanged, true)
             }
             
             // has attachment(s) in current post
             currentImageIndex = 0
             currentPostDirURL = getCurrentPostDirURL()
             currentImageURL = getCurrentImageURL()
-            return true
+            return (artistChanged, true)
         }
         // SHOULD NOT REACH HERE
         currentPostDirURL = nil
         currentImageURL = nil
-        return false
+        return (false, false)
     }
     
-    func previousImage() -> Bool {
+    func previousImage() -> (artistChanged: Bool, postChanged: Bool) {
         if currentImageIndex > 0 && currentImageIndex < currentPostImagesName.count {
             currentImageIndex -= 1
             
             currentImageURL = getCurrentImageURL()
-            return false
+            return (false, false)
         }
         // first attachment in current post OR no attachment in current post
         if currentImageIndex == 0 || currentImageIndex == -2 {
             
+            let artistChanged: Bool
             // first attachment in first post
             if currentPostIndex == 0 || currentPostIndex == -2 {
                 // first attachment in first post in first artist
                 if currentArtistIndex == 0 {
-                    return false
+                    return (false, false)
                 }
                 
                 // previous artist
+                artistChanged = true
                 currentArtistIndex -= 1
                 
                 if notViewedPost_firstLoad[currentArtistIndex] != nil {
@@ -215,11 +221,12 @@ final class PixivImagePointer: ObservableObject {
                     currentPostIndex = -2
                     currentPostDirURL = nil
                     currentImageURL = nil
-                    return true
+                    return (true, true)
                 }
                 
                 currentPostIndex = postsFolderName.count - 1
             } else {
+                artistChanged = false
                 currentPostIndex -= 1
             }
             
@@ -233,7 +240,7 @@ final class PixivImagePointer: ObservableObject {
                 
                 currentPostDirURL = getCurrentPostDirURL()
                 currentImageURL = nil
-                return true
+                return (artistChanged, true)
             }
             
             // has attachment(s) in current post
@@ -241,12 +248,12 @@ final class PixivImagePointer: ObservableObject {
             
             currentPostDirURL = getCurrentPostDirURL()
             currentImageURL = getCurrentImageURL()
-            return true
+            return (artistChanged, true)
         }
         
         currentPostDirURL = nil
         currentImageURL = nil
-        return false
+        return (false, false)
     }
     
     private func notiPost_newViewedPost() {
