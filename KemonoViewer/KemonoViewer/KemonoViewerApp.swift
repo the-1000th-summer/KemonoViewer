@@ -18,12 +18,12 @@ struct KemonoViewerApp: App {
             SettingsView()
         }
         
-        MenuBarExtra("My App", systemImage: "gear") {
-            SettingsLink {
-                Text("Settings")
-            }
-        }
-        .keyboardShortcut(".", modifiers: .command)
+//        MenuBarExtra("My App", systemImage: "gear") {
+//            SettingsLink {
+//                Text("Settings")
+//            }
+//        }
+//        .keyboardShortcut(".", modifiers: .command)
         
         Window("my kemono window", id: "kemonoViewer") {
             KContentSelectView()

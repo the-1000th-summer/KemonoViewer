@@ -60,7 +60,7 @@ class KemonoImage(BaseModel):
         table_name = 'kemonoImage'
 
 @singleton  # 应用单例装饰器
-class DatabaseManager:
+class KemonoSyncer:
     def __init__(self):
         # connect to the database
         # if the database does not exist, it will be created
@@ -278,5 +278,5 @@ class DatabaseManager:
         return artistKemonoId
 
 if __name__ == "__main__":
-    dbManager = DatabaseManager()
+    dbManager = KemonoSyncer()
     dbManager.writeKemonoDataToDatabase()

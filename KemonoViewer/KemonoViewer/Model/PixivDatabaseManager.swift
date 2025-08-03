@@ -275,6 +275,48 @@ final class PixivDataReader {
         return outputQuery
     }
     
+    static func loadContentData(postId: Int64) async -> PixivContent_show? {
+        guard let db = PixivDatabaseManager.shared.getConnection() else {
+            print("数据库初始化失败")
+            return nil
+        }
+        
+        let query = PixivPost.postTable.select(
+            PixivPost.e_pixivPostId,
+            PixivPost.e_postName,
+            PixivPost.e_postComment,
+            PixivPost.e_postDate,
+            PixivPost.e_likeCount,
+            PixivPost.e_bookmarkCount,
+            PixivPost.e_viewCount,
+            PixivPost.e_commentCount,
+            PixivPost.e_xRestrict,
+            PixivPost.e_isHowto,
+            PixivPost.e_isOriginal,
+            PixivPost.e_aiType
+        ).filter(PixivPost.e_postId == postId)
+        do {
+            guard let pluckResult = try db.pluck(query) else { return nil }
+            return PixivContent_show(
+                pixivPostId: pluckResult[PixivPost.e_pixivPostId],
+                postName: pluckResult[PixivPost.e_postName],
+                comment: pluckResult[PixivPost.e_postComment],
+                postDate: pluckResult[PixivPost.e_postDate],
+                likeCount: Int(pluckResult[PixivPost.e_likeCount]),
+                bookmarkCount: Int(pluckResult[PixivPost.e_bookmarkCount]),
+                viewCount: Int(pluckResult[PixivPost.e_viewCount]),
+                commentCount: Int(pluckResult[PixivPost.e_commentCount]),
+                xRestrict: Int(pluckResult[PixivPost.e_xRestrict]),
+                isHowto: pluckResult[PixivPost.e_isHowto],
+                isOriginal: pluckResult[PixivPost.e_isOriginal],
+                aiType: Int(pluckResult[PixivPost.e_aiType])
+            )
+        } catch {
+            print(error.localizedDescription)
+        }
+        return nil
+    }
+    
 }
 
 final class PixivDataWriter {
@@ -285,7 +327,6 @@ final class PixivDataWriter {
         }
         
         do {
-            let record = PixivPost.postTable.filter(PixivPost.e_postId == postId)
             try db.run(PixivPost.postTable.filter(PixivPost.e_postId == postId).update(
                 PixivPost.e_likeCount <- Int64(likeCount),
                 PixivPost.e_bookmarkCount <- Int64(bookmarkCount),

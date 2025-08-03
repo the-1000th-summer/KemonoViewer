@@ -22,16 +22,6 @@ struct PixivImagePointerData: Hashable, Codable {
     let postQueryConfig: PixivPostQueryConfig
 }
 
-protocol ImagePointing: ObservableObject {
-    associatedtype ArtistType
-    var currentIndex: Int { get set }
-    var currentImageURL: URL? { get }
-    
-    func fetchArtistsData() async
-    func nextImage() -> URL?
-    func previousImage() -> URL?
-}
-
 final class PixivImagePointer: ObservableObject {
     private var artistsData = [PixivArtist_show]()
     
@@ -291,48 +281,6 @@ final class PixivImagePointer: ObservableObject {
                 )
             }
         }
-    }
-    
-    func loadContentData() async -> PixivContent_show? {
-        guard let db = PixivDatabaseManager.shared.getConnection() else {
-            print("数据库初始化失败")
-            return nil
-        }
-        
-        let query = PixivPost.postTable.select(
-            PixivPost.e_pixivPostId,
-            PixivPost.e_postName,
-            PixivPost.e_postComment,
-            PixivPost.e_postDate,
-            PixivPost.e_likeCount,
-            PixivPost.e_bookmarkCount,
-            PixivPost.e_viewCount,
-            PixivPost.e_commentCount,
-            PixivPost.e_xRestrict,
-            PixivPost.e_isHowto,
-            PixivPost.e_isOriginal,
-            PixivPost.e_aiType
-        ).filter(PixivPost.e_postId == getPostId())
-        do {
-            guard let pluckResult = try db.pluck(query) else { return nil }
-            return PixivContent_show(
-                pixivPostId: pluckResult[PixivPost.e_pixivPostId],
-                postName: pluckResult[PixivPost.e_postName],
-                comment: pluckResult[PixivPost.e_postComment],
-                postDate: pluckResult[PixivPost.e_postDate],
-                likeCount: Int(pluckResult[PixivPost.e_likeCount]),
-                bookmarkCount: Int(pluckResult[PixivPost.e_bookmarkCount]),
-                viewCount: Int(pluckResult[PixivPost.e_viewCount]),
-                commentCount: Int(pluckResult[PixivPost.e_commentCount]),
-                xRestrict: Int(pluckResult[PixivPost.e_xRestrict]),
-                isHowto: pluckResult[PixivPost.e_isHowto],
-                isOriginal: pluckResult[PixivPost.e_isOriginal],
-                aiType: Int(pluckResult[PixivPost.e_aiType])
-            )
-        } catch {
-            print(error.localizedDescription)
-        }
-        return nil
     }
     
     private func checkForArtistNotViewed() async -> Bool {

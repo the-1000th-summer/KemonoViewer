@@ -150,7 +150,7 @@ struct PixivTextContentView: View {
     private func loadAllData() {
         contentLoading = true
         Task {
-            let loadResult = await imagePointer.loadContentData()
+            let loadResult = await PixivDataReader.loadContentData(postId: imagePointer.getPostId())
             await MainActor.run {
                 pixivContent = loadResult
                 contentLoading = false
