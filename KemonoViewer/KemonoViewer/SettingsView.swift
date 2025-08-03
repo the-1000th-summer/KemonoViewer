@@ -57,6 +57,24 @@ class DBShouldReload {
     static var pixivReload = false
 }
 
+struct PathDisabledHintView: View {
+    @State private var hoverState = false
+    var body: some View {
+        Image(systemName: "exclamationmark.triangle")
+            .symbolRenderingMode(.multicolor)
+            .onHover { hovering in
+                withAnimation(.spring(duration: 0.3)) {
+                    hoverState = hovering
+                }
+            }
+            .popover(isPresented: $hoverState) {
+                Text("关闭图片浏览窗口以重新编辑路径")
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+            }
+    }
+}
+
 struct SettingsView: View {
     @AppStorage(AppStorageKeys.kemonoBaseDir) private var kemonoBaseDir = ""
     @AppStorage(AppStorageKeys.twitterBaseDir) private var twitterBaseDir = ""
@@ -93,69 +111,109 @@ struct SettingsView: View {
     }
     
     var body: some View {
-        Form {
+        Grid(alignment: .trailingFirstTextBaseline) {
             Group {
-                HStack {
-                    TextField(BaseDirPathType.kemonoBaseDir.rawValue, text: $kemonoBaseDir)
-                    Button("Browse...") {
-                        showDirPicker = true
-                        activeBaseDirPathType = .kemonoBaseDir
+                GridRow {
+                    Group {
+                        Text(BaseDirPathType.kemonoBaseDir.rawValue)
+                        TextField("", text: $kemonoBaseDir)
+                        Button("Browse...") {
+                            showDirPicker = true
+                            activeBaseDirPathType = .kemonoBaseDir
+                        }
+                    }
+                    .disabled(windowState.shouldDisableKemonoControl)
+                    if windowState.shouldDisableKemonoControl {
+                        PathDisabledHintView()
                     }
                 }
-                .disabled(windowState.shouldDisableKemonoControl)
-                HStack {
-                    TextField(BaseDirPathType.twitterBaseDir.rawValue, text: $twitterBaseDir)
-                    Button("Browse...") {
-                        showDirPicker = true
-                        activeBaseDirPathType = .twitterBaseDir
+                GridRow {
+                    Group {
+                        Text(BaseDirPathType.twitterBaseDir.rawValue)
+                        TextField("", text: $twitterBaseDir)
+                        Button("Browse...") {
+                            showDirPicker = true
+                            activeBaseDirPathType = .twitterBaseDir
+                        }
+                    }
+                    .disabled(windowState.shouldDisableTwitterControl)
+                    if windowState.shouldDisableTwitterControl {
+                        PathDisabledHintView()
                     }
                 }
-                .disabled(windowState.shouldDisableTwitterControl)
-                HStack {
-                    TextField(BaseDirPathType.pixivBaseDir.rawValue, text: $pixivBaseDir)
-                    Button("Browse...") {
-                        showDirPicker = true
-                        activeBaseDirPathType = .pixivBaseDir
+                GridRow {
+                    Group {
+                        Text(BaseDirPathType.pixivBaseDir.rawValue)
+                        TextField("", text: $pixivBaseDir)
+                        Button("Browse...") {
+                            showDirPicker = true
+                            activeBaseDirPathType = .pixivBaseDir
+                        }
+                    }
+                    .disabled(windowState.shouldDisablePixivControl)
+                    if windowState.shouldDisablePixivControl {
+                        PathDisabledHintView()
                     }
                 }
-                .disabled(windowState.shouldDisablePixivControl)
+
             }
             .fileImporter(isPresented: $showDirPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
                     handleFolderSelection(result: result)
             }
             
             Group {
-                HStack {
-                    TextField(DatabasePathType.kemonoDatabaseFilePath.rawValue, text: $kemonoDatabaseFilePath)
-                    Button("Browse...") {
-                        showDatabasePicker = true
-                        activeDatabasePathType = .kemonoDatabaseFilePath
+                GridRow {
+                    Group {
+                        Text(DatabasePathType.kemonoDatabaseFilePath.rawValue)
+                        TextField("", text: $kemonoDatabaseFilePath)
+                        Button("Browse...") {
+                            showDatabasePicker = true
+                            activeDatabasePathType = .kemonoDatabaseFilePath
+                        }
+                    }
+                    .disabled(windowState.shouldDisableKemonoControl)
+                    if windowState.shouldDisableKemonoControl {
+                        PathDisabledHintView()
                     }
                 }
-                .disabled(windowState.shouldDisableKemonoControl)
-                HStack {
-                    TextField(DatabasePathType.twitterDatabaseFilePath.rawValue, text: $twitterDatabaseFilePath)
-                    Button("Browse...") {
-                        showDatabasePicker = true
-                        activeDatabasePathType = .twitterDatabaseFilePath
+                GridRow {
+                    Group {
+                        Text(DatabasePathType.twitterDatabaseFilePath.rawValue)
+                        TextField("", text: $twitterDatabaseFilePath)
+                        Button("Browse...") {
+                            showDatabasePicker = true
+                            activeDatabasePathType = .twitterDatabaseFilePath
+                        }
+                        .zIndex(1)
+                    }
+                    .disabled(windowState.shouldDisableTwitterControl)
+                    if windowState.shouldDisableTwitterControl {
+                        PathDisabledHintView()
                     }
                 }
-                .disabled(windowState.shouldDisableTwitterControl)
-                HStack {
-                    TextField(DatabasePathType.pixivDatabaseFilePath.rawValue, text: $pixivDatabaseFilePath)
-                    Button("Browse...") {
-                        showDatabasePicker = true
-                        activeDatabasePathType = .pixivDatabaseFilePath
+
+                GridRow {
+                    Group {
+                        Text(DatabasePathType.pixivDatabaseFilePath.rawValue)
+                        TextField("", text: $pixivDatabaseFilePath)
+                        Button("Browse...") {
+                            showDatabasePicker = true
+                            activeDatabasePathType = .pixivDatabaseFilePath
+                        }
+                        .zIndex(1)
+                    }
+                    .disabled(windowState.shouldDisablePixivControl)
+                    if windowState.shouldDisablePixivControl {
+                        PathDisabledHintView()
                     }
                 }
-                .disabled(windowState.shouldDisablePixivControl)
             }
             .fileImporter(isPresented: $showDatabasePicker, allowedContentTypes: [.sqliteFile, .sqlite3File], allowsMultipleSelection: false) { result in
                     handleDatabaseSelection(result: result)
             }
         }
-        .padding()
-        .frame(width: 600)
+        .padding(50)
+        .frame(width: 700)
         .alert("Error", isPresented: $showErrorView) {
             Button("OK") { }
         } message: {
@@ -210,4 +268,6 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
+//    PathDisabledHintView()
+//        .frame(width: 500, height: 500)
 }

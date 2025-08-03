@@ -83,6 +83,9 @@ final class PixivImagePointer: ObservableObject {
     func getArtistName() -> String {
         return artistsData[currentArtistIndex].name
     }
+    func getArtistPixivId() -> String {
+        return artistsData[currentArtistIndex].pixivId
+    }
     func getArtistAvatarURL() -> URL? {
         guard !artistsData[currentArtistIndex].avatarName.isEmpty else { return nil }
         return URL(filePath: Constants.pixivBaseDir).appendingPathComponent(artistsData[currentArtistIndex].folderName)

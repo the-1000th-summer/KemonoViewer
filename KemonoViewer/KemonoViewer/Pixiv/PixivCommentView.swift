@@ -11,6 +11,7 @@ import Kingfisher
 struct PixivCommentView: View {
     @StateObject private var viewModel = PixivCommentViewModel()
     
+    let artistPixivId: String
     let pixivPostId: String
     
     var body: some View {
@@ -23,7 +24,7 @@ struct PixivCommentView: View {
             } else {
                 LazyVStack(alignment: .leading) {
                     ForEach(viewModel.comments) { comment in
-                        PixivCommentRowWithReply(comment: comment)
+                        PixivCommentRowWithReply(artistPixivId: artistPixivId, comment: comment)
                             .padding(.top, 20)
                             .onAppear {
                                 // when about to reach bottom, load more comments
@@ -67,16 +68,17 @@ struct PixivCommentView: View {
 }
 
 struct PixivCommentRowWithReply: View {
+    let artistPixivId: String
     let comment: PixivComment
     
     @State private var showReplies = false
     
     var body: some View {
         VStack(alignment: .leading) {
-            PixivCommentRow(comment: comment)
+            PixivCommentRow(artistPixivId: artistPixivId, comment: comment)
             if comment.hasReplies {
                 if showReplies {
-                    PixivReplyView(commentId: comment.id)
+                    PixivReplyView(artistPixivId: artistPixivId, commentId: comment.id)
                         .padding(.leading, 60)
                 } else {
                     LoadMoreCommentsButton(buttonStr: "查看回复") {
@@ -93,6 +95,7 @@ struct PixivCommentRowWithReply: View {
 }
 
 struct PixivCommentRow: View {
+    let artistPixivId: String
     let comment: PixivComment
     
     var body: some View {
@@ -111,10 +114,24 @@ struct PixivCommentRow: View {
             
             VStack(alignment: .leading) {
                 if !comment.name.isEmpty {
-                    Text(comment.name)
-                        .font(.system(size: 15))
-                        .fontWeight(.semibold)
-                        .padding(.bottom, 3)
+                    HStack {
+                        Text(comment.name)
+                            .font(.system(size: 15))
+                            .fontWeight(.semibold)
+                            .padding(.bottom, 3)
+                        if comment.userId == artistPixivId {
+                            Text("作者")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 3)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 3)
+                                        .fill(Color(red: 0.0, green: 138.0/255.0, blue: 244.0/255.0))
+                                )
+                        }
+                    }
+                    
                 }
                 if let stampId = comment.stampId {
                     Image("\(stampId)_s")

@@ -129,7 +129,7 @@ struct PixivTextContentView: View {
                     Divider()
                         .padding(.horizontal)
                     if let pixivContent {
-                        PixivCommentView(pixivPostId: pixivContent.pixivPostId)
+                        PixivCommentView(artistPixivId: imagePointer.getArtistPixivId(), pixivPostId: pixivContent.pixivPostId)
 //                            .frame(maxWidth: .infinity, alignment: .leading)
 //                            .padding()
                     }

@@ -15,6 +15,7 @@ struct PixivReplyView: View {
     @State private var canLoadMore = false
     @State private var errorMessage: String? = nil
     
+    let artistPixivId: String
     let commentId: String
     
     var body: some View {
@@ -25,7 +26,7 @@ struct PixivReplyView: View {
                     .foregroundStyle(.gray)
             } else {
                 ForEach(replies) { reply in
-                    PixivCommentRow(comment: reply)
+                    PixivCommentRow(artistPixivId: artistPixivId, comment: reply)
                 }
                 if isLoadingReplies {
                     ProgressView()
