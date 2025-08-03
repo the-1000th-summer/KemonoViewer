@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PostCommentView: View {
+struct KemonoPostCommentRow: View {
     let comment: KemonoComment
     
     let commentDateFormatter: DateFormatter = {
@@ -31,13 +31,11 @@ struct PostCommentView: View {
             Text(comment.commentContent)
         }
         .font(.system(size: 15))
-        .padding(.horizontal)
-        
     }
 }
 
 #Preview {
-    PostCommentView(comment: KemonoComment(
+    KemonoPostCommentRow(comment: KemonoComment(
         commenterName: "りゅーせい",
         commentContent: "見覚えのある場所だと思ったら、この前僕が巫女さんに挟んでもらった時の観覧射じゃないか!たまげたなあ",
         publishedDatetimeStr: "2024-05-07T12:36:51")

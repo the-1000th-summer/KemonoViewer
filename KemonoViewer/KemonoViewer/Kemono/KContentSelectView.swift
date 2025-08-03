@@ -147,7 +147,7 @@ struct KContentSelectView: View {
                             }
                         }
                         
-                        PostImageView(
+                        KemonoPostImageView(
                             postsData: $postsData,
                             artistsData: $artistsData,
                             artistSelectedIndex: $artistSelectedIndex,

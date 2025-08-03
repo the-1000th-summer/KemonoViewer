@@ -277,4 +277,24 @@ final class PixivDataReader {
     
 }
 
+final class PixivDataWriter {
+    static func updateInteractionData(postId: Int64, likeCount: Int, bookmarkCount: Int, viewCount: Int, commentCount: Int) async {
+        guard let db = PixivDatabaseManager.shared.getConnection() else {
+            print("数据库初始化失败")
+            return
+        }
+        
+        do {
+            let record = PixivPost.postTable.filter(PixivPost.e_postId == postId)
+            try db.run(PixivPost.postTable.filter(PixivPost.e_postId == postId).update(
+                PixivPost.e_likeCount <- Int64(likeCount),
+                PixivPost.e_bookmarkCount <- Int64(bookmarkCount),
+                PixivPost.e_viewCount <- Int64(viewCount),
+                PixivPost.e_commentCount <- Int64(commentCount)
+            ))
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+}
 

@@ -22,6 +22,16 @@ struct PixivImagePointerData: Hashable, Codable {
     let postQueryConfig: PixivPostQueryConfig
 }
 
+protocol ImagePointing: ObservableObject {
+    associatedtype ArtistType
+    var currentIndex: Int { get set }
+    var currentImageURL: URL? { get }
+    
+    func fetchArtistsData() async
+    func nextImage() -> URL?
+    func previousImage() -> URL?
+}
+
 final class PixivImagePointer: ObservableObject {
     private var artistsData = [PixivArtist_show]()
     

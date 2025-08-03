@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftyJSON
 import Kingfisher
 
-struct PostTextContentView: View {
+struct KemonoPostTextContentView: View {
     
     @State private var contentStr = ""
     @State private var comments: [KemonoComment]?
@@ -17,6 +17,8 @@ struct PostTextContentView: View {
     
     @State private var contentStrLoading = false
     @State private var isLoadingComments = false
+    
+    @State private var loadCommentErrMsg: String? = nil
     
     @ViewBuilder
     private func headerView() -> some View {
@@ -40,14 +42,12 @@ struct PostTextContentView: View {
                         .font(.system(size: 15))
                         .fontWeight(.bold)
                 }
-                .padding(.horizontal)
                 
                 contentView()
-                    .padding(.horizontal)
+
                 Text(imagePointer.getCurrentPostDatetime())
                     .font(.system(size: 13))
                     .foregroundStyle(.gray)
-                    .padding(.horizontal)
                     .padding(.top, 1)
             }
             .padding(.vertical)
@@ -66,27 +66,36 @@ struct PostTextContentView: View {
     
     @ViewBuilder
     private func commentView() -> some View {
-        if isLoadingComments {
-            HStack{
-                Spacer()
-                ProgressView()
-                Spacer()
+        if let loadCommentErrMsg {
+            VStack(alignment: .leading) {
+                Divider()
+                Text(loadCommentErrMsg)
+                    .font(.system(size: 15))
+                    .foregroundStyle(.gray)
             }
         } else {
-            if let comments {
-                if comments.isEmpty {
-                    Text("No comments.")
-                } else {
-                    ForEach(comments, id: \.self) { comment in
-                        PostCommentView(comment: comment)
-                    }
-                    Divider()
+            if isLoadingComments {
+                HStack {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
                 }
             } else {
-                Text("Comment load failed.")
-                    .padding(.horizontal)
+                if let comments {
+                    if comments.isEmpty {
+                        Text("No comments.")
+                    } else {
+                        ForEach(comments, id: \.self) { comment in
+                            KemonoPostCommentRow(comment: comment)
+                        }
+                        Divider()
+                    }
+                } else {
+                    Text("Comment load failed.")
+                }
             }
         }
+        
     }
     
     var body: some View {
@@ -101,6 +110,7 @@ struct PostTextContentView: View {
             .onChange(of: imagePointer.currentPostDirURL) {
                 loadAllData()
             }
+            .padding()
         }
     }
     
@@ -153,12 +163,16 @@ struct PostTextContentView: View {
                 print("转换为Json对象失败")
                 return nil
             }
-            let a = jsonObj.map {
-                return KemonoComment(commenterName: $0.1["commenter_name"].string, commentContent: $0.1["content"].stringValue, publishedDatetimeStr: $0.1["published"].stringValue)
+            return jsonObj.map {
+                KemonoComment(
+                    commenterName: $0.1["commenter_name"].string,
+                    commentContent: $0.1["content"].stringValue,
+                    publishedDatetimeStr: $0.1["published"].stringValue
+                )
             }
-            return a
         } catch {
-            print(error.localizedDescription)
+            print("评论加载失败：\(error.localizedDescription)")
+            loadCommentErrMsg = "评论加载失败：\(error.localizedDescription)"
             return nil
         }
     }

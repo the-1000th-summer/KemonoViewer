@@ -10,112 +10,6 @@ import Kingfisher
 import WrappingHStack
 import SwiftyJSON
 
-struct PixivTagHoverTextModifier: ViewModifier {
-    @State private var isHovering = false
-    @State private var isLoadingDetail = false
-    @State private var tagImageURL: URL? = nil
-    
-    let colorBefore: Color
-    let colorAfter: Color
-    let tagData: PixivTag
-    
-    func body(content: Content) -> some View {
-        content
-            .foregroundColor(isHovering ? colorAfter : colorBefore)
-            .onHover { hovering in
-                if tagData.tagType == .xRestrict || tagData.tagType == .otherSpecial {
-                    return
-                }
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    isHovering = hovering
-                }
-            }
-            .popover(isPresented: $isHovering) {
-                ZStack(alignment: .bottom) {
-                    if isLoadingDetail {
-                        ProgressView()
-                    } else {
-                        ZStack(alignment: .bottom) {
-                            KFImage(tagImageURL)
-                                .placeholder { ProgressView() }
-                                .cacheMemoryOnly(true)
-                                .frame(width: 350, height: 275)
-                            ZStack(alignment: .leading) {
-                                Color(red: 29.0/255.0, green: 29.0/255.0, blue: 29.0/255.0)
-                                    .frame(width: 350, height: 85)
-                                Text(tagData.translation)
-                                    .font(.system(size: 15))
-                                    .fontWeight(.medium)
-                                    .padding(.horizontal)
-                                    .padding(.bottom, 15)
-                            }
-                        }
-                    }
-                }
-                .onAppear {
-                    Task {
-                        await loadDetailData()
-                    }
-                }
-                .frame(width: 350, height: 250)
-            }
-        
-    }
-    
-    private func loadDetailData() async {
-        await MainActor.run {
-            isLoadingDetail = true
-        }
-        
-        do {
-            let url = URL(string: "https://www.pixiv.net/ajax/search/tags/\(tagData.name)")!
-            var request = URLRequest(url: url)
-            UtilFunc.configureBrowserHeaders(for: &request)
-            
-            let (fetcheddata, _) = try await URLSession.shared.data(for: request)
-            let jsonObj = try JSON(data: fetcheddata)
-            
-            let imageURLStr = jsonObj["body"]["pixpedia"]["image"].stringValue.replacingOccurrences(of: "i.pximg.net", with: "i.pixiv.re")
-
-            await MainActor.run {
-                tagImageURL = URL(string: imageURLStr)!
-                isLoadingDetail = false
-            }
-        } catch {
-            print(error.localizedDescription)
-        }
-    }
-}
-
-// 扩展 View 使其更容易使用
-extension View {
-    func pixivTagHoverEffect(tagData: PixivTag) -> some View {
-        let colorBefore: Color
-        let colorAfter: Color
-        
-        switch tagData.tagType {
-        case .xRestrict:
-            colorBefore = .red
-            colorAfter = .red
-        case .otherSpecial:
-            colorBefore = Color(red: 48.0/255.0, green: 106.0/255.0, blue: 140.0/255.0)
-            colorAfter = Color(red: 48.0/255.0, green: 106.0/255.0, blue: 140.0/255.0)
-        case .tag:
-            colorBefore = Color(red: 48.0/255.0, green: 106.0/255.0, blue: 140.0/255.0)
-            colorAfter = Color(red: 46.0/255.0, green: 144.0/255.0, blue: 250.0/255.0)
-        case .translation:
-            colorBefore = .gray
-            colorAfter = .white
-        }
-        
-        return self.modifier(PixivTagHoverTextModifier(
-            colorBefore: colorBefore,
-            colorAfter: colorAfter,
-            tagData: tagData
-        ))
-    }
-}
-
 enum PixivTagsType {
     case xRestrict
     case otherSpecial
@@ -137,27 +31,34 @@ struct PixivTagView: View {
     
     @State private var specialTagCount = 0
     @State private var tags = [PixivTag]()
+    @State private var errorMessage: String? = nil
 
-    
     var body: some View {
         HStack {
-            if isLoadingData {
-                ProgressView()
+            if let errorMessage {
+                Text(errorMessage)
+                    .font(.system(size: 15))
+                    .foregroundStyle(.gray)
             } else {
-                WrappingHStack(tags.indices, id: \.self) { i in
-                    let tag = tags[i]
-                    HStack {
-                        Link(
-                            destination: tag.tagLink ?? URL(string: "https://www.pixiv.net/tags/\(tag.name)/artworks?ai_type=1")!
-                        ) {
-                            Text(tagShowText(tagData: tag))
-                                .font(.system(size: 15))
-                                .fontWeight((tag.tagType == .xRestrict || tag.tagType == .otherSpecial) ? .bold : .regular)
+                if isLoadingData {
+                    ProgressView()
+                } else {
+                    WrappingHStack(tags.indices, id: \.self) { i in
+                        let tag = tags[i]
+                        HStack {
+                            Link(
+                                destination: tag.tagLink ?? URL(string: "https://www.pixiv.net/tags/\(tag.name)/artworks?ai_type=1")!
+                            ) {
+                                Text(tagShowText(tagData: tag))
+                                    .font(.system(size: 15))
+                                    .fontWeight((tag.tagType == .xRestrict || tag.tagType == .otherSpecial) ? .bold : .regular)
+                            }
+                            .pixivTagHoverEffect(tagData: tag)
                         }
-                        .pixivTagHoverEffect(tagData: tag)
                     }
                 }
             }
+            
         }
         .onAppear {
             isLoadingData = true
@@ -238,12 +139,35 @@ struct PixivTagView: View {
                     )
                 }
             }
+            
+            let likeCount = jsonObj["body"]["likeCount"]
+            let bookmarkCount = jsonObj["body"]["bookmarkCount"]
+            let viewCount = jsonObj["body"]["viewCount"]
+            let commentCount = jsonObj["body"]["commentCount"]
+
             await MainActor.run {
                 tags = tagsData
+                
+                if likeCount.exists() && bookmarkCount.exists() && viewCount.exists() && commentCount.exists() {
+                    NotificationCenter.default.post(
+                        name: .pixivInteractionUpdated,
+                        object: nil,
+                        userInfo: [
+                            "likeCount": likeCount.intValue,
+                            "bookmarkCount": bookmarkCount.intValue,
+                            "viewCount": viewCount.intValue,
+                            "commentCount": commentCount.intValue
+                        ]
+                    )
+                }
                 isLoadingData = false
             }
         } catch {
             print(error.localizedDescription)
+            await MainActor.run {
+                errorMessage = "Tag加载失败：\(error.localizedDescription)"
+                isLoadingData = false
+            }
         }
     }
 }

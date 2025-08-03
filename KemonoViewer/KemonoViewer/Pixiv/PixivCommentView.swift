@@ -14,25 +14,35 @@ struct PixivCommentView: View {
     let pixivPostId: String
     
     var body: some View {
-        LazyVStack(alignment: .leading) {
-            ForEach(viewModel.comments) { comment in
-                PixivCommentRowWithReply(comment: comment)
-                    .padding(.top, 20)
-                    .onAppear {
-                        // when about to reach bottom, load more comments
-                        if shouldLoadMore(currentItem: comment) {
-                            Task {
-                                await viewModel.loadMoreComments(pixivPostId: pixivPostId)
+        Group {
+            if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
+                    .font(.system(size: 15))
+                    .foregroundStyle(.gray)
+                    .padding(.top, 5)
+            } else {
+                LazyVStack(alignment: .leading) {
+                    ForEach(viewModel.comments) { comment in
+                        PixivCommentRowWithReply(comment: comment)
+                            .padding(.top, 20)
+                            .onAppear {
+                                // when about to reach bottom, load more comments
+                                if shouldLoadMore(currentItem: comment) {
+                                    Task {
+                                        await viewModel.loadMoreComments(pixivPostId: pixivPostId)
+                                    }
+                                }
                             }
-                        }
                     }
-            }
-            if viewModel.isLoading {
-                ProgressView()
-            }
-            if !viewModel.canLoadMore && !viewModel.comments.isEmpty {
-                Text("没有更多评论了")
-                    .foregroundColor(.secondary)
+                    if viewModel.isLoading {
+                        ProgressView()
+                    }
+                    if !viewModel.canLoadMore && !viewModel.comments.isEmpty {
+                        Text("没有更多评论了")
+                            .foregroundColor(.secondary)
+                            .padding(.top, 5)
+                    }
+                }
             }
         }
         .task {

@@ -209,7 +209,7 @@ struct KemonoFullScreenImageView: View {
                 }
                 if showSidebar {
                     Divider()
-                    PostTextContentView(imagePointer: imagePointer)
+                    KemonoPostTextContentView(imagePointer: imagePointer)
                         .frame(width: 500)
                         .transition(.move(edge: .trailing))
                         .zIndex(1)

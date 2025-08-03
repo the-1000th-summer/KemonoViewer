@@ -96,7 +96,13 @@ struct PixivFullScreenImageView: View {
             ImagePathShowView(pathText: "\(imagePointer.currentPostDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")")
         }
         .onAppear { windowOpenState.pixivFsOpened = true }
-        .onDisappear { windowOpenState.pixivFsOpened = false }
+        .onDisappear {
+            NotificationCenter.default.post(
+                name: .pixivFullScreenViewClosed,
+                object: nil
+            )
+            windowOpenState.pixivFsOpened = false
+        }
     }
     
     private func showNextImage() {

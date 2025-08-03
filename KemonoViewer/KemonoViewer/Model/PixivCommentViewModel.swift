@@ -84,8 +84,9 @@ class PixivCommentViewModel: ObservableObject {
         } catch {
             // 错误处理
             await MainActor.run { [weak self] in
+                print("评论加载失败: \(error.localizedDescription)")
                 self?.isLoading = false
-                self?.errorMessage = "加载失败: \(error.localizedDescription)"
+                self?.errorMessage = "评论加载失败: \(error.localizedDescription)"
             }
         }
     }

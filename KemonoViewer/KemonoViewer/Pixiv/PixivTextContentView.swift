@@ -120,14 +120,7 @@ struct PixivTextContentView: View {
                         .pointingHandCursor()
                         
                         PixivTagView(pixivContent: pixivContent)
-                        
-                        HStack {
-                            PixivCountView(systemImageName: "face.smiling", countNumber: pixivContent.likeCount)
-                            PixivCountView(systemImageName: "heart.fill", countNumber: pixivContent.bookmarkCount)
-                            PixivCountView(systemImageName: "eye.fill", countNumber: pixivContent.viewCount)
-                            PixivCountView(systemImageName: "message.fill", countNumber: pixivContent.commentCount)
-                        }
-                        .padding(.vertical, 5)
+                        PixivInteractionView(postId: imagePointer.getPostId(), pixivContent: pixivContent)
                         
                         Text(PixivTextContentView.postDateFormatter.string(from: pixivContent.postDate))
                             .font(.system(size: 15))

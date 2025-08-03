@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PostImageView: View {
+struct KemonoPostImageView: View {
     @Environment(\.openWindow) private var openWindow
     private static let initialColumns = 3
     @State private var gridColumns = Array(repeating: GridItem(.flexible()), count: initialColumns)

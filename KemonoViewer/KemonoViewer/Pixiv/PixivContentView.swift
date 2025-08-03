@@ -30,6 +30,7 @@ struct PixivContentView: View {
     
     private let onePostViewedPub = NotificationCenter.default.publisher(for: .updateNewViewedPixivPostUI)
     private let allViewedPub = NotificationCenter.default.publisher(for: .updateAllPixivPostViewedStatus)
+    private let fullScrViewClosedPub = NotificationCenter.default.publisher(for: .pixivFullScreenViewClosed)
 
     var body: some View {
         HSplitView {
@@ -165,6 +166,14 @@ struct PixivContentView: View {
         .onReceive(allViewedPub) { notification in
             Task {
                 await reloadPostsData()
+            }
+        }
+        .onReceive(fullScrViewClosedPub) { _ in
+            if postQueryConfig.onlyShowNotViewedPost {
+                postSelectedIndex = nil
+                Task {
+                    await reloadPostsData()
+                }
             }
         }
         .onAppear { windowOpenState.pixivMainOpened = true }
