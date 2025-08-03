@@ -17,6 +17,14 @@ Twitter：使用[twitter_download](https://github.com/caolvchong-top/twitter_dow
 
 Pixiv：使用[PixivUtil2](https://github.com/Nandaka/PixivUtil2)下载文件。
 
+各下载器的环境配置文件请参考`refFile`文件夹中的文件：
+
+KToolBox：`.env`
+
+twitter_download：`settings.json`
+
+PixivUtil2：`config.ini`
+
 ### 2. 用本项目附带的python脚本将文件信息写入SQLite数据库
 
 #### 2.1 库依赖
@@ -32,7 +40,7 @@ Twitter：`python twitter_sync.py`
 
 Pixiv：`python pixiv_sync.py`
 
-首次执行Python文件时将在`filePathConfig.py`指定的数据库路径创建数据库文件，各下载器下载新的文件后，需手动执行上述命令，已创建的数据库的数据将被更新。
+首次执行Python文件时将在`filePathConfig.py`指定的数据库路径创建数据库文件，各下载器下载新的文件后，需手动执行上述命令以更新数据库。
 
 ### 3. 使用Kemono Viewer浏览文件
 打开App后，在Settings设置下载文件的目录和数据库目录即可开始浏览文件。
