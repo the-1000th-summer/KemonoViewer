@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -433,7 +433,6 @@
 				};
 			};
 			buildConfigurationList = 7986A0BA2E105BBB0008D9EE /* Build configuration list for PBXProject "KemonoViewer" */;
-			compatibilityVersion = "Xcode 15.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -449,6 +448,7 @@
 				79002C102E3737E300ACC3BD /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 				79B1AED92E3A6F2300620876 /* XCRemoteSwiftPackageReference "WrappingHStack" */,
 			);
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 7986A0C02E105BBB0008D9EE /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
