@@ -53,7 +53,7 @@ struct PixivPostImageView: View {
                                     }) {
                                         PostImageGridItemView(
                                             size: geo.size.width,
-                                            imageURL: getImageURL(artistIndex: artistSelectedIndex, postIndex: postSelectedIndex, imageIndex: imageIndex),
+                                            imageURL: getImageURL(artistIndex: artistSelectedIndex, postIndex: postSelectedIndex, imageIndex: imageIndex)
                                         )
                                         .contentShape(Rectangle())
                                     }

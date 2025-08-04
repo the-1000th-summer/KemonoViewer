@@ -149,7 +149,7 @@ final class TwitterImagePointer: ObservableObject {
             name: artistData.name,
             twitterId: artistData.twitterId,
             hasNotViewed: hasNotViewed,
-            id: artistData.id,
+            id: artistData.id
         )
     }
     

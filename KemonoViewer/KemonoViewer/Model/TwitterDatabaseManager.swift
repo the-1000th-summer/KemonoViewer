@@ -15,7 +15,7 @@ struct TwitterImage {
     static let e_artistIdRef = Expression<Int64>("artist_id")
     static let e_content = Expression<String>("content")
     static let e_tweetDate = Expression<String>("tweet_date")
-    static let e_imageName = Expression<String>("name")
+    static let e_imageName = Expression<String>(value: "name")
     static let e_favoriteCount = Expression<Int64>("favorite_count")
     static let e_retweetCount = Expression<Int64>("retweet_count")
     static let e_replyCount = Expression<Int64>("reply_count")

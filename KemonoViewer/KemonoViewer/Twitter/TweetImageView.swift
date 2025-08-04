@@ -227,7 +227,7 @@ struct TweetImageView: View {
             name: artistData.name,
             twitterId: artistData.twitterId,
             hasNotViewed: hasNotViewed,
-            id: artistData.id,
+            id: artistData.id
         )
     }
     

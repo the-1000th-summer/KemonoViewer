@@ -60,7 +60,7 @@ struct KemonoPostImageView: View {
                                     }) {
                                         PostImageGridItemView(
                                             size: geo.size.width,
-                                            imageURL: URL(filePath: postDirPath).appendingPathComponent(imagesName[imageIndex]),
+                                            imageURL: URL(filePath: postDirPath).appendingPathComponent(imagesName[imageIndex])
                                         )
                                         .contentShape(Rectangle())
                                     }

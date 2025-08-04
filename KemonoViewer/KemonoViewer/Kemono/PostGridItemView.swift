@@ -201,6 +201,6 @@ public struct ShortSideDownsamplingProcessor: ImageProcessor {
         size: 200,
         initialSize: 200,
         imageURL: URL(filePath: "/Volumes/ACG/kemono/5924557/[2019-05-12]罠にかかった秋月修正/1.jpe"),
-        isSelected: true,
+        isSelected: true
     )
 }
