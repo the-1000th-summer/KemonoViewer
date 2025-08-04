@@ -74,7 +74,7 @@ struct TweetImageView: View {
                                                 ZStack(alignment: .topTrailing) {
                                                     PostImageGridItemView(
                                                         size: geo.size.width,
-                                                        imageURL: getImageURL(artistId: artistsData[artistSelectedIndex].twitterId, imageName: imagesData[imageIndex].name),
+                                                        imageURL: getImageURL(artistId: artistsData[artistSelectedIndex].twitterId, imageName: imagesData[imageIndex].name)
                                                     )
                                                     Image(systemName: "circlebadge.fill")
                                                         .padding(.top, 2)
