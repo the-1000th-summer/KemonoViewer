@@ -11,14 +11,7 @@ jobs:
       SCHEME: KemonoViewer
     steps:
       - uses: actions/checkout@v4
-      - name: Build Swift Package dependencies
-        run: |
-          xcodebuild \
-            -scheme "$SCHEME" \
-            -configuration Release \
-            -sdk macosx \
-            -resolvePackageDependencies
-      - name: Archive without clean
+      - name: Archive with clean
         run: |
           xcodebuild clean archive \
             -scheme "$SCHEME" \
