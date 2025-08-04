@@ -9,7 +9,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct PixivFullScreenImageView: View {
-    
+    @Environment(\.appearsActive) private var windowIsActive
     let imagePointerData: PixivImagePointerData
     
     @StateObject private var imagePointer = PixivImagePointer()
@@ -94,6 +94,11 @@ struct PixivFullScreenImageView: View {
                 }
             }
             ImagePathShowView(pathText: "\(imagePointer.currentPostDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")")
+        }
+        .onChange(of: windowIsActive) { wasActive, isNowActive in
+            if isNowActive {
+                NSApp.applicationIconImage = NSImage(named: "pixivIcon_round")
+            }
         }
         .onAppear { windowOpenState.pixivFsOpened = true }
         .onDisappear {

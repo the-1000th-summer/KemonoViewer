@@ -9,7 +9,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct TwitterFullScreenImageView: View {
-    
+    @Environment(\.appearsActive) private var windowIsActive
     let imagePointerData: TwitterImagePointerData
     
     @StateObject private var imagePointer = TwitterImagePointer()
@@ -94,6 +94,11 @@ struct TwitterFullScreenImageView: View {
                 }
             }
             ImagePathShowView(pathText: "\(imagePointer.currentArtistDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")")
+        }
+        .onChange(of: windowIsActive) { wasActive, isNowActive in
+            if isNowActive {
+                NSApp.applicationIconImage = NSImage(named: "twitterIcon_round")
+            }
         }
         .onAppear { windowOpenState.twitterFsOpened = true }
         .onDisappear {

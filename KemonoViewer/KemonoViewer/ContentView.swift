@@ -8,36 +8,68 @@
 import SwiftUI
 
 struct ContentView: View {
-    
-    
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.appearsActive) private var windowIsActive
     
     @State private var showErrorView = false
     @State private var errorMessage = ""
     
     var body: some View {
-        VStack {
-            Button("Kemono content") {
+        HStack {
+            
+            Button(action: {
                 let baseDirValid = checkUserDefaultValid(userDefaultKey: AppStorageKeys.kemonoBaseDir)
                 let dbPathValid = checkUserDefaultValid(userDefaultKey: AppStorageKeys.kemonoDatabaseFilePath)
                 if baseDirValid && dbPathValid {
                     openWindow(id: "kemonoViewer")
                 }
+            }) {
+                VStack {
+                    Image("kemonoIcon_round")
+                        .resizable()
+                        .frame(width: 200, height: 200)
+                    Text("Kemono")
+                        .font(.system(size: 20))
+                }
+                .contentShape(Rectangle())
             }
-            Button("Twitter content") {
+            .buttonStyle(PlainButtonStyle())
+            
+            Button(action: {
                 let baseDirValid = checkUserDefaultValid(userDefaultKey: AppStorageKeys.twitterBaseDir)
                 let dbPathValid = checkUserDefaultValid(userDefaultKey: AppStorageKeys.twitterDatabaseFilePath)
                 if baseDirValid && dbPathValid {
                     openWindow(id: "twitterViewer")
                 }
+            }) {
+                VStack {
+                    Image("twitterIcon_round")
+                        .resizable()
+                        .frame(width: 200, height: 200)
+                    Text("Twitter")
+                        .font(.system(size: 20))
+                }
+                .contentShape(Rectangle())
             }
-            Button("Pixiv content") {
+            .buttonStyle(PlainButtonStyle())
+            
+            Button(action: {
                 let baseDirValid = checkUserDefaultValid(userDefaultKey: AppStorageKeys.pixivBaseDir)
                 let dbPathValid = checkUserDefaultValid(userDefaultKey: AppStorageKeys.pixivDatabaseFilePath)
                 if baseDirValid && dbPathValid {
                     openWindow(id: "pixivViewer")
                 }
+            }) {
+                VStack {
+                    Image("pixivIcon_round")
+                        .resizable()
+                        .frame(width: 200, height: 200)
+                    Text("Pixiv")
+                        .font(.system(size: 20))
+                }
+                .contentShape(Rectangle())
             }
+            .buttonStyle(PlainButtonStyle())
 //            Button("Kemono Renamer") {
 //                openWindow(id: "renamer")
 //            }
@@ -47,6 +79,11 @@ struct ContentView: View {
             Button("OK") { }
         } message: {
             Text(errorMessage)
+        }
+        .onChange(of: windowIsActive) { wasActive, isNowActive in
+            if isNowActive {
+                NSApp.applicationIconImage = nil
+            }
         }
     }
     

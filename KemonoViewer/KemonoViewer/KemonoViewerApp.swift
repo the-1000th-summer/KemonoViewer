@@ -12,20 +12,13 @@ struct KemonoViewerApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
-        WindowGroup {
+        Window("my Main Window", id: "mainWindow") {
             ContentView()
         }
         
         Settings {
             SettingsView()
         }
-        
-//        MenuBarExtra("My App", systemImage: "gear") {
-//            SettingsLink {
-//                Text("Settings")
-//            }
-//        }
-//        .keyboardShortcut(".", modifiers: .command)
         
         Window("my kemono window", id: "kemonoViewer") {
             KContentSelectView()
@@ -40,7 +33,7 @@ struct KemonoViewerApp: App {
             RenamerView()
         }
         
-        WindowGroup("my fullScreen window", id: "fsViewer", for: KemonoImagePointerData.self) { $imagePointerData in
+        WindowGroup("my kemono fullScreen window", id: "fsViewer", for: KemonoImagePointerData.self) { $imagePointerData in
             if let imagePointerData {
                 KemonoFullScreenImageView(imagePointerData: imagePointerData)
             } else {

@@ -9,7 +9,7 @@ import SwiftUI
 
 
 struct TwitterContentView: View {
-    
+    @Environment(\.appearsActive) private var windowIsActive
     @State private var artistsData = [TwitterArtist_show]()
     @State private var artistSelectedIndex: Int?
     
@@ -72,6 +72,11 @@ struct TwitterContentView: View {
         }
         .onChange(of: artistQueryConfig) {
             reloadArtistData()
+        }
+        .onChange(of: windowIsActive) { wasActive, isNowActive in
+            if isNowActive {
+                NSApp.applicationIconImage = NSImage(named: "twitterIcon_round")
+            }
         }
         .onAppear { windowOpenState.twitterMainOpened = true }
         .onDisappear { windowOpenState.twitterMainOpened = false }

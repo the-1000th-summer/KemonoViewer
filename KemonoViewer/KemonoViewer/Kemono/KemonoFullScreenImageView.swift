@@ -130,7 +130,7 @@ struct MessageView: View {
 }
 
 struct KemonoFullScreenImageView: View {
-    
+    @Environment(\.appearsActive) private var windowIsActive
     let imagePointerData: KemonoImagePointerData
     
     @StateObject private var imagePointer = KemonoImagePointer()
@@ -216,6 +216,11 @@ struct KemonoFullScreenImageView: View {
                 }
             }
             ImagePathShowView(pathText: "\(imagePointer.currentPostDirURL?.path(percentEncoded: false) ?? "" ) > \(imagePointer.currentImageURL?.lastPathComponent ?? "[no attachments]")")
+        }
+        .onChange(of: windowIsActive) { wasActive, isNowActive in
+            if isNowActive {
+                NSApp.applicationIconImage = NSImage(named: "kemonoIcon_round")
+            }
         }
         .onAppear { windowOpenState.kemonoFsOpened = true }
         .onDisappear {

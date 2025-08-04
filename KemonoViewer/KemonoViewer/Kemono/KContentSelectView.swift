@@ -17,6 +17,7 @@ struct ArtistQueryConfig: Equatable {
 }
 
 struct KContentSelectView: View {
+    @Environment(\.appearsActive) private var windowIsActive
     @State private var artistsData = [KemonoArtist_show]()
     @State private var artistSelectedIndex: Int?
     
@@ -222,6 +223,11 @@ struct KContentSelectView: View {
                 .progressViewStyle(LinearProgressViewStyle())
                 .padding()
                 .interactiveDismissDisabled()
+        }
+        .onChange(of: windowIsActive) { wasActive, isNowActive in
+            if isNowActive {
+                NSApp.applicationIconImage = NSImage(named: "kemonoIcon_round")
+            }
         }
         .onAppear { windowOpenState.kemonoMainOpened = true }
         .onDisappear { windowOpenState.kemonoMainOpened = false }

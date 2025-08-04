@@ -9,6 +9,7 @@ import SwiftUI
 import Kingfisher
 
 struct PixivContentView: View {
+    @Environment(\.appearsActive) private var windowIsActive
     @State private var artistsData = [PixivArtist_show]()
     @State private var artistSelectedIndex: Int?
     
@@ -161,6 +162,11 @@ struct PixivContentView: View {
             }
             if currentArtistShouldUpdateUI {
                 refreshArtistData(artistId: currentArtistIdFromPointer, hasNotViewed: false)
+            }
+        }
+        .onChange(of: windowIsActive) { wasActive, isNowActive in
+            if isNowActive {
+                NSApp.applicationIconImage = NSImage(named: "pixivIcon_round")
             }
         }
         .onReceive(allViewedPub) { notification in
