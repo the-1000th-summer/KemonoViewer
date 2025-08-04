@@ -9,6 +9,8 @@ import SwiftUI
 
 @main
 struct KemonoViewerApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -59,5 +61,11 @@ struct KemonoViewerApp: App {
                 Text("lack of image pointer data")
             }
         }
+    }
+}
+
+class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return true
     }
 }
