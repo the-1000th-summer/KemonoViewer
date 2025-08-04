@@ -421,7 +421,7 @@
 				};
 			};
 			buildConfigurationList = 7986A0BA2E105BBB0008D9EE /* Build configuration list for PBXProject "KemonoViewer" */;
-			compatibilityVersion = "Xcode 15.3";
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
