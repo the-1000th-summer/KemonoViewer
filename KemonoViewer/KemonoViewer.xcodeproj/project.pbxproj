@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -161,16 +161,8 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		7986A0D02E105BBC0008D9EE /* KemonoViewerTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = KemonoViewerTests;
-			sourceTree = "<group>";
-		};
-		7986A0DA2E105BBC0008D9EE /* KemonoViewerUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = KemonoViewerUITests;
-			sourceTree = "<group>";
-		};
+		7986A0D02E105BBC0008D9EE /* KemonoViewerTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = KemonoViewerTests; sourceTree = "<group>"; };
+		7986A0DA2E105BBC0008D9EE /* KemonoViewerUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = KemonoViewerUITests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -429,6 +421,7 @@
 				};
 			};
 			buildConfigurationList = 7986A0BA2E105BBB0008D9EE /* Build configuration list for PBXProject "KemonoViewer" */;
+			compatibilityVersion = "Xcode 15.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -444,7 +437,6 @@
 				79002C102E3737E300ACC3BD /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 				79B1AED92E3A6F2300620876 /* XCRemoteSwiftPackageReference "WrappingHStack" */,
 			);
-			preferredProjectObjectVersion = 77;
 			productRefGroup = 7986A0C02E105BBB0008D9EE /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
