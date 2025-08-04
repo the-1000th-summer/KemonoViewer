@@ -11,10 +11,9 @@ jobs:
       SCHEME: KemonoViewer
     steps:
       - uses: actions/checkout@v4
-      - name: check PWD
-        run: ls -a
       - name: Build Swift Package dependencies
         run: |
+          cd $SCHEME
           xcodebuild \
             -scheme "$SCHEME" \
             -configuration Release \
@@ -22,6 +21,7 @@ jobs:
             -resolvePackageDependencies
       - name: Archive with clean
         run: |
+          cd ./$SCHEME
           xcodebuild clean archive \
             -scheme "$SCHEME" \
             -configuration Release \
