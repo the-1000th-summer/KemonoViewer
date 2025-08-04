@@ -10,6 +10,8 @@ import SwiftUI
 import SQLite
 import SwiftyJSON
 
+typealias Expression = SQLite.Expression
+
 struct KemonoArtist {
     static let artistTable = Table("kemonoArtist")
     static let e_artistId = Expression<Int64>("id")
