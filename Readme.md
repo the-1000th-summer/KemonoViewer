@@ -3,7 +3,7 @@
 👉 [English Version](Readme_en.md)
 
 此App用于管理kemono.su、Twitter和Pixiv下载的图片和视频。此App的特色在于：
-* 可直接浏览从三个网站下载的任意媒体文件
+* 可直接浏览从三个网站下载的任意媒体文件；
 * 可跨post/tweet/artist浏览，当前post/tweet/artist的所有媒体文件浏览完毕后，点按下/上一图片自动跳到下/上一个post/tweet/artist的媒体文件
 * 可控制gif和ugoira动图的播放状态，可暂停浏览任意一帧。尽力修正了可完全控制播放状态的情况下播放速度偏慢的问题
 * 自动播放时，遇到视频/动图时将等待视频/动图全部播放完毕后才自动播放下一媒体文件
