@@ -1,0 +1,32 @@
+name: Build macOS .app
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    env:
+      SCHEME: KemonoViewer
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Swift Package dependencies
+        run: |
+          xcodebuild \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -sdk macosx \
+            -resolvePackageDependencies
+      - name: Archive without clean
+        run: |
+          xcodebuild clean archive \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -destination "generic/platform=macOS" \
+            -archivePath "$PWD/build/$SCHEME.xcarchive"
+      - name: Zip & upload to GitHub Release
+        run: zip -r "$SCHEME-macos.zip" "build/$SCHEME.xcarchive/Products/Applications/$SCHEME.app"
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: $SCHEME-macos.zip
