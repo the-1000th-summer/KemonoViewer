@@ -28,7 +28,11 @@ jobs:
             -destination "generic/platform=macOS" \
             -archivePath "$PWD/build/$SCHEME.xcarchive"
       - name: Zip & upload to GitHub Release
-        run: zip -r "$SCHEME-macos.zip" "build/$SCHEME.xcarchive/Products/Applications/$SCHEME.app"
+        run: |
+          ls $PWD/build/$SCHEME.xcarchive
+          ls $PWD/build/$SCHEME.xcarchive/Products
+          ls $PWD/build/$SCHEME.xcarchive/Products/Applications
+          zip -r "$SCHEME-macos.zip" "$PWD/build/$SCHEME.xcarchive/Products/Applications/$SCHEME.app"
       - uses: softprops/action-gh-release@v2
         with:
           files: $SCHEME-macos.zip
