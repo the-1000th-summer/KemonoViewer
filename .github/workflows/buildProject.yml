@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: macos-15
+    permissions:
+      contents: write
     env:
       SCHEME: KemonoViewer
     steps:
@@ -29,7 +31,11 @@ jobs:
             -archivePath "$PWD/build/$SCHEME.xcarchive"
       - name: Zip & upload to GitHub Release
         run: |
-          zip -r "KemonoViewer-macos.zip" "$SCHEME/build/$SCHEME.xcarchive/Products/Applications/$SCHEME.app"
+          cd $SCHEME
+          mkdir -p build/extracted
+          cp -R build/$SCHEME.xcarchive/Products/Applications/$SCHEME.app build/extracted/
+          cd build/extracted
+          zip -r "KemonoViewer-macos.zip" "$SCHEME.app"
       - uses: softprops/action-gh-release@v2
         with:
-          files: KemonoViewer-macos.zip
+          files: "KemonoViewer/build/extracted/KemonoViewer-macos.zip"
