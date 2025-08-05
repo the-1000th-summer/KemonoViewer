@@ -5,7 +5,7 @@
 <img src="mainIcon_round.png" alt="appIcon" width="200"/>
 
 此App用于管理kemono.su、Twitter和Pixiv下载的图片和视频。此App的特色在于：
-* 可直接浏览从三个网站下载的任意媒体文件；
+* 可直接浏览从三个网站下载的任意媒体文件
 * 可跨post/tweet/artist浏览，当前post/tweet/artist的所有媒体文件浏览完毕后，点按下/上一图片自动跳到下/上一个post/tweet/artist的媒体文件
 * 可控制gif和ugoira动图的播放状态，可暂停浏览任意一帧。尽力修正了可完全控制播放状态的情况下播放速度偏慢的问题
 * 自动播放时，遇到视频/动图时将等待视频/动图全部播放完毕后才自动播放下一媒体文件
@@ -50,3 +50,9 @@
 打开App后，在Settings设置下载文件的目录和数据库目录即可开始浏览文件。
 
 构建的App无签名，因此会弹出“Apple无法验证“KemonoViewer.app””的窗口，请在设置>隐私与安全性>安全性中点击“仍要打开”打开App。[参考](https://developer.apple.com/cn/news/?id=saqachfa)
+
+## TODO
+
+* 软件中英文支持
+* 部分无用代码清理或再利用
+

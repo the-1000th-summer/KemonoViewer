@@ -49,3 +49,8 @@ The first time you run the script, it will create a database at the path specifi
 After launching the app, go to Settings and set the paths for downloaded files and the database. You can then start browsing media.
 
 The app isn't notarized, so a window saying "Apple cannot verify 'KemonoViewer.app'" will pop up. Please go to Settings > Privacy & Security > Security and click "Open Anyway" to open the app. [Reference](https://developer.apple.com/news/?id=saqachfa)
+
+## TODO
+
+* Add English and Chinese language support to the software
+* Remove or repurpose unused code
