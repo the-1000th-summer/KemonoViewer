@@ -1,5 +1,7 @@
 # Kemono Viewer
 
+<img src="mainIcon_round.png" alt="appIcon" width="200"/>
+
 This app is designed to manage media files downloaded from **kemono.su**, **Twitter**, and **Pixiv**. Its key features include:
 
 * Direct browsing of media files downloaded from any of the three platforms
@@ -41,7 +43,9 @@ Modify pythonUtil/filePathConfig.py to specify the paths to your downloaded file
 - For Twitter: `python twitter_sync.py`
 - For Pixiv: `python pixiv_sync.py`
 
-The first time you run a script, it will create a database at the path specified in filePathConfig.py. You’ll need to rerun the scripts manually whenever new files are downloaded.
+The first time you run the script, it will create a database at the path specified in filePathConfig.py. You’ll need to rerun the scripts manually whenever new files are downloaded.
 
 ### 3. Browse with Kemono Viewer
 After launching the app, go to Settings and set the paths for downloaded files and the database. You can then start browsing media.
+
+The app isn't notarized, so a window saying "Apple cannot verify 'KemonoViewer.app'" will pop up. Please go to Settings > Privacy & Security > Security and click "Open Anyway" to open the app. [Reference](https://developer.apple.com/news/?id=saqachfa)
