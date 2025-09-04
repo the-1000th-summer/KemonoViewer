@@ -31,7 +31,7 @@ struct KemonoPostTextContentView: View {
         } else {
             VStack(alignment: .leading) {
                 HStack {
-                    KFImage(URL(string: "https://img.kemono.su/icons/\(imagePointer.getArtistService())/\(imagePointer.getArtistKemonoId())"))
+                    KFImage(URL(string: "https://img.kemono.cr/icons/\(imagePointer.getArtistService())/\(imagePointer.getArtistKemonoId())"))
                         .cacheMemoryOnly(true)
                         .resizable()
                         .scaledToFill()
@@ -148,9 +148,9 @@ struct KemonoPostTextContentView: View {
     
     private func loadComments() async -> [KemonoComment]? {
         guard let kemonoPostId = imagePointer.getCurrentPostKemonoId() else { return nil }
-        guard let apiUrl = URL(string: "https://kemono.su/api/v1/\(imagePointer.getArtistService())/user/\(imagePointer.getArtistKemonoId())/post/\(kemonoPostId)/comments") else { return nil }
+        guard let apiUrl = URL(string: "https://kemono.cr/api/v1/\(imagePointer.getArtistService())/user/\(imagePointer.getArtistKemonoId())/post/\(kemonoPostId)/comments") else { return nil }
         do {
-            let fetcheddata = try await KemonoDataWriter.fetchData(from: apiUrl)
+            let fetcheddata = try await KemonoDataWriter.fetchData(from: apiUrl, addSpecialHeader: true)
             
 //            let (data, response) = try await URLSession.shared.data(from: apiUrl)
 //            guard let httpResponse = response as? HTTPURLResponse,

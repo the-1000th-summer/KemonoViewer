@@ -2,7 +2,7 @@
 
 <img src="mainIcon_round.png" alt="appIcon" width="200"/>
 
-This app is designed to manage media files downloaded from **kemono.su**, **Twitter**, and **Pixiv**. Its key features include:
+This app is designed to manage media files downloaded from **kemono.cr**, **Twitter**, and **Pixiv**. Its key features include:
 
 * Direct browsing of media files downloaded from any of the three platforms
 * Seamless navigation across posts/tweets/artists — when all media in the current item is viewed, navigating to the next/previous image will automatically switch to the next/previous post/tweet/artist
@@ -17,7 +17,7 @@ This app is designed to manage media files downloaded from **kemono.su**, **Twit
 ### 1. Download Media Files
 All downloaders use Python. Please refer to each downloader’s documentation for Python environment setup.
 
-- kemono.su: Download using [KToolBox](https://github.com/Ljzd-PRO/KToolBox)
+- kemono.cr: Download using [KToolBox](https://github.com/Ljzd-PRO/KToolBox)
 - Twitter: Download using [twitter_download](https://github.com/caolvchong-top/twitter_download)
 - Pixiv: Download using [PixivUtil2](https://github.com/Nandaka/PixivUtil2)
 
@@ -39,7 +39,7 @@ The Python scripts require the `peewee` library. Install it via pip or conda:
 Modify pythonUtil/filePathConfig.py to specify the paths to your downloaded files and database.
 
 #### 2.3 Run the Scripts
-- For kemono.su: `python kemono_sync.py`
+- For kemono.cr: `python kemono_sync.py`
 - For Twitter: `python twitter_sync.py`
 - For Pixiv: `python pixiv_sync.py`
 

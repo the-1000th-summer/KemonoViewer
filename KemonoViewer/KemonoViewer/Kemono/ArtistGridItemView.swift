@@ -63,7 +63,7 @@ struct ArtistGridItemView: View {
         ZStack(alignment: .topTrailing) {
             ZStack(alignment: .leading) {
                 
-                KFImage(URL(string: "https://img.kemono.su/banners/\(artistData.service)/\(artistData.kemonoId)"))
+                KFImage(URL(string: "https://img.kemono.cr/banners/\(artistData.service)/\(artistData.kemonoId)"))
                     .resizable()
                     .overlay(
                         LinearGradient(colors: [
@@ -74,7 +74,7 @@ struct ArtistGridItemView: View {
                     .scaledToFill()
                     .frame(width: size.width, height: size.height)
                 HStack {
-                    KFImage(URL(string: "https://img.kemono.su/icons/\(artistData.service)/\(artistData.kemonoId)"))
+                    KFImage(URL(string: "https://img.kemono.cr/icons/\(artistData.service)/\(artistData.kemonoId)"))
                         .cacheMemoryOnly(true)
                         .resizable()
                         .scaledToFill()

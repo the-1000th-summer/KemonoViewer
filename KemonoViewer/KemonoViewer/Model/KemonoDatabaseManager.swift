@@ -339,7 +339,7 @@ final class KemonoDataWriter {
                         while true {
                             do {
                                 guard let url = getArtistPostsApi(artistDirPath: artistDirPath, page: page) else { return (-1, nil) }
-                                let fetcheddata = try await fetchData(from: url)
+                                let fetcheddata = try await fetchData(from: url, addSpecialHeader: true)
                                 guard let jsonObj = try? JSON(data: fetcheddata) else {
                                     print("转换为Json对象失败")
                                     return (id, nil)
@@ -394,16 +394,20 @@ final class KemonoDataWriter {
     static func getArtistPostsApi(artistDirPath: String, page: Int) -> URL? {
         guard let artistData = getArtistIdAndService(artistDirPath: artistDirPath) else { return nil}
         
-        var urlStr = "https://kemono.su/api/v1/\(artistData.service)/user/\(artistData.kemonoID)"
+        var urlStr = "https://kemono.cr/api/v1/\(artistData.service)/user/\(artistData.kemonoID)"
         if page > 1 {
             urlStr += "?o=\((page-1)*50)"
         }
         return URL(string: urlStr)
     }
     
-    static func fetchData(from apiUrl: URL) async throws -> Data {
+    static func fetchData(from apiUrl: URL, addSpecialHeader: Bool) async throws -> Data {
         var request = URLRequest(url: apiUrl)
         UtilFunc.configureBrowserHeaders(for: &request)
+        
+        if addSpecialHeader {
+            request.setValue("text/css", forHTTPHeaderField: "Accept")
+        }
         
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse,
